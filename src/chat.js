@@ -15575,7 +15575,7 @@
         };
 
         /**
-         * Test communication with kotern
+         * Test connectivity with kotern
          *
          * @param turnIp
          * @param port
