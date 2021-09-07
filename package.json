@@ -4,7 +4,8 @@
   "description": "Javascript SDK to use POD's Chat Service - Browser Only",
   "main": "./src/chat.js",
   "scripts": {
-    "test": "mocha --reporter spec --exit"
+    "test": "mocha --reporter spec --exit",
+    "bundle": "browserify browser-bundling.js -o ./dist/podchat-10.14.0.js"
   },
   "repository": {
     "type": "git",
