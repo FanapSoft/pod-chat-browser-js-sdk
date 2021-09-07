@@ -52,7 +52,8 @@ var params = {
     onMessageReceive: true, // log received messages on console
     onMessageSend: true, // log sent messaged on console
     actualTiming: true // log actual functions running time
-  }
+  },
+  clientName: 'SDK Default example', // used for logging (Sentry)
 };
 
 var chatAgent = new Chat(params);
