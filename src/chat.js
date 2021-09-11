@@ -43,6 +43,8 @@
                 attachStacktrace: true
             });
             Sentry.setContext("Chat Params", params);
+            Sentry.setTag("sdk.details", "js browser");
+            Sentry.setTag("client.name", params.clientName);
         }
 
         var asyncClient,
