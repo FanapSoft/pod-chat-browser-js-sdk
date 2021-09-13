@@ -10370,7 +10370,7 @@
                     var serversTemp = params.turnAddress.split(',');
 
                     turnServers = [
-                        {"urls": "stun:" + serversTemp[0]},
+                        //{"urls": "stun:" + serversTemp[0]},
                         {
                             "urls": "turn:" + serversTemp[1],
                             "username": "mkhorrami",
@@ -10379,7 +10379,7 @@
                     ];
                 } else {
                     turnServers = [
-                        {"urls": "stun:" + callTurnIp + ":3478"},
+                        //{"urls": "stun:" + callTurnIp + ":3478"},
                         {
                             "urls": "turn:" + callTurnIp + ":3478",
                             "username": "mkhorrami",
@@ -10401,6 +10401,7 @@
                                 framerate: 15
                             }
                         },
+                        iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
                             setTimeout(function () {
                                 sendCallMessage({
@@ -10418,6 +10419,7 @@
                     const receiveVideoOptions = {
                         remoteVideo: uiRemoteMedias[callTopics['receiveVideoTopic']],
                         mediaConstraints: {audio: false, video: true},
+                        iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
                             setTimeout(function () {
                                 sendCallMessage({
@@ -10488,6 +10490,7 @@
                     const sendAudioOptions = {
                         localVideo: uiRemoteMedias[callTopics['sendAudioTopic']],
                         mediaConstraints: {audio: true, video: false},
+                        iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
                             setTimeout(function () {
                                 sendCallMessage({
@@ -10505,6 +10508,7 @@
                     const receiveAudioOptions = {
                         remoteVideo: uiRemoteMedias[callTopics['receiveAudioTopic']],
                         mediaConstraints: {audio: true, video: false},
+                        iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
                             setTimeout(function () {
                                 sendCallMessage({
