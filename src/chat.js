@@ -1933,34 +1933,14 @@
                             }
                         });
 
-                        // if (fullResponseObject) {
-                        //     getHistory({
-                        //         offset: 0,
-                        //         threadId: threadId,
-                        //         id: messageContent.messageId,
-                        //         cache: false
-                        //     }, function (result) {
-                        //         if (!result.hasError) {
-                        //             fireEvent('messageEvents', {
-                        //                 type: 'MESSAGE_SEEN',
-                        //                 result: {
-                        //                     message: result.result.history[0],
-                        //                     threadId: threadId,
-                        //                     senderId: messageContent.participantId
-                        //                 }
-                        //             });
-                        //         }
-                        //     });
-                        // } else {
-                        //     fireEvent('messageEvents', {
-                        //         type: 'MESSAGE_SEEN',
-                        //         result: {
-                        //             message: messageContent.messageId,
-                        //             threadId: threadId,
-                        //             senderId: messageContent.participantId
-                        //         }
-                        //     });
-                        // }
+                        fireEvent('messageEvents', {
+                            type: 'MESSAGE_SEEN',
+                            result: {
+                                message: messageContent.messageId,
+                                threadId: threadId,
+                                senderId: messageContent.participantId
+                            }
+                        });
 
                         sendMessageCallbacksHandler(chatMessageVOTypes.SEEN, threadId, uniqueId);
                         break;
@@ -10370,7 +10350,7 @@
                     var serversTemp = params.turnAddress.split(',');
 
                     turnServers = [
-                        {"urls": "stun:" + serversTemp[0]},
+                        //{"urls": "stun:" + serversTemp[0]},
                         {
                             "urls": "turn:" + serversTemp[1],
                             "username": "mkhorrami",
@@ -10379,7 +10359,7 @@
                     ];
                 } else {
                     turnServers = [
-                        {"urls": "stun:" + callTurnIp + ":3478"},
+                        //{"urls": "stun:" + callTurnIp + ":3478"},
                         {
                             "urls": "turn:" + callTurnIp + ":3478",
                             "username": "mkhorrami",
@@ -10401,6 +10381,7 @@
                                 framerate: 15
                             }
                         },
+                        iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
                             setTimeout(function () {
                                 sendCallMessage({
@@ -10418,6 +10399,7 @@
                     const receiveVideoOptions = {
                         remoteVideo: uiRemoteMedias[callTopics['receiveVideoTopic']],
                         mediaConstraints: {audio: false, video: true},
+                        iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
                             setTimeout(function () {
                                 sendCallMessage({
@@ -10488,6 +10470,7 @@
                     const sendAudioOptions = {
                         localVideo: uiRemoteMedias[callTopics['sendAudioTopic']],
                         mediaConstraints: {audio: true, video: false},
+                        iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
                             setTimeout(function () {
                                 sendCallMessage({
@@ -10505,6 +10488,7 @@
                     const receiveAudioOptions = {
                         remoteVideo: uiRemoteMedias[callTopics['receiveAudioTopic']],
                         mediaConstraints: {audio: true, video: false},
+                        iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
                             setTimeout(function () {
                                 sendCallMessage({
