@@ -2231,6 +2231,37 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
     </fieldset>
 </form>
 
+<br>
+<hr>
+<br>
+
+<form action="">
+    <fieldset>
+        <legend>Check Turn Server Availability</legend>
+        <div>
+            TURN IP: <input id='checkTurnServerIp' placeholder='example.com  or  xxx.yyy.rrr.ddd' value="46.32.6.188"/>
+            Port: <input type='number' value='3478' id='checkTurnServerPort' placeholder='enter a port number' value="3478"/>
+        </div>
+        <div>
+            Transport: <label for="tcp"></label><input type="radio" name="transport" id="checkTurnServerTcp" value="tcp"/> TCP
+            <input type="radio" name="transport" id="checkTurnServerUdp" value="udp" checked/>UDP
+        </div>
+        <div>
+            Username: <input id="checkTurnServerName" placeholder="turn username" value="mkhorrami"/>
+        </div>
+        <div>
+            password: <input id="checkTurnServerPass" placeholder="turn password" value="mkh_123456"/>
+        </div>
+        <div>
+            checking Timeout: <input type='number' id="checkTurnServerTime" placeholder="wait time  before checking timeout" value=5000/>
+        </div>
+        <div>
+            <button id='checkTurnServerButton'> Check TURN Server</button>
+        </div>
+        <h4 id='checkTurnServerResult'></h4>
+    </fieldset>
+</form>
+
 </body>
 
 <script>
@@ -2808,6 +2839,24 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
                 break;
         }
     });
+
+
+    const res = document.getElementById('checkTurnServerResult');
+    document.getElementById('checkTurnServerButton').onclick = function (e) {
+        e.preventDefault();
+        res.innerHTML = 'Checking TURN Server...';
+
+        chatAgent.checkTURNServer(document.getElementById('checkTurnServerIp').value, document.getElementById('checkTurnServerPort').value, document.getElementById('checkTurnServerUdp').checked,
+            document.getElementById('checkTurnServerName').value, document.getElementById('checkTurnServerPass').value, document.getElementById('checkTurnServerTime').value).then(function (bool) {
+            if (bool)
+                res.innerHTML = 'Yep, the TURN server works...';
+            else
+                throw new Error('Doesn\'t work');
+        }).catch(function (e) {
+            console.log(e);
+            res.innerHTML = 'TURN server does not work.';
+        });
+    };
 
 </script>
 
