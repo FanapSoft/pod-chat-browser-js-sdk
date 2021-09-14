@@ -5,7 +5,7 @@
   "main": "./src/chat.js",
   "scripts": {
     "test": "mocha --reporter spec --exit",
-    "bundle": "browserify browser-bundling.js -o ./dist/podchat-10.14.2.js"
+    "bundle": "browserify browser-bundling.js -o ./dist/podchat-10.14.3.js"
   },
   "repository": {
     "type": "git",
