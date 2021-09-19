@@ -8898,6 +8898,7 @@
                             Sentry.setExtra('errorCode', err.code);
                             Sentry.setExtra('uniqueId', err.uniqueId);
                             Sentry.setExtra('token', err.token);
+                            Sentry.setTag('Error code:', (err.code ? err.code : ''))
                             Sentry.captureException(err.error, {
                                 logger: eventName
                             });
@@ -8911,11 +8912,11 @@
             },
 
             PodChatErrorException = function (error) {
-                this.code = error.error.code;
-                this.message = error.error.message;
-                this.uniqueId = error.uniqueId;
+                this.code = error.error ? error.error.code : error.code;
+                this.message = error.error ? error.error.message : error.message;
+                this.uniqueId = error.uniqueId ? error.uniqueId : '';
                 this.token = token;
-                this.error = JSON.stringify(error.error);
+                this.error =  JSON.stringify((error.error ? error.error : error));
             },
 
             /**
