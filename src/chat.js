@@ -10271,16 +10271,16 @@
                         });
                     }
 
-                    sendCallMessage({
+                    /*sendCallMessage({
                         id: 'STOPALL'
-                    }, function (result) {
-                        handleCallSocketOpen({
-                            brokerAddress: params.brokerAddress,
-                            turnAddress: params.turnAddress,
-                            callVideo: callVideo,
-                            callAudio: !callMute
-                        });
+                    }, function (result) {*/
+                    handleCallSocketOpen({
+                        brokerAddress: params.brokerAddress,
+                        turnAddress: params.turnAddress,
+                        callVideo: callVideo,
+                        callAudio: !callMute
                     });
+                   /* });*/
                 } else {
                     consoleLogging && console.log('No Call DIV has been declared!');
                     return;
@@ -10389,7 +10389,7 @@
                                     topic: callTopics['sendVideoTopic'],
                                     candidateDto: candidate
                                 })
-                            }, 500, {candidate: candidate});
+                            }, 2000, {candidate: candidate});
                         },
                         configuration: {
                             iceServers: turnServers
@@ -10407,7 +10407,7 @@
                                     topic: callTopics['receiveVideoTopic'],
                                     candidateDto: candidate
                                 })
-                            }, 500, {candidate: candidate});
+                            }, 2000, {candidate: candidate});
                         },
                         configuration: {
                             iceServers: turnServers
@@ -10478,7 +10478,7 @@
                                     topic: callTopics['sendAudioTopic'],
                                     candidateDto: candidate,
                                 })
-                            }, 500, {candidate: candidate});
+                            }, 2000, {candidate: candidate});
                         },
                         configuration: {
                             iceServers: turnServers
@@ -10496,7 +10496,7 @@
                                     topic: callTopics['receiveAudioTopic'],
                                     candidateDto: candidate,
                                 })
-                            }, 500, {candidate: candidate});
+                            }, 2000, {candidate: candidate});
                         },
                         configuration: {
                             iceServers: turnServers
@@ -10572,10 +10572,11 @@
                                         restartMedia(callTopics['sendVideoTopic'])
                                     }, 6000);
 
-                                    shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
+                                    alert('Internet connection failed, Reconnect your call')
+                                    /*shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
                                     shouldReconnectCallTimeout = setTimeout(function () {
                                         shouldReconnectCall();
-                                    }, 7000);
+                                    }, 7000);*/
                                 }
 
                                 if (webpeers[peer].peerConnection.iceConnectionState === "failed") {
