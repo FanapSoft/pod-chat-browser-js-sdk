@@ -54850,10 +54850,12 @@ WildEmitter.mixin(WildEmitter);
 
         if (!!Sentry) {
             Sentry.init({
-                dsn: 'http://784a14966f6a416b8b58a4b144aef0f5@talksentry.sakku-khatam.ir:9000/4',
+                dsn: 'https://784a14966f6a416b8b58a4b144aef0f5@talk-sentry.sakku-khatam.ir/4',
                 attachStacktrace: true
             });
             Sentry.setContext("Chat Params", params);
+            Sentry.setTag("sdk.details", "js browser");
+            Sentry.setTag("client.name", params.clientName);
         }
 
         var asyncClient,
@@ -56742,34 +56744,14 @@ WildEmitter.mixin(WildEmitter);
                             }
                         });
 
-                        // if (fullResponseObject) {
-                        //     getHistory({
-                        //         offset: 0,
-                        //         threadId: threadId,
-                        //         id: messageContent.messageId,
-                        //         cache: false
-                        //     }, function (result) {
-                        //         if (!result.hasError) {
-                        //             fireEvent('messageEvents', {
-                        //                 type: 'MESSAGE_SEEN',
-                        //                 result: {
-                        //                     message: result.result.history[0],
-                        //                     threadId: threadId,
-                        //                     senderId: messageContent.participantId
-                        //                 }
-                        //             });
-                        //         }
-                        //     });
-                        // } else {
-                        //     fireEvent('messageEvents', {
-                        //         type: 'MESSAGE_SEEN',
-                        //         result: {
-                        //             message: messageContent.messageId,
-                        //             threadId: threadId,
-                        //             senderId: messageContent.participantId
-                        //         }
-                        //     });
-                        // }
+                        fireEvent('messageEvents', {
+                            type: 'MESSAGE_SEEN',
+                            result: {
+                                message: messageContent.messageId,
+                                threadId: threadId,
+                                senderId: messageContent.participantId
+                            }
+                        });
 
                         sendMessageCallbacksHandler(chatMessageVOTypes.SEEN, threadId, uniqueId);
                         break;
@@ -63727,6 +63709,7 @@ WildEmitter.mixin(WildEmitter);
                             Sentry.setExtra('errorCode', err.code);
                             Sentry.setExtra('uniqueId', err.uniqueId);
                             Sentry.setExtra('token', err.token);
+                            Sentry.setTag('Error code:', (err.code ? err.code : ''))
                             Sentry.captureException(err.error, {
                                 logger: eventName
                             });
@@ -63740,11 +63723,11 @@ WildEmitter.mixin(WildEmitter);
             },
 
             PodChatErrorException = function (error) {
-                this.code = error.error.code;
-                this.message = error.error.message;
-                this.uniqueId = error.uniqueId;
+                this.code = error.error ? error.error.code : error.code;
+                this.message = error.error ? error.error.message : error.message;
+                this.uniqueId = error.uniqueId ? error.uniqueId : '';
                 this.token = token;
-                this.error = JSON.stringify(error.error);
+                this.error =  JSON.stringify((error.error ? error.error : error));
             },
 
             /**
@@ -65100,16 +65083,16 @@ WildEmitter.mixin(WildEmitter);
                         });
                     }
 
-                    sendCallMessage({
+                    /*sendCallMessage({
                         id: 'STOPALL'
-                    }, function (result) {
-                        handleCallSocketOpen({
-                            brokerAddress: params.brokerAddress,
-                            turnAddress: params.turnAddress,
-                            callVideo: callVideo,
-                            callAudio: !callMute
-                        });
+                    }, function (result) {*/
+                    handleCallSocketOpen({
+                        brokerAddress: params.brokerAddress,
+                        turnAddress: params.turnAddress,
+                        callVideo: callVideo,
+                        callAudio: !callMute
                     });
+                   /* });*/
                 } else {
                     consoleLogging && console.log('No Call DIV has been declared!');
                     return;
@@ -65179,7 +65162,7 @@ WildEmitter.mixin(WildEmitter);
                     var serversTemp = params.turnAddress.split(',');
 
                     turnServers = [
-                        {"urls": "stun:" + serversTemp[0]},
+                        //{"urls": "stun:" + serversTemp[0]},
                         {
                             "urls": "turn:" + serversTemp[1],
                             "username": "mkhorrami",
@@ -65188,7 +65171,7 @@ WildEmitter.mixin(WildEmitter);
                     ];
                 } else {
                     turnServers = [
-                        {"urls": "stun:" + callTurnIp + ":3478"},
+                        //{"urls": "stun:" + callTurnIp + ":3478"},
                         {
                             "urls": "turn:" + callTurnIp + ":3478",
                             "username": "mkhorrami",
@@ -65210,6 +65193,7 @@ WildEmitter.mixin(WildEmitter);
                                 framerate: 15
                             }
                         },
+                        iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
                             setTimeout(function () {
                                 sendCallMessage({
@@ -65217,7 +65201,7 @@ WildEmitter.mixin(WildEmitter);
                                     topic: callTopics['sendVideoTopic'],
                                     candidateDto: candidate
                                 })
-                            }, 500, {candidate: candidate});
+                            }, 2000, {candidate: candidate});
                         },
                         configuration: {
                             iceServers: turnServers
@@ -65227,6 +65211,7 @@ WildEmitter.mixin(WildEmitter);
                     const receiveVideoOptions = {
                         remoteVideo: uiRemoteMedias[callTopics['receiveVideoTopic']],
                         mediaConstraints: {audio: false, video: true},
+                        iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
                             setTimeout(function () {
                                 sendCallMessage({
@@ -65234,7 +65219,7 @@ WildEmitter.mixin(WildEmitter);
                                     topic: callTopics['receiveVideoTopic'],
                                     candidateDto: candidate
                                 })
-                            }, 500, {candidate: candidate});
+                            }, 2000, {candidate: candidate});
                         },
                         configuration: {
                             iceServers: turnServers
@@ -65297,6 +65282,7 @@ WildEmitter.mixin(WildEmitter);
                     const sendAudioOptions = {
                         localVideo: uiRemoteMedias[callTopics['sendAudioTopic']],
                         mediaConstraints: {audio: true, video: false},
+                        iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
                             setTimeout(function () {
                                 sendCallMessage({
@@ -65304,7 +65290,7 @@ WildEmitter.mixin(WildEmitter);
                                     topic: callTopics['sendAudioTopic'],
                                     candidateDto: candidate,
                                 })
-                            }, 500, {candidate: candidate});
+                            }, 2000, {candidate: candidate});
                         },
                         configuration: {
                             iceServers: turnServers
@@ -65314,6 +65300,7 @@ WildEmitter.mixin(WildEmitter);
                     const receiveAudioOptions = {
                         remoteVideo: uiRemoteMedias[callTopics['receiveAudioTopic']],
                         mediaConstraints: {audio: true, video: false},
+                        iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
                             setTimeout(function () {
                                 sendCallMessage({
@@ -65321,7 +65308,7 @@ WildEmitter.mixin(WildEmitter);
                                     topic: callTopics['receiveAudioTopic'],
                                     candidateDto: candidate,
                                 })
-                            }, 500, {candidate: candidate});
+                            }, 2000, {candidate: candidate});
                         },
                         configuration: {
                             iceServers: turnServers
@@ -65397,10 +65384,11 @@ WildEmitter.mixin(WildEmitter);
                                         restartMedia(callTopics['sendVideoTopic'])
                                     }, 6000);
 
-                                    shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
+                                    alert('Internet connection failed, Reconnect your call')
+                                    /*shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
                                     shouldReconnectCallTimeout = setTimeout(function () {
                                         shouldReconnectCall();
-                                    }, 7000);
+                                    }, 7000);*/
                                 }
 
                                 if (webpeers[peer].peerConnection.iceConnectionState === "failed") {
@@ -70384,6 +70372,55 @@ WildEmitter.mixin(WildEmitter);
 
             asyncClient.logout();
         };
+
+        /**
+         * Test connectivity with kotern
+         *
+         * @param turnIp
+         * @param port
+         * @param useUDP
+         * @param username
+         * @param password
+         * @param timeout
+         * @return {Promise<boolean>}
+         */
+        this.checkTURNServer =  function (turnIp, port, useUDP = false, username = 'mkhorrami', password = 'mkh_123456', timeout) {
+            let url = 'turn:' + turnIp + ':' + port + '?transport=' + (useUDP ? 'udp' : 'tcp');
+            const turnConfig = {
+                urls: url,
+                username: username,
+                credential: password
+            }
+            console.log('turnConfig: ', turnConfig);
+            return new Promise(function (resolve, reject) {
+
+                let promiseResolved;
+                setTimeout(function () {
+                    if (promiseResolved) return;
+                    resolve(false);
+                    promiseResolved = true;
+                }, timeout || 5000);
+
+                promiseResolved = false;
+                let myPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection //compatibility for firefox and chrome
+                    , pc = new myPeerConnection({iceServers: [turnConfig]}),
+                    noop = function () {
+                    };
+                pc.createDataChannel(""); //create a bogus data channel
+                pc.createOffer(function (sdp) {
+                    if (sdp.sdp.indexOf('typ relay') > -1) { // sometimes sdp contains the ice candidates...
+                        promiseResolved = true;
+                        resolve(true);
+                    }
+                    pc.setLocalDescription(sdp, noop, noop);
+                }, noop); // create offer and set local description
+                pc.onicecandidate = function (ice) { //listen for candidate events
+                    if (promiseResolved || !ice || !ice.candidate || !ice.candidate.candidate || !(ice.candidate.candidate.indexOf('typ relay') > -1)) return;
+                    promiseResolved = true;
+                    resolve(true);
+                };
+            });
+        }
 
         init();
     }
