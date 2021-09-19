@@ -317,6 +317,7 @@
                 DESKTOP: 3
             },
             webpeers = {},
+            webpeersMetadata = {},
             uiRemoteMedias = {},
             systemMessageIntervalPitch = params.systemMessageIntervalPitch || 1000,
             isTypingInterval,
@@ -10206,6 +10207,23 @@
                     callTopics['receiveVideoTopic'] = 'Vi-' + receiveTopic;
                     callTopics['receiveAudioTopic'] = 'Vo-' + receiveTopic;
 
+                    webpeersMetadata[callTopics['sendVideoTopic']] = {
+                        interval: null,
+                        receivedSdpAnswer: false
+                    };
+                    webpeersMetadata[callTopics['sendAudioTopic']] = {
+                        interval: null,
+                        receivedSdpAnswer: false
+                    };
+                    webpeersMetadata[callTopics['receiveVideoTopic']] = {
+                        interval: null,
+                        receivedSdpAnswer: false
+                    };
+                    webpeersMetadata[callTopics['receiveAudioTopic']] = {
+                        interval: null,
+                        receivedSdpAnswer: false
+                    };
+
                     callParentDiv = document.getElementById(callDivId);
 
                     // Local Video Tag
@@ -10370,7 +10388,6 @@
 
                 // Video Topics
                 if (params.callVideo) {
-
                     const sendVideoOptions = {
                         localVideo: uiRemoteMedias[callTopics['sendVideoTopic']],
                         mediaConstraints: {
@@ -10383,13 +10400,27 @@
                         },
                         iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
-                            setTimeout(function () {
+                            if (webpeersMetadata[callTopics['sendVideoTopic']].interval !== null) {
+                                clearInterval(webpeersMetadata[callTopics['sendVideoTopic']].interval);
+                            }
+                            webpeersMetadata[callTopics['sendVideoTopic']].interval = setInterval(function() {
+                                if(webpeersMetadata[callTopics['sendVideoTopic']].sdpAnswerReceived === true) {
+                                    webpeersMetadata[callTopics['sendVideoTopic']].sdpAnswerReceived = false;
+                                    clearInterval(webpeersMetadata[callTopics['sendVideoTopic']].interval);
+                                    sendCallMessage({
+                                        id: 'ADD_ICE_CANDIDATE',
+                                        topic: callTopics['sendVideoTopic'],
+                                        candidateDto: candidate
+                                    })
+                                }
+                            }, 500, {candidate: candidate});
+                            /*setTimeout(function () {
                                 sendCallMessage({
                                     id: 'ADD_ICE_CANDIDATE',
                                     topic: callTopics['sendVideoTopic'],
                                     candidateDto: candidate
                                 })
-                            }, 2000, {candidate: candidate});
+                            }, 2000, {candidate: candidate});*/
                         },
                         configuration: {
                             iceServers: turnServers
@@ -10401,13 +10432,28 @@
                         mediaConstraints: {audio: false, video: true},
                         iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
-                            setTimeout(function () {
+                            if (webpeersMetadata[callTopics['receiveVideoTopic']].interval !== null) {
+                                clearInterval(webpeersMetadata[callTopics['receiveVideoTopic']].interval);
+                            }
+                            webpeersMetadata[callTopics['receiveVideoTopic']].interval = setInterval(function() {
+                                if(webpeersMetadata[callTopics['receiveVideoTopic']].sdpAnswerReceived === true) {
+                                    webpeersMetadata[callTopics['receiveVideoTopic']].sdpAnswerReceived = false;
+                                    clearInterval(webpeersMetadata[callTopics['receiveVideoTopic']].interval);
+                                    sendCallMessage({
+                                        id: 'ADD_ICE_CANDIDATE',
+                                        topic: callTopics['receiveVideoTopic'],
+                                        candidateDto: candidate
+                                    })
+                                }
+                            }, 500, {candidate: candidate});
+
+/*                            setTimeout(function () {
                                 sendCallMessage({
                                     id: 'ADD_ICE_CANDIDATE',
                                     topic: callTopics['receiveVideoTopic'],
                                     candidateDto: candidate
                                 })
-                            }, 2000, {candidate: candidate});
+                            }, 2000, {candidate: candidate});*/
                         },
                         configuration: {
                             iceServers: turnServers
@@ -10472,13 +10518,27 @@
                         mediaConstraints: {audio: true, video: false},
                         iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
-                            setTimeout(function () {
+                            if (webpeersMetadata[callTopics['sendAudioTopic']].interval !== null) {
+                                clearInterval(webpeersMetadata[callTopics['sendAudioTopic']].interval);
+                            }
+                            webpeersMetadata[callTopics['sendAudioTopic']].interval = setInterval(function() {
+                                if(webpeersMetadata[callTopics['sendAudioTopic']].sdpAnswerReceived === true) {
+                                    webpeersMetadata[callTopics['sendAudioTopic']].sdpAnswerReceived = false;
+                                    clearInterval(webpeersMetadata[callTopics['sendAudioTopic']].interval);
+                                    sendCallMessage({
+                                        id: 'ADD_ICE_CANDIDATE',
+                                        topic: callTopics['sendAudioTopic'],
+                                        candidateDto: candidate,
+                                    })
+                                }
+                            }, 500, {candidate: candidate});
+/*                            setTimeout(function () {
                                 sendCallMessage({
                                     id: 'ADD_ICE_CANDIDATE',
                                     topic: callTopics['sendAudioTopic'],
                                     candidateDto: candidate,
                                 })
-                            }, 2000, {candidate: candidate});
+                            }, 2000, {candidate: candidate});*/
                         },
                         configuration: {
                             iceServers: turnServers
@@ -10490,13 +10550,28 @@
                         mediaConstraints: {audio: true, video: false},
                         iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
-                            setTimeout(function () {
+                            if (webpeersMetadata[callTopics['receiveAudioTopic']].interval !== null) {
+                                clearInterval(webpeersMetadata[callTopics['receiveAudioTopic']].interval);
+                            }
+                            webpeersMetadata[callTopics['receiveAudioTopic']].interval = setInterval(function() {
+                                if(webpeersMetadata[callTopics['receiveAudioTopic']].sdpAnswerReceived === true) {
+                                    webpeersMetadata[callTopics['receiveAudioTopic']].sdpAnswerReceived = false;
+                                    clearInterval(webpeersMetadata[callTopics['receiveAudioTopic']].interval);
+                                    sendCallMessage({
+                                        id: 'ADD_ICE_CANDIDATE',
+                                        topic: callTopics['receiveAudioTopic'],
+                                        candidateDto: candidate,
+                                    })
+                                }
+                            }, 500, {candidate: candidate});
+
+/*                            setTimeout(function () {
                                 sendCallMessage({
                                     id: 'ADD_ICE_CANDIDATE',
                                     topic: callTopics['receiveAudioTopic'],
                                     candidateDto: candidate,
                                 })
-                            }, 2000, {candidate: candidate});
+                            }, 2000, {candidate: candidate});*/
                         },
                         configuration: {
                             iceServers: turnServers
@@ -10794,6 +10869,10 @@
                         });
 
                         return;
+                    }
+
+                    if(webpeersMetadata[jsonMessage.topic].interval !== null) {
+                        webpeersMetadata[jsonMessage.topic].sdpAnswerReceived = true;
                     }
                     startMedia(uiRemoteMedias[jsonMessage.topic]);
                 });
