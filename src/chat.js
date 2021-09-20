@@ -10638,9 +10638,9 @@
                         console.log("set callback on webpeers: ",  peer);
                         if (webpeers[peer]) {
                             webpeers[peer].peerConnection.onconnectionstatechange = function () {
-                                console.log("on connection state change:  ", peer, webpeers[peer].peerConnection.connectionState);
+                                console.log("on connection state change, ", "peer: ", peer, "peerConnection.connectionState: ", webpeers[peer].peerConnection.connectionState);
                                 if (webpeers[peer].peerConnection.connectionState == 'disconnected') {
-                                    console.log(peer, '>>>>>>>>>>>>> onconnectionstatechange: disconnected');
+                                    console.log(peer, 'peerConnection.onconnectionstatechange: disconnected');
                                 }
                             }
 
