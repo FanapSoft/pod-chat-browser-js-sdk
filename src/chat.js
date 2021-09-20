@@ -10472,6 +10472,8 @@
                             return;
                         }
 
+                        watchRTCPeerConnection(callTopics['receiveVideoTopic']);
+
                         webpeers[callTopics['receiveVideoTopic']].generateOffer((err, sdpOffer) => {
                             if (err) {
                                 console.error("[start/WebRtcVideoPeerReceiveOnly/generateOffer] " + err);
@@ -10496,6 +10498,8 @@
                                 callStop();
                                 return;
                             }
+
+                            watchRTCPeerConnection(callTopics['sendVideoTopic']);
 
                             startMedia(uiRemoteMedias[callTopics['sendVideoTopic']]);
 
@@ -10590,6 +10594,8 @@
                             return;
                         }
 
+                        watchRTCPeerConnection(callTopics['receiveAudioTopic']);
+
                         webpeers[callTopics['receiveAudioTopic']].generateOffer((err, sdpOffer) => {
                             if (err) {
                                 console.error("[start/WebRtcAudioPeerReceiveOnly/generateOffer] " + err);
@@ -10613,7 +10619,7 @@
                                 callStop();
                                 return;
                             }
-
+                            watchRTCPeerConnection(callTopics['sendAudioTopic']);
                             startMedia(uiRemoteMedias[callTopics['sendAudioTopic']]);
 
                             webpeers[callTopics['sendAudioTopic']].generateOffer((err, sdpOffer) => {
@@ -10633,7 +10639,7 @@
                     }, 2000);
                 }
 
-                setTimeout(function () {
+                /*setTimeout(function () {
                     for (var peer in webpeers) {
                         console.log("set callback on webpeers: ",  peer);
                         if (webpeers[peer]) {
@@ -10664,10 +10670,10 @@
                                     }, 6000);
 
                                     alert('Internet connection failed, Reconnect your call');
-                                    /*shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
+                                    /!*shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
                                     shouldReconnectCallTimeout = setTimeout(function () {
                                         shouldReconnectCall();
-                                    }, 7000);*/
+                                    }, 7000);*!/
                                 }
 
                                 if (webpeers[peer].peerConnection.iceConnectionState === "failed") {
@@ -10698,7 +10704,7 @@
                             }
                         }
                     }
-                }, 6000);
+                }, 6000);*/
 
                 setTimeout(function () {
                     restartMedia(callTopics['sendVideoTopic'])
@@ -10713,7 +10719,72 @@
                     restartMedia(callTopics['sendVideoTopic'])
                 }, 20000);
             },
+            watchRTCPeerConnection = function (peer) {
+                if (webpeers[peer]) {
+                    console.log("set callback on webpeers: ",  peer);
+                    if (webpeers[peer]) {
+                        webpeers[peer].peerConnection.onconnectionstatechange = function () {
+                            console.log("on connection state change, ", "peer: ", peer, "peerConnection.connectionState: ", webpeers[peer].peerConnection.connectionState);
+                            if (webpeers[peer].peerConnection.connectionState == 'disconnected') {
+                                console.log(peer, 'peerConnection.onconnectionstatechange: disconnected');
+                            }
+                        }
 
+                        webpeers[peer].peerConnection.oniceconnectionstatechange = function () {
+                            console.log("on ice connection state change:  ", peer, webpeers[peer].peerConnection.connectionState);
+                            if (webpeers[peer].peerConnection.iceConnectionState == 'disconnected') {
+                                console.log(  peer , '>>>>>>>>>>>>> disconnected');
+                                fireEvent('callEvents', {
+                                    type: 'CALL_STATUS',
+                                    errorCode: 7000,
+                                    errorMessage: `Call Peer (${peer}) is disconnected!`,
+                                    errorInfo: webpeers[peer]
+                                });
+
+                                setTimeout(function () {
+                                    restartMedia(callTopics['sendVideoTopic'])
+                                }, 2000);
+
+                                setTimeout(function () {
+                                    restartMedia(callTopics['sendVideoTopic'])
+                                }, 6000);
+
+                                alert('Internet connection failed, Reconnect your call');
+                                /*shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
+                                shouldReconnectCallTimeout = setTimeout(function () {
+                                    shouldReconnectCall();
+                                }, 7000);*/
+                            }
+
+                            if (webpeers[peer].peerConnection.iceConnectionState === "failed") {
+                                fireEvent('callEvents', {
+                                    type: 'CALL_STATUS',
+                                    errorCode: 7000,
+                                    errorMessage: `Call Peer (${peer}) has failed!`,
+                                    errorInfo: webpeers[peer]
+                                });
+                            }
+
+                            if (webpeers[peer].peerConnection.iceConnectionState === "connected") {
+                                fireEvent('callEvents', {
+                                    type: 'CALL_STATUS',
+                                    errorCode: 7000,
+                                    errorMessage: `Call Peer (${peer}) has connected!`,
+                                    errorInfo: webpeers[peer]
+                                });
+
+                                setTimeout(function () {
+                                    restartMedia(callTopics['sendVideoTopic'])
+                                }, 2000);
+
+                                setTimeout(function () {
+                                    restartMedia(callTopics['sendVideoTopic'])
+                                }, 6000);
+                            }
+                        }
+                    }
+                }
+            },
             sendCallSocketError = function (message) {
                 fireEvent('callEvents', {
                     type: 'CALL_ERROR',
