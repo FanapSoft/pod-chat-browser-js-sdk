@@ -319,6 +319,9 @@
             webpeers = {},
             webpeersMetadata = {},
             uiRemoteMedias = {},
+            callStopQueue = {
+                callStarted: false,
+            },
             systemMessageIntervalPitch = params.systemMessageIntervalPitch || 1000,
             isTypingInterval,
             protocol = params.protocol || 'websocket',
@@ -10314,8 +10317,10 @@
                     turnAddress: params.turnAddress.split(',')[0]
                 }, function (res) {
                     if (res.done === 'TRUE') {
+                        callStopQueue.callStarted = true;
                         generateAndSendSdpOffers(params);
                     } else if (res.done === 'SKIP') {
+                        callStopQueue.callStarted = true;
                         generateAndSendSdpOffers(params);
                     } else {
                         consoleLogging && console.log('CREATE_SESSION faced a problem', res);
@@ -10629,9 +10634,19 @@
 
                 setTimeout(function () {
                     for (var peer in webpeers) {
+                        console.log("set callback on webpeers: ",  peer);
                         if (webpeers[peer]) {
+                            webpeers[peer].peerConnection.onconnectionstatechange = function () {
+                                console.log("on connection state change:  ", peer, webpeers[peer].peerConnection.connectionState);
+                                if (webpeers[peer].peerConnection.connectionState == 'disconnected') {
+                                    console.log(peer, '>>>>>>>>>>>>> onconnectionstatechange: disconnected');
+                                }
+                            }
+
                             webpeers[peer].peerConnection.oniceconnectionstatechange = function () {
+                                console.log("on ice connection state change:  ", peer, webpeers[peer].peerConnection.connectionState);
                                 if (webpeers[peer].peerConnection.iceConnectionState == 'disconnected') {
+                                    console.log(  peer , '>>>>>>>>>>>>> disconnected');
                                     fireEvent('callEvents', {
                                         type: 'CALL_STATUS',
                                         errorCode: 7000,
@@ -10647,7 +10662,7 @@
                                         restartMedia(callTopics['sendVideoTopic'])
                                     }, 6000);
 
-                                    alert('Internet connection failed, Reconnect your call')
+                                    alert('Internet connection failed, Reconnect your call');
                                     /*shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
                                     shouldReconnectCallTimeout = setTimeout(function () {
                                         shouldReconnectCall();
@@ -10682,7 +10697,7 @@
                             }
                         }
                     }
-                }, 4000);
+                }, 6000);
 
                 setTimeout(function () {
                     restartMedia(callTopics['sendVideoTopic'])
@@ -10942,9 +10957,12 @@
                     }
                 }
 
-                sendCallMessage({
-                    id: 'CLOSE'
-                });
+                if(callStopQueue.callStarted) {
+                    sendCallMessage({
+                        id: 'CLOSE'
+                    });
+                    callStopQueue.callStarted = false;
+                }
 
                 currentCallParams = {};
                 currentCallId = null;
