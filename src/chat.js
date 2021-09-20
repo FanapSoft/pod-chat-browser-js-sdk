@@ -317,7 +317,11 @@
                 DESKTOP: 3
             },
             webpeers = {},
+            webpeersMetadata = {},
             uiRemoteMedias = {},
+            callStopQueue = {
+                callStarted: false,
+            },
             systemMessageIntervalPitch = params.systemMessageIntervalPitch || 1000,
             isTypingInterval,
             protocol = params.protocol || 'websocket',
@@ -10207,6 +10211,23 @@
                     callTopics['receiveVideoTopic'] = 'Vi-' + receiveTopic;
                     callTopics['receiveAudioTopic'] = 'Vo-' + receiveTopic;
 
+                    webpeersMetadata[callTopics['sendVideoTopic']] = {
+                        interval: null,
+                        receivedSdpAnswer: false
+                    };
+                    webpeersMetadata[callTopics['sendAudioTopic']] = {
+                        interval: null,
+                        receivedSdpAnswer: false
+                    };
+                    webpeersMetadata[callTopics['receiveVideoTopic']] = {
+                        interval: null,
+                        receivedSdpAnswer: false
+                    };
+                    webpeersMetadata[callTopics['receiveAudioTopic']] = {
+                        interval: null,
+                        receivedSdpAnswer: false
+                    };
+
                     callParentDiv = document.getElementById(callDivId);
 
                     // Local Video Tag
@@ -10297,8 +10318,10 @@
                     turnAddress: params.turnAddress.split(',')[0]
                 }, function (res) {
                     if (res.done === 'TRUE') {
+                        callStopQueue.callStarted = true;
                         generateAndSendSdpOffers(params);
                     } else if (res.done === 'SKIP') {
+                        callStopQueue.callStarted = true;
                         generateAndSendSdpOffers(params);
                     } else {
                         consoleLogging && console.log('CREATE_SESSION faced a problem', res);
@@ -10371,7 +10394,6 @@
 
                 // Video Topics
                 if (params.callVideo) {
-
                     const sendVideoOptions = {
                         localVideo: uiRemoteMedias[callTopics['sendVideoTopic']],
                         mediaConstraints: {
@@ -10384,13 +10406,27 @@
                         },
                         iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
-                            setTimeout(function () {
+                            if (webpeersMetadata[callTopics['sendVideoTopic']].interval !== null) {
+                                clearInterval(webpeersMetadata[callTopics['sendVideoTopic']].interval);
+                            }
+                            webpeersMetadata[callTopics['sendVideoTopic']].interval = setInterval(function() {
+                                if(webpeersMetadata[callTopics['sendVideoTopic']].sdpAnswerReceived === true) {
+                                    webpeersMetadata[callTopics['sendVideoTopic']].sdpAnswerReceived = false;
+                                    clearInterval(webpeersMetadata[callTopics['sendVideoTopic']].interval);
+                                    sendCallMessage({
+                                        id: 'ADD_ICE_CANDIDATE',
+                                        topic: callTopics['sendVideoTopic'],
+                                        candidateDto: candidate
+                                    })
+                                }
+                            }, 500, {candidate: candidate});
+                            /*setTimeout(function () {
                                 sendCallMessage({
                                     id: 'ADD_ICE_CANDIDATE',
                                     topic: callTopics['sendVideoTopic'],
                                     candidateDto: candidate
                                 })
-                            }, 2000, {candidate: candidate});
+                            }, 2000, {candidate: candidate});*/
                         },
                         configuration: {
                             iceServers: turnServers
@@ -10402,13 +10438,28 @@
                         mediaConstraints: {audio: false, video: true},
                         iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
-                            setTimeout(function () {
+                            if (webpeersMetadata[callTopics['receiveVideoTopic']].interval !== null) {
+                                clearInterval(webpeersMetadata[callTopics['receiveVideoTopic']].interval);
+                            }
+                            webpeersMetadata[callTopics['receiveVideoTopic']].interval = setInterval(function() {
+                                if(webpeersMetadata[callTopics['receiveVideoTopic']].sdpAnswerReceived === true) {
+                                    webpeersMetadata[callTopics['receiveVideoTopic']].sdpAnswerReceived = false;
+                                    clearInterval(webpeersMetadata[callTopics['receiveVideoTopic']].interval);
+                                    sendCallMessage({
+                                        id: 'ADD_ICE_CANDIDATE',
+                                        topic: callTopics['receiveVideoTopic'],
+                                        candidateDto: candidate
+                                    })
+                                }
+                            }, 500, {candidate: candidate});
+
+/*                            setTimeout(function () {
                                 sendCallMessage({
                                     id: 'ADD_ICE_CANDIDATE',
                                     topic: callTopics['receiveVideoTopic'],
                                     candidateDto: candidate
                                 })
-                            }, 2000, {candidate: candidate});
+                            }, 2000, {candidate: candidate});*/
                         },
                         configuration: {
                             iceServers: turnServers
@@ -10473,13 +10524,27 @@
                         mediaConstraints: {audio: true, video: false},
                         iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
-                            setTimeout(function () {
+                            if (webpeersMetadata[callTopics['sendAudioTopic']].interval !== null) {
+                                clearInterval(webpeersMetadata[callTopics['sendAudioTopic']].interval);
+                            }
+                            webpeersMetadata[callTopics['sendAudioTopic']].interval = setInterval(function() {
+                                if(webpeersMetadata[callTopics['sendAudioTopic']].sdpAnswerReceived === true) {
+                                    webpeersMetadata[callTopics['sendAudioTopic']].sdpAnswerReceived = false;
+                                    clearInterval(webpeersMetadata[callTopics['sendAudioTopic']].interval);
+                                    sendCallMessage({
+                                        id: 'ADD_ICE_CANDIDATE',
+                                        topic: callTopics['sendAudioTopic'],
+                                        candidateDto: candidate,
+                                    })
+                                }
+                            }, 500, {candidate: candidate});
+/*                            setTimeout(function () {
                                 sendCallMessage({
                                     id: 'ADD_ICE_CANDIDATE',
                                     topic: callTopics['sendAudioTopic'],
                                     candidateDto: candidate,
                                 })
-                            }, 2000, {candidate: candidate});
+                            }, 2000, {candidate: candidate});*/
                         },
                         configuration: {
                             iceServers: turnServers
@@ -10491,13 +10556,28 @@
                         mediaConstraints: {audio: true, video: false},
                         iceTransportPolicy: 'relay',
                         onicecandidate: (candidate) => {
-                            setTimeout(function () {
+                            if (webpeersMetadata[callTopics['receiveAudioTopic']].interval !== null) {
+                                clearInterval(webpeersMetadata[callTopics['receiveAudioTopic']].interval);
+                            }
+                            webpeersMetadata[callTopics['receiveAudioTopic']].interval = setInterval(function() {
+                                if(webpeersMetadata[callTopics['receiveAudioTopic']].sdpAnswerReceived === true) {
+                                    webpeersMetadata[callTopics['receiveAudioTopic']].sdpAnswerReceived = false;
+                                    clearInterval(webpeersMetadata[callTopics['receiveAudioTopic']].interval);
+                                    sendCallMessage({
+                                        id: 'ADD_ICE_CANDIDATE',
+                                        topic: callTopics['receiveAudioTopic'],
+                                        candidateDto: candidate,
+                                    })
+                                }
+                            }, 500, {candidate: candidate});
+
+/*                            setTimeout(function () {
                                 sendCallMessage({
                                     id: 'ADD_ICE_CANDIDATE',
                                     topic: callTopics['receiveAudioTopic'],
                                     candidateDto: candidate,
                                 })
-                            }, 2000, {candidate: candidate});
+                            }, 2000, {candidate: candidate});*/
                         },
                         configuration: {
                             iceServers: turnServers
@@ -10555,9 +10635,19 @@
 
                 setTimeout(function () {
                     for (var peer in webpeers) {
+                        console.log("set callback on webpeers: ",  peer);
                         if (webpeers[peer]) {
+                            webpeers[peer].peerConnection.onconnectionstatechange = function () {
+                                console.log("on connection state change:  ", peer, webpeers[peer].peerConnection.connectionState);
+                                if (webpeers[peer].peerConnection.connectionState == 'disconnected') {
+                                    console.log(peer, '>>>>>>>>>>>>> onconnectionstatechange: disconnected');
+                                }
+                            }
+
                             webpeers[peer].peerConnection.oniceconnectionstatechange = function () {
+                                console.log("on ice connection state change:  ", peer, webpeers[peer].peerConnection.connectionState);
                                 if (webpeers[peer].peerConnection.iceConnectionState == 'disconnected') {
+                                    console.log(  peer , '>>>>>>>>>>>>> disconnected');
                                     fireEvent('callEvents', {
                                         type: 'CALL_STATUS',
                                         errorCode: 7000,
@@ -10573,7 +10663,7 @@
                                         restartMedia(callTopics['sendVideoTopic'])
                                     }, 6000);
 
-                                    alert('Internet connection failed, Reconnect your call')
+                                    alert('Internet connection failed, Reconnect your call');
                                     /*shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
                                     shouldReconnectCallTimeout = setTimeout(function () {
                                         shouldReconnectCall();
@@ -10608,7 +10698,7 @@
                             }
                         }
                     }
-                }, 4000);
+                }, 6000);
 
                 setTimeout(function () {
                     restartMedia(callTopics['sendVideoTopic'])
@@ -10796,6 +10886,10 @@
 
                         return;
                     }
+
+                    if(webpeersMetadata[jsonMessage.topic].interval !== null) {
+                        webpeersMetadata[jsonMessage.topic].sdpAnswerReceived = true;
+                    }
                     startMedia(uiRemoteMedias[jsonMessage.topic]);
                 });
             },
@@ -10864,9 +10958,12 @@
                     }
                 }
 
-                sendCallMessage({
-                    id: 'CLOSE'
-                });
+                if(callStopQueue.callStarted) {
+                    sendCallMessage({
+                        id: 'CLOSE'
+                    });
+                    callStopQueue.callStarted = false;
+                }
 
                 currentCallParams = {};
                 currentCallId = null;
