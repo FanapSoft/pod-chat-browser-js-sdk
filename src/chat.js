@@ -10733,7 +10733,7 @@
                         webpeers[peer].peerConnection.oniceconnectionstatechange = function () {
                             console.log("on ice connection state change:  ", peer, webpeers[peer].peerConnection.connectionState);
                             if (webpeers[peer].peerConnection.iceConnectionState == 'disconnected') {
-                                console.log(  peer , '>>>>>>>>>>>>> disconnected');
+                                console.log(  peer , 'peerConnection.oniceconnectionstatechange disconnected');
                                 fireEvent('callEvents', {
                                     type: 'CALL_STATUS',
                                     errorCode: 7000,
