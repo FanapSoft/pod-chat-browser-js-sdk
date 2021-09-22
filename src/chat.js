@@ -318,6 +318,16 @@
             },
             webpeers = {},
             webpeersMetadata = {},
+            callRequestController = {
+                callRequestReceived: false,
+                callEstablishedInMySide: false,
+                iCanAcceptTheCall: function () {
+                    if(callRequestController.callRequestReceived && callRequestController.callEstablishedInMySide) {
+                        return true;
+                    }
+                    return false;
+                }
+            },
             uiRemoteMedias = {},
             callStopQueue = {
                 callStarted: false,
@@ -3264,6 +3274,7 @@
                      * Type 70    Send Call Request
                      */
                     case chatMessageVOTypes.CALL_REQUEST:
+                        callRequestController.callRequestReceived = true;
                         callReceived({
                             callId: messageContent.callId
                         }, function (r) {
@@ -3336,6 +3347,14 @@
                      * Type 74    Start Call Request
                      */
                     case chatMessageVOTypes.START_CALL:
+                        if(!callRequestController.iCanAcceptTheCall()) {
+                            fireEvent('callEvents', {
+                                type: 'CALL_STARTED_ELSEWHERE',
+                                message: 'Call already started somewhere else..., aborting...'
+                            });
+                            return;
+                        }
+
                         if (messagesCallbacks[uniqueId]) {
                             messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
@@ -3712,6 +3731,9 @@
                      * Type 111    Kafka Call Session Created
                      */
                     case chatMessageVOTypes.CALL_SESSION_CREATED:
+                        if(!callRequestController.callEstablishedInMySide)
+                            return;
+
                         fireEvent('callEvents', {
                             type: 'CALL_SESSION_CREATED',
                             result: messageContent
@@ -9893,6 +9915,10 @@
                     token: token
                 };
 
+                if(!callRequestController.callEstablishedInMySide){
+                    return;
+                }
+
                 if (params) {
                     if (typeof +params.callId === 'number' && params.callId > 0) {
                         endCallData.subjectId = +params.callId;
@@ -10466,7 +10492,7 @@
 
                     webpeers[callTopics['receiveVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveVideoOptions, function (err) {
                         if (err) {
-                            console.error("[start/webRtcReceiveVideoPeer] Error: " + explainUserMediaError(err));
+                            console.error("[start/webRtcReceiveVideoPeer] Error: " + explainUserMediaError(err, 'video'));
                             return;
                         }
 
@@ -10492,13 +10518,12 @@
                     setTimeout(function () {
                         webpeers[callTopics['sendVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendVideoOptions, function (err) {
                             if (err) {
-                                sendCallSocketError("[start/WebRtcVideoPeerSendOnly] Error: " + explainUserMediaError(err));
-                                callStop();
+                                sendCallSocketError("[start/WebRtcVideoPeerSendOnly] Error: " + explainUserMediaError(err, 'video'));
+                                //callStop();
                                 return;
                             }
 
                             watchRTCPeerConnection(callTopics['sendVideoTopic']);
-
                             startMedia(uiRemoteMedias[callTopics['sendVideoTopic']]);
 
                             webpeers[callTopics['sendVideoTopic']].generateOffer((err, sdpOffer) => {
@@ -10588,7 +10613,7 @@
 
                     webpeers[callTopics['receiveAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveAudioOptions, function (err) {
                         if (err) {
-                            console.error("[start/WebRtcAudioPeerReceiveOnly] Error: " + explainUserMediaError(err));
+                            console.error("[start/WebRtcAudioPeerReceiveOnly] Error: " + explainUserMediaError(err, 'audio'));
                             return;
                         }
 
@@ -10613,8 +10638,8 @@
                     setTimeout(function () {
                         webpeers[callTopics['sendAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendAudioOptions, function (err) {
                             if (err) {
-                                sendCallSocketError("[start/WebRtcAudioPeerSendOnly] Error: " + explainUserMediaError(err));
-                                callStop();
+                                sendCallSocketError("[start/WebRtcAudioPeerSendOnly] Error: " + explainUserMediaError(err, 'audio'));
+                                //callStop();
                                 return;
                             }
                             watchRTCPeerConnection(callTopics['sendAudioTopic']);
@@ -10763,6 +10788,7 @@
                         }
 
                         if (webpeers[topic].peerConnection.iceConnectionState === "connected") {
+                            callRequestController.callEstablishedInMySide = true;
                             fireEvent('callEvents', {
                                 type: 'CALL_STATUS',
                                 errorCode: 7000,
@@ -10795,7 +10821,7 @@
                 });
             },
 
-            explainUserMediaError = function (err) {
+            explainUserMediaError = function (err, deviceType) {
                 fireEvent('callEvents', {
                     type: 'CALL_ERROR',
                     code: 7000,
@@ -10807,30 +10833,35 @@
                     fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: "Missing webcam for required tracks"
+                        message: "Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks"
                     });
-                    return "Missing webcam for required tracks";
+                    alert("Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks");
+                    return "Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks";
                 } else if (n === 'NotReadableError' || n === 'TrackStartError') {
                     fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: "Webcam is already in use"
+                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use"
                     });
-                    return "Webcam is already in use";
+
+                    alert( (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use");
+                    return  (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use";
                 } else if (n === 'OverconstrainedError' || n === 'ConstraintNotSatisfiedError') {
                     fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: "Webcam doesn't provide required tracks"
+                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks"
                     });
-                    return "Webcam doesn't provide required tracks";
+                    alert((deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks");
+                    return (deviceType === 'video' ? 'Webcam' : 'Mice') +  " doesn't provide required tracks";
                 } else if (n === 'NotAllowedError' || n === 'PermissionDeniedError') {
                     fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: "Webcam permission has been denied by the user"
+                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " permission has been denied by the user"
                     });
-                    return "Webcam permission has been denied by the user";
+                    alert((deviceType === 'video' ? 'Webcam' : 'Mice') + " permission has been denied by the user");
+                    return (deviceType === 'video' ? 'Webcam' : 'Mice') +  " permission has been denied by the user";
                 } else if (n === 'TypeError') {
                     fireEvent('callEvents', {
                         type: 'CALL_ERROR',
@@ -11033,6 +11064,8 @@
                     callStopQueue.callStarted = false;
                 }
 
+                callRequestController.callEstablishedInMySide = false;
+                callRequestController.callRequestReceived = false;
                 currentCallParams = {};
                 currentCallId = null;
             },
@@ -14763,6 +14796,9 @@
                 return;
             }
 
+            callRequestController.callRequestReceived = true;
+            callRequestController.callEstablishedInMySide = true;
+
             return sendMessage(startCallData, {
                 onResult: function (result) {
                     callback && callback(result);
@@ -14908,6 +14944,8 @@
                 return;
             }
 
+
+            callRequestController.callEstablishedInMySide = true;
             return sendMessage(acceptCallData, {
                 onResult: function (result) {
                     callback && callback(result);
