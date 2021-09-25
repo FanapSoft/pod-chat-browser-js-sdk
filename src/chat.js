@@ -639,7 +639,7 @@
                         }
                     }, seenIntervalPitch);
 
-                    shouldReconnectCall();
+                    //shouldReconnectCall();
                 });
 
                 asyncClient.on('stateChange', function (state) {
@@ -10358,20 +10358,21 @@
                 });
             },
 
-            shouldReconnectCall = function () {
+            shouldReconnectCall = function (topic) {
                 if (currentCallParams && Object.keys(currentCallParams).length) {
-                    for (var peer in webpeers) {
-                        if (webpeers[peer]) {
-                            if (webpeers[peer].peerConnection.iceConnectionState != 'connected') {
+                        if (webpeers[topic]) {
+                            console.log("shouldReconnectCall webpeers[peer].peerConnection.iceConnectionState:: ", webpeers[topic].peerConnection.iceConnectionState);
+                            if (webpeers[topic].peerConnection.iceConnectionState != 'connected') {
                                 fireEvent('callEvents', {
                                     type: 'CALL_STATUS',
                                     errorCode: 7000,
-                                    errorMessage: `Call Peer (${peer}) is not in connected state, Restarting call in progress ...!`,
-                                    errorInfo: webpeers[peer]
+                                    errorMessage: `Call Peer (${topic}) is not in connected state, Restarting call in progress ...!`,
+                                    errorInfo: webpeers[topic]
                                 });
 
                                 sendCallMessage({
-                                    id: 'STOPALL'
+                                    id: 'STOP',
+                                    topic: topic
                                 }, function (result) {
                                     if (result.done === 'TRUE') {
                                         handleCallSocketOpen(currentCallParams);
@@ -10385,11 +10386,8 @@
                                         callStop();
                                     }
                                 });
-
-                                break;
                             }
                         }
-                    }
                 }
             },
 
