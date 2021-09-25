@@ -10494,7 +10494,7 @@
 
                     webpeers[callTopics['receiveVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveVideoOptions, function (err) {
                         if (err) {
-                            console.error("[start/webRtcReceiveVideoPeer] Error: " + explainUserMediaError(err));
+                            console.error("[start/webRtcReceiveVideoPeer] Error: " + explainUserMediaError(err, 'video'));
                             return;
                         }
 
@@ -10518,8 +10518,8 @@
                     setTimeout(function () {
                         webpeers[callTopics['sendVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendVideoOptions, function (err) {
                             if (err) {
-                                sendCallSocketError("[start/WebRtcVideoPeerSendOnly] Error: " + explainUserMediaError(err));
-                                callStop();
+                                sendCallSocketError("[start/WebRtcVideoPeerSendOnly] Error: " + explainUserMediaError(err, 'video'));
+                                //callStop();
                                 return;
                             }
 
@@ -10612,7 +10612,7 @@
 
                     webpeers[callTopics['receiveAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveAudioOptions, function (err) {
                         if (err) {
-                            console.error("[start/WebRtcAudioPeerReceiveOnly] Error: " + explainUserMediaError(err));
+                            console.error("[start/WebRtcAudioPeerReceiveOnly] Error: " + explainUserMediaError(err, 'audio'));
                             return;
                         }
 
@@ -10635,8 +10635,8 @@
                     setTimeout(function () {
                         webpeers[callTopics['sendAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendAudioOptions, function (err) {
                             if (err) {
-                                sendCallSocketError("[start/WebRtcAudioPeerSendOnly] Error: " + explainUserMediaError(err));
-                                callStop();
+                                sendCallSocketError("[start/WebRtcAudioPeerSendOnly] Error: " + explainUserMediaError(err, 'audio'));
+                                //callStop();
                                 return;
                             }
 
@@ -10753,7 +10753,7 @@
                 });
             },
 
-            explainUserMediaError = function (err) {
+            explainUserMediaError = function (err, deviceType) {
                 fireEvent('callEvents', {
                     type: 'CALL_ERROR',
                     code: 7000,
@@ -10765,30 +10765,35 @@
                     fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: "Missing webcam for required tracks"
+                        message: "Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks"
                     });
-                    return "Missing webcam for required tracks";
+                    alert("Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks");
+                    return "Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks";
                 } else if (n === 'NotReadableError' || n === 'TrackStartError') {
                     fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: "Webcam is already in use"
+                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use"
                     });
-                    return "Webcam is already in use";
+
+                    alert( (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use");
+                    return  (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use";
                 } else if (n === 'OverconstrainedError' || n === 'ConstraintNotSatisfiedError') {
                     fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: "Webcam doesn't provide required tracks"
+                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks"
                     });
-                    return "Webcam doesn't provide required tracks";
+                    alert((deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks");
+                    return (deviceType === 'video' ? 'Webcam' : 'Mice') +  " doesn't provide required tracks";
                 } else if (n === 'NotAllowedError' || n === 'PermissionDeniedError') {
                     fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: "Webcam permission has been denied by the user"
+                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " permission has been denied by the user"
                     });
-                    return "Webcam permission has been denied by the user";
+                    alert((deviceType === 'video' ? 'Webcam' : 'Mice') + " permission has been denied by the user");
+                    return (deviceType === 'video' ? 'Webcam' : 'Mice') +  " permission has been denied by the user";
                 } else if (n === 'TypeError') {
                     fireEvent('callEvents', {
                         type: 'CALL_ERROR',
