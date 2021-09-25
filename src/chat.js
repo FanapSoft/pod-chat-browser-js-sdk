@@ -639,7 +639,7 @@
                         }
                     }, seenIntervalPitch);
 
-                    shouldReconnectCall();
+                    //shouldReconnectCall();
                 });
 
                 asyncClient.on('stateChange', function (state) {
@@ -10773,11 +10773,11 @@
                                 restartMedia(callTopics['sendVideoTopic'])
                             }, 6000);
 
-                            //alert('Internet connection failed, Reconnect your call');
-                            shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
-                            shouldReconnectCallTimeout = setTimeout(function () {
+                            alert('Internet connection failed, Reconnect your call');
+                            //shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
+                            /*shouldReconnectCallTimeout = setTimeout(function () {
                                 shouldReconnectCall(topic);
-                            }, 7000);
+                            }, 7000);*/
                         }
 
                         if (webpeers[topic].peerConnection.iceConnectionState === "failed") {
