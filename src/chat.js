@@ -318,6 +318,16 @@
             },
             webpeers = {},
             webpeersMetadata = {},
+            callRequestController = {
+                callRequestReceived: false,
+                callEstablishedInMySide: false,
+                iCanAcceptTheCall: function () {
+                    if(callRequestController.callRequestReceived && callRequestController.callEstablishedInMySide) {
+                        return true;
+                    }
+                    return false;
+                }
+            },
             uiRemoteMedias = {},
             callStopQueue = {
                 callStarted: false,
@@ -3264,6 +3274,7 @@
                      * Type 70    Send Call Request
                      */
                     case chatMessageVOTypes.CALL_REQUEST:
+                        callRequestController.callRequestReceived = true;
                         callReceived({
                             callId: messageContent.callId
                         }, function (r) {
@@ -3336,6 +3347,14 @@
                      * Type 74    Start Call Request
                      */
                     case chatMessageVOTypes.START_CALL:
+                        if(!callRequestController.iCanAcceptTheCall()) {
+                            fireEvent('callEvents', {
+                                type: 'CALL_STARTED_ELSEWHERE',
+                                message: 'Call already started somewhere else..., aborting...'
+                            });
+                            return;
+                        }
+
                         if (messagesCallbacks[uniqueId]) {
                             messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
@@ -3712,6 +3731,9 @@
                      * Type 111    Kafka Call Session Created
                      */
                     case chatMessageVOTypes.CALL_SESSION_CREATED:
+                        if(!callRequestController.callEstablishedInMySide)
+                            return;
+
                         fireEvent('callEvents', {
                             type: 'CALL_SESSION_CREATED',
                             result: messageContent
@@ -9893,6 +9915,10 @@
                     token: token
                 };
 
+                if(!callRequestController.callEstablishedInMySide){
+                    return;
+                }
+
                 if (params) {
                     if (typeof +params.callId === 'number' && params.callId > 0) {
                         endCallData.subjectId = +params.callId;
@@ -10965,6 +10991,8 @@
                     callStopQueue.callStarted = false;
                 }
 
+                callRequestController.callEstablishedInMySide = false;
+                callRequestController.callRequestReceived = false;
                 currentCallParams = {};
                 currentCallId = null;
             },
@@ -14695,6 +14723,9 @@
                 return;
             }
 
+            callRequestController.callRequestReceived = true;
+            callRequestController.callEstablishedInMySide = true;
+
             return sendMessage(startCallData, {
                 onResult: function (result) {
                     callback && callback(result);
@@ -14840,6 +14871,8 @@
                 return;
             }
 
+
+            callRequestController.callEstablishedInMySide = true;
             return sendMessage(acceptCallData, {
                 onResult: function (result) {
                     callback && callback(result);
