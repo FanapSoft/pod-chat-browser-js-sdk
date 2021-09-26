@@ -10767,13 +10767,13 @@
                                 errorInfo: webpeers[topic]
                             });
 
-                            setTimeout(function () {
+                            /*setTimeout(function () {
                                 restartMedia(callTopics['sendVideoTopic'])
-                            }, 2000);
+                            }, 2000);*/
 
-                            setTimeout(function () {
+                            /*setTimeout(function () {
                                 restartMedia(callTopics['sendVideoTopic'])
-                            }, 6000);
+                            }, 6000);*/
 
                             console.log('Internet connection failed, Reconnect your call, topic:', topic);
                             //shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
@@ -10800,13 +10800,13 @@
                                 errorInfo: webpeers[topic]
                             });
 
-                            setTimeout(function () {
+                            /*setTimeout(function () {
                                 restartMedia(callTopics['sendVideoTopic'])
-                            }, 2000);
+                            }, 2000);*/
 
-                            setTimeout(function () {
+                            /*setTimeout(function () {
                                 restartMedia(callTopics['sendVideoTopic'])
-                            }, 6000);
+                            }, 6000);*/
                         }
                     }
                 }
