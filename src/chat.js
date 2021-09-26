@@ -4114,11 +4114,11 @@
                         handlePartnerFreeze(jsonMessage);
                         break;
 
-                    case 'STOPALL':
+                    /*case 'STOPALL':
                         if (messagesCallbacks[uniqueId]) {
                             messagesCallbacks[uniqueId](jsonMessage);
                         }
-                        break;
+                        break;*/
 
                     case 'CLOSE':
                         if (messagesCallbacks[uniqueId]) {
@@ -9908,6 +9908,8 @@
             },
 
             endCall = function (params, callback) {
+                consoleLogging && console.log('endCall called...');
+
                 var endCallData = {
                     chatMessageVOType: chatMessageVOTypes.END_CALL_REQUEST,
                     typeCode: params.typeCode,
@@ -10531,7 +10533,7 @@
                             webpeers[callTopics['sendVideoTopic']].generateOffer((err, sdpOffer) => {
                                 if (err) {
                                     sendCallSocketError("[start/WebRtcVideoPeerSendOnly/generateOffer] Error: " + err);
-                                    callStop();
+                                    //callStop();
                                     return;
                                 }
 
@@ -10650,7 +10652,7 @@
                             webpeers[callTopics['sendAudioTopic']].generateOffer((err, sdpOffer) => {
                                 if (err) {
                                     sendCallSocketError("[start/WebRtcAudioPeerSendOnly/generateOffer] Error: " + err);
-                                    callStop();
+                                    //callStop();
                                     return;
                                 }
                                 sendCallMessage({
@@ -10773,7 +10775,7 @@
                                 restartMedia(callTopics['sendVideoTopic'])
                             }, 6000);
 
-                            alert('Internet connection failed, Reconnect your call');
+                            console.log('Internet connection failed, Reconnect your call, topic:', topic);
                             //shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
                             /*shouldReconnectCallTimeout = setTimeout(function () {
                                 shouldReconnectCall(topic);
