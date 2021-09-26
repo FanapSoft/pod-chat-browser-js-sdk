@@ -10404,7 +10404,7 @@
                     turnServers = [
                         //{"urls": "stun:" + serversTemp[0]},
                         {
-                            "urls": "turn:" + serversTemp[1],
+                            "urls": "turn:" + serversTemp[0],
                             "username": "mkhorrami",
                             "credential": "mkh_123456"
                         }
