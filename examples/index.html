@@ -1134,7 +1134,7 @@
                     break;
 
                 case 'CALL_STARTED':
-                    document.getElementById('call-receive-broker').innerText = event.result.clientDTO.brokerAddress.split(',')[0];
+                    document.getElementById('call-receive-broker').innerText = event.result.chatDataDto.brokerAddress.split(',')[0];
                     document.getElementById('call-receive-send').innerText = event.result.clientDTO.topicSend;
                     document.getElementById('call-receive-receive').innerText = event.result.clientDTO.topicReceive;
                     document.getElementById('call-receive-key').innerText = event.result.clientDTO.sendKey;

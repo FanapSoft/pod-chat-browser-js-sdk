@@ -10814,7 +10814,7 @@
                 }
 
                 if (typeof params.threadType === 'string' && createThreadTypes.hasOwnProperty(params.threadType.toUpperCase())) {
-                    if (params.threadType.toUpperCase() === 'PUBLIC_GROUP') {
+                    if (params.threadType.toUpperCase() === 'PUBLIC_GROUP' || params.threadType.toUpperCase() === 'PUBLIC_CHANNEL') {
                         if (typeof params.uniqueName === 'string' && params.uniqueName.length > 0) {
                             sendData.content.uniqueName = params.uniqueName;
                         } else {
