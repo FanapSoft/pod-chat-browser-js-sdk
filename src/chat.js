@@ -10,25 +10,28 @@
     var Async,
         ChatUtility,
         Dexie,
-        KurentoUtils,
-        WebrtcAdapter,
-        Sentry;
+        Sentry,
+        ChatCall,
+        ChatEvents,
+        ChatMessaging;
 
     function Chat(params) {
         if (typeof (require) !== 'undefined' && typeof (exports) !== 'undefined') {
             Async = require('podasync-ws-only');
             ChatUtility = require('./utility/utility.js');
             Dexie = require('dexie').default || require('dexie');
-            KurentoUtils = require('kurento-utils');
-            WebrtcAdapter = require('webrtc-adapter');
             Sentry = require('@sentry/browser');
+            ChatEvents = require('./events.module.js');
+            ChatMessaging = require('./messaging.module.js');
+            ChatCall = require('./call.module.js');
         } else {
             Async = window.POD.Async;
             ChatUtility = window.POD.ChatUtility;
             Dexie = window.Dexie;
-            KurentoUtils = window.kurentoUtils;
-            WebrtcAdapter = window.adapter;
             Sentry = window.Sentry;
+            ChatEvents = window.POD.ChatEvents;
+            ChatMessaging = window.POD.ChatMessaging;
+            ChatCall = window.POD.ChatCall;
         }
 
         /*******************************************************
@@ -71,22 +74,6 @@
             grantDeviceIdFromSSO = (params.grantDeviceIdFromSSO && typeof params.grantDeviceIdFromSSO === 'boolean')
                 ? params.grantDeviceIdFromSSO
                 : false,
-            eventCallbacks = {
-                connect: {},
-                disconnect: {},
-                reconnect: {},
-                messageEvents: {},
-                threadEvents: {},
-                contactEvents: {},
-                botEvents: {},
-                userEvents: {},
-                callEvents: {},
-                fileUploadEvents: {},
-                systemEvents: {},
-                chatReady: {},
-                error: {},
-                chatState: {}
-            },
             messagesCallbacks = {},
             messagesDelivery = {},
             messagesSeen = {},
@@ -164,7 +151,7 @@
                 CALL_REQUEST: 70,
                 ACCEPT_CALL: 71,
                 REJECT_CALL: 72,
-                RECIVE_CALL_REQUEST: 73,
+                RECEIVE_CALL_REQUEST: 73,
                 START_CALL: 74,
                 END_CALL_REQUEST: 75,
                 END_CALL: 76,
@@ -268,54 +255,8 @@
                 'THREAD': 2,
                 'CONTACTS': 3
             },
-            callTypes = {
-                'VOICE': 0x0,
-                'VIDEO': 0x1
-            },
-            callOptions = params.callOptions,
-            callTurnIp = (params.callOptions
-                && params.callOptions.hasOwnProperty('callTurnIp')
-                && typeof params.callOptions.callTurnIp === 'string')
-                ? params.callOptions.callTurnIp
-                : '46.32.6.188',
-            callDivId = (params.callOptions
-                && params.callOptions.hasOwnProperty('callDivId')
-                && typeof params.callOptions.callDivId === 'string')
-                ? params.callOptions.callDivId
-                : 'call-div',
-            callAudioTagClassName = (params.callOptions
-                && params.callOptions.hasOwnProperty('callAudioTagClassName')
-                && typeof params.callOptions.callAudioTagClassName === 'string')
-                ? params.callOptions.callAudioTagClassName
-                : '',
-            callVideoTagClassName = (params.callOptions
-                && params.callOptions.hasOwnProperty('callVideoTagClassName')
-                && typeof params.callOptions.callVideoTagClassName === 'string')
-                ? params.callOptions.callVideoTagClassName
-                : '',
-            callVideoMinWidth = (params.callOptions
-                && params.callOptions.hasOwnProperty('callVideo')
-                && typeof params.callOptions.callVideo === 'object'
-                && params.callOptions.callVideo.hasOwnProperty('minWidth'))
-                ? params.callOptions.callVideo.minWidth
-                : 320,
-            callVideoMinHeight = (params.callOptions
-                && params.callOptions.hasOwnProperty('callVideo')
-                && typeof params.callOptions.callVideo === 'object'
-                && params.callOptions.callVideo.hasOwnProperty('minHeight'))
-                ? params.callOptions.callVideo.minHeight
-                : 180,
-            currentCallParams = {},
             currentCallId = null,
-            shouldReconnectCallTimeout = null,
             callTopics = {},
-            callWebSocket = null,
-            callSocketForceReconnect = true,
-            callClientType = {
-                WEB: 1,
-                ANDROID: 2,
-                DESKTOP: 3
-            },
             webpeers = {},
             webpeersMetadata = {},
             callRequestController = {
@@ -457,8 +398,33 @@
             chatSendQueue = [],
             chatWaitQueue = [],
             chatUploadQueue = [],
-            fullResponseObject = params.fullResponseObject || false;
-
+            fullResponseObject = params.fullResponseObject || false,
+            chatEvents = new ChatEvents(Object.assign(params, {
+                Sentry: Sentry,
+                Utility: Utility,
+                consoleLogging: consoleLogging,
+            })),
+            chatMessaging = new ChatMessaging(Object.assign(params, {
+                asyncClient: asyncClient,
+                Sentry: Sentry,
+                Utility: Utility,
+                consoleLogging: consoleLogging,
+                generalTypeCode: generalTypeCode,
+                chatMessageVOTypes: chatMessageVOTypes,
+                chatPingMessageInterval: chatPingMessageInterval,
+                asyncRequestTimeout: asyncRequestTimeout,
+                serverName: serverName,
+                messageTtl: messageTtl,
+                msgPriority: msgPriority
+            })),
+            callModule = new ChatCall(Object.assign(params, {
+                Sentry: Sentry,
+                Utility: Utility,
+                consoleLogging: consoleLogging,
+                chatEvents: chatEvents,
+                asyncClient: asyncClient,
+                chatMessaging: chatMessaging
+            }));
         /*******************************************************
          *            P R I V A T E   M E T H O D S            *
          *******************************************************/
@@ -518,6 +484,8 @@
                     reconnectOnClose: reconnectOnClose,
                     asyncLogging: asyncLogging
                 });
+                callModule.asyncInitialized(asyncClient);
+                chatMessaging.asyncInitialized(asyncClient);
 
                 asyncClient.on('asyncReady', function () {
                     if (actualTimingLog) {
@@ -526,7 +494,7 @@
 
                     peerId = asyncClient.getPeerId();
 
-                    if (!userInfo) {
+                    if (!chatMessaging.userInfo) {
                         var getUserInfoTime = new Date().getTime();
 
                         getUserInfo(function (userInfoResult) {
@@ -534,9 +502,9 @@
                                 Utility.chatStepLogger('Get User Info ', new Date().getTime() - getUserInfoTime);
                             }
                             if (!userInfoResult.hasError) {
-                                userInfo = userInfoResult.result.user;
+                                chatMessaging.userInfo = userInfoResult.result.user;
 
-                                !!Sentry && Sentry.setUser(userInfo);
+                                !!Sentry && Sentry.setUser(chatMessaging.userInfo);
 
                                 getAllThreads({
                                     summary: true,
@@ -550,7 +518,7 @@
                                     if (db) {
                                         db.users
                                             .where('id')
-                                            .equals(parseInt(userInfo.id))
+                                            .equals(parseInt(chatMessaging.userInfo.id))
                                             .toArray()
                                             .then(function (users) {
                                                 if (users.length > 0 && typeof users[0].keyId != 'undefined') {
@@ -562,8 +530,8 @@
                                                         if (!result.hasError) {
                                                             cacheSecret = result.secretKey;
 
-                                                            chatState = true;
-                                                            fireEvent('chatReady');
+                                                            chatMessaging.chatState = true;
+                                                            chatEvents.fireEvent('chatReady');
                                                             chatSendQueueHandler();
                                                         } else {
                                                             if (result.message !== '') {
@@ -574,8 +542,8 @@
                                                                             keyAlgorithm: 'AES',
                                                                             keySize: 256
                                                                         }, function () {
-                                                                            chatState = true;
-                                                                            fireEvent('chatReady');
+                                                                            chatMessaging.chatState = true;
+                                                                            chatEvents.fireEvent('chatReady');
                                                                             chatSendQueueHandler();
                                                                         });
                                                                     }
@@ -590,36 +558,36 @@
                                                         keyAlgorithm: 'AES',
                                                         keySize: 256
                                                     }, function () {
-                                                        chatState = true;
-                                                        fireEvent('chatReady');
+                                                        chatMessaging.chatState = true;
+                                                        chatEvents.fireEvent('chatReady');
                                                         chatSendQueueHandler();
                                                     });
                                                 }
                                             })
                                             .catch(function (error) {
-                                                fireEvent('error', {
+                                                chatEvents.fireEvent('error', {
                                                     code: error.errorCode,
                                                     message: error.errorMessage,
                                                     error: error
                                                 });
                                             });
                                     } else {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: 6601,
                                             message: CHAT_ERRORS[6601],
                                             error: null
                                         });
                                     }
                                 } else {
-                                    chatState = true;
-                                    fireEvent('chatReady');
+                                    chatMessaging.chatState = true;
+                                    chatEvents.fireEvent('chatReady');
                                     chatSendQueueHandler();
                                 }
                             }
                         });
-                    } else if (userInfo.id > 0) {
-                        chatState = true;
-                        fireEvent('chatReady');
+                    } else if (chatMessaging.userInfo.id > 0) {
+                        chatMessaging.chatState = true;
+                        chatEvents.fireEvent('chatReady');
                         chatSendQueueHandler();
                     }
 
@@ -643,23 +611,23 @@
                 });
 
                 asyncClient.on('stateChange', function (state) {
-                    fireEvent('chatState', state);
+                    chatEvents.fireEvent('chatMessaging.chatState', state);
                     chatFullStateObject = state;
 
                     switch (state.socketState) {
                         case 1: // CONNECTED
                             if (state.deviceRegister && state.serverRegister) {
-                                chatState = true;
-                                ping();
+                                chatMessaging.chatState = true;
+                                chatMessaging.ping();
                             }
                             break;
                         case 0: // CONNECTING
                         case 2: // CLOSING
                         case 3: // CLOSED
-                            chatState = false;
+                            chatMessaging.chatState = false;
 
                             // TODO: Check if this is OK or not?!
-                            sendPingTimeout && clearTimeout(sendPingTimeout);
+                            chatMessaging.sendPingTimeout && clearTimeout(chatMessaging.sendPingTimeout);
                             break;
                     }
                 });
@@ -667,16 +635,16 @@
                 asyncClient.on('connect', function (newPeerId) {
                     asyncGetReadyTime = new Date().getTime();
                     peerId = newPeerId;
-                    fireEvent('connect');
-                    ping();
+                    chatEvents.fireEvent('connect');
+                    chatMessaging.ping();
                 });
 
                 asyncClient.on('disconnect', function (event) {
                     oldPeerId = peerId;
                     peerId = undefined;
-                    fireEvent('disconnect', event);
+                    chatEvents.fireEvent('disconnect', event);
 
-                    fireEvent('callEvents', {
+                    chatEvents.fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
                         message: 'Call Socket is closed!',
@@ -686,7 +654,7 @@
 
                 asyncClient.on('reconnect', function (newPeerId) {
                     peerId = newPeerId;
-                    fireEvent('reconnect');
+                    chatEvents.fireEvent('reconnect');
                 });
 
                 asyncClient.on('message', function (params, ack) {
@@ -695,7 +663,7 @@
                 });
 
                 asyncClient.on('error', function (error) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: error.errorCode,
                         message: error.errorMessage,
                         error: error.errorEvent
@@ -738,7 +706,7 @@
                             }
 
                             if (!deviceId) {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6000,
                                     message: CHAT_ERRORS[6000],
                                     error: null
@@ -747,14 +715,14 @@
                                 callback(deviceId);
                             }
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 6001,
                                 message: CHAT_ERRORS[6001],
                                 error: null
                             });
                         }
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: result.errorCode,
                             message: result.errorMessage,
                             error: result
@@ -819,7 +787,7 @@
                         if (canUseCache) {
                             if (db) {
                                 db.users
-                                    .update(userInfo.id, {keyId: response.keyId})
+                                    .update(chatMessaging.userInfo.id, {keyId: response.keyId})
                                     .then(function () {
                                         getEncryptionKey({
                                             keyId: response.keyId
@@ -831,14 +799,14 @@
                                         });
                                     })
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -846,7 +814,7 @@
                             }
                         }
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: result.error,
                             message: result.error_description,
                             error: result
@@ -903,7 +871,7 @@
                                     message: result.errorMessage
                                 });
 
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: result.errorCode,
                                     message: result.errorMessage,
                                     error: result
@@ -974,7 +942,7 @@
                         if (callback) {
                             if (hasFile) {
                                 hasError = true;
-                                fireEvent('fileUploadEvents', {
+                                chatEvents.fireEvent('fileUploadEvents', {
                                     threadId: threadId,
                                     uniqueId: fileUniqueId,
                                     state: 'UPLOAD_ERROR',
@@ -1001,7 +969,7 @@
                         if (callback) {
                             if (hasFile) {
                                 hasError = true;
-                                fireEvent('fileUploadEvents', {
+                                chatEvents.fireEvent('fileUploadEvents', {
                                     threadId: threadId,
                                     uniqueId: fileUniqueId,
                                     state: 'UPLOAD_CANCELED',
@@ -1085,7 +1053,7 @@
 
                                 httpRequestObject[eval('fileUploadUniqueId')].upload.onprogress = function (event) {
                                     if (event.lengthComputable && !hasError) {
-                                        fireEvent('fileUploadEvents', {
+                                        chatEvents.fireEvent('fileUploadEvents', {
                                             threadId: threadId,
                                             uniqueId: fileUniqueId,
                                             state: 'UPLOADING',
@@ -1149,7 +1117,7 @@
                                     consoleLogging && console.log(e)
                                 }
 
-                                fireEvent('fileUploadEvents', {
+                                chatEvents.fireEvent('fileUploadEvents', {
                                     threadId: threadId,
                                     uniqueId: fileUniqueId,
                                     fileHash: fileHashCode,
@@ -1176,7 +1144,7 @@
                         } else {
                             if (hasFile) {
                                 hasError = true;
-                                fireEvent('fileUploadEvents', {
+                                chatEvents.fireEvent('fileUploadEvents', {
                                     threadId: threadId,
                                     uniqueId: fileUniqueId,
                                     state: 'UPLOAD_ERROR',
@@ -1223,7 +1191,7 @@
 
                     getUserInfoRetryCount = 0;
 
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 6101,
                         message: CHAT_ERRORS[6101],
                         error: null
@@ -1235,7 +1203,7 @@
                         getUserInfoRecursive(callback);
                     }, getUserInfoRetryCount * 10000);
 
-                    return sendMessage({
+                    return chatMessaging.sendMessage({
                         chatMessageVOType: chatMessageVOTypes.USER_INFO,
                         typeCode: params.typeCode
                     }, {
@@ -1272,7 +1240,7 @@
                                                             name: currentUser.name
                                                         })
                                                         .catch(function (error) {
-                                                            fireEvent('error', {
+                                                            chatEvents.fireEvent('error', {
                                                                 code: error.code,
                                                                 message: error.message,
                                                                 error: error
@@ -1281,7 +1249,7 @@
                                                 } else {
                                                     db.users.put(currentUser)
                                                         .catch(function (error) {
-                                                            fireEvent('error', {
+                                                            chatEvents.fireEvent('error', {
                                                                 code: error.code,
                                                                 message: error.message,
                                                                 error: error
@@ -1290,7 +1258,7 @@
                                                 }
                                             });
                                     } else {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: 6601,
                                             message: CHAT_ERRORS[6601],
                                             error: null
@@ -1317,285 +1285,8 @@
                 }
             },
 
-            /**
-             * Send Message
-             *
-             * All socket messages go through this function
-             *
-             * @access private
-             *
-             * @param {string}    token           SSO Token of current user
-             * @param {string}    tokenIssuer     Issuer of token (default : 1)
-             * @param {int}       type            Type of message (object : chatMessageVOTypes)
-             * @param {string}    typeCode        Type of contact who is going to receive the message
-             * @param {int}       messageType     Type of Message, in order to filter messages
-             * @param {long}      subjectId       Id of chat thread
-             * @param {string}    uniqueId        Tracker id for client
-             * @param {string}    content         Content of message
-             * @param {long}      time            Time of message, filled by chat server
-             * @param {string}    medadata        Metadata for message (Will use when needed)
-             * @param {string}    systemMedadata  Metadata for message (To be Set by client)
-             * @param {long}      repliedTo       Id of message to reply to (Should be filled by client)
-             * @param {function}  callback        The callback function to run after
-             *
-             * @return {object} Instant Function Return
-             */
-            sendMessage = function (params, callbacks, recursiveCallback) {
-                /**
-                 * + ChatMessage        {object}
-                 *    - token           {string}
-                 *    - tokenIssuer     {string}
-                 *    - type            {int}
-                 *    - typeCode        {string}
-                 *    - messageType     {int}
-                 *    - subjectId       {int}
-                 *    - uniqueId        {string}
-                 *    - content         {string}
-                 *    - time            {int}
-                 *    - medadata        {string}
-                 *    - systemMedadata  {string}
-                 *    - repliedTo       {int}
-                 */
-                var threadId = null;
-
-                var asyncPriority = (params.asyncPriority > 0)
-                    ? params.asyncPriority
-                    : msgPriority;
-
-                var messageVO = {
-                    type: params.chatMessageVOType,
-                    token: token,
-                    tokenIssuer: 1
-                };
-
-                if (params.typeCode) {
-                    messageVO.typeCode = params.typeCode;
-                } else if (generalTypeCode) {
-                    messageVO.typeCode = generalTypeCode;
-                }
-
-                if (params.messageType) {
-                    messageVO.messageType = params.messageType;
-                }
-
-                if (params.subjectId) {
-                    threadId = params.subjectId;
-                    messageVO.subjectId = params.subjectId;
-                }
-
-                if (params.content) {
-                    if (typeof params.content == 'object') {
-                        messageVO.content = JSON.stringify(params.content);
-                    } else {
-                        messageVO.content = params.content;
-                    }
-                }
-
-                if (params.metadata) {
-                    messageVO.metadata = params.metadata;
-                }
-
-                if (params.systemMetadata) {
-                    messageVO.systemMetadata = params.systemMetadata;
-                }
-
-                if (params.repliedTo) {
-                    messageVO.repliedTo = params.repliedTo;
-                }
-
-                var uniqueId;
-
-                if (typeof params.uniqueId != 'undefined') {
-                    uniqueId = params.uniqueId;
-                } else if (params.chatMessageVOType !== chatMessageVOTypes.PING) {
-                    uniqueId = Utility.generateUUID();
-                }
-
-                if (Array.isArray(uniqueId)) {
-                    messageVO.uniqueId = JSON.stringify(uniqueId);
-                } else {
-                    messageVO.uniqueId = uniqueId;
-                }
-
-                if (typeof callbacks == 'object') {
-                    if (callbacks.onSeen || callbacks.onDeliver || callbacks.onSent) {
-                        if (!threadCallbacks[threadId]) {
-                            threadCallbacks[threadId] = {};
-                        }
-
-                        threadCallbacks[threadId][uniqueId] = {};
-
-                        sendMessageCallbacks[uniqueId] = {};
-
-                        if (callbacks.onSent) {
-                            sendMessageCallbacks[uniqueId].onSent = callbacks.onSent;
-                            threadCallbacks[threadId][uniqueId].onSent = false;
-                            threadCallbacks[threadId][uniqueId].uniqueId = uniqueId;
-                        }
-
-                        if (callbacks.onSeen) {
-                            sendMessageCallbacks[uniqueId].onSeen = callbacks.onSeen;
-                            threadCallbacks[threadId][uniqueId].onSeen = false;
-                        }
-
-                        if (callbacks.onDeliver) {
-                            sendMessageCallbacks[uniqueId].onDeliver = callbacks.onDeliver;
-                            threadCallbacks[threadId][uniqueId].onDeliver = false;
-                        }
-
-                    } else if (callbacks.onResult) {
-                        messagesCallbacks[uniqueId] = callbacks.onResult;
-                    }
-                } else if (typeof callbacks == 'function') {
-                    messagesCallbacks[uniqueId] = callbacks;
-                }
-
-                /**
-                 * Message to send through async SDK
-                 *
-                 * + MessageWrapperVO  {object}
-                 *    - type           {int}       Type of ASYNC message based on content
-                 *    + content        {string}
-                 *       -peerName     {string}    Name of receiver Peer
-                 *       -receivers[]  {int}      Array of receiver peer ids (if you use this, peerName will be ignored)
-                 *       -priority     {int}       Priority of message 1-10, lower has more priority
-                 *       -messageId    {int}      Id of message on your side, not required
-                 *       -ttl          {int}      Time to live for message in milliseconds
-                 *       -content      {string}    Chat Message goes here after stringifying
-                 *    - trackId        {int}      Tracker id of message that you receive from DIRANA previously (if you are replying a sync message)
-                 */
-
-                var data = {
-                    type: (parseInt(params.pushMsgType) > 0)
-                        ? params.pushMsgType
-                        : 3,
-                    content: {
-                        peerName: serverName,
-                        priority: asyncPriority,
-                        content: JSON.stringify(messageVO),
-                        ttl: (params.messageTtl > 0)
-                            ? params.messageTtl
-                            : messageTtl
-                    }
-                };
-
-                asyncClient.send(data, function (res) {
-                    if (!res.hasError && callbacks) {
-                        if (typeof callbacks == 'function') {
-                            callbacks(res);
-                        } else if (typeof callbacks == 'object' && typeof callbacks.onResult == 'function') {
-                            callbacks.onResult(res);
-                        }
-
-                        if (messagesCallbacks[uniqueId]) {
-                            delete messagesCallbacks[uniqueId];
-                        }
-                    }
-                });
-
-                if (asyncRequestTimeout > 0) {
-                    asyncRequestTimeouts[uniqueId] && clearTimeout(asyncRequestTimeouts[uniqueId]);
-                    asyncRequestTimeouts[uniqueId] = setTimeout(function () {
-                        if (typeof callbacks == 'function') {
-                            callbacks({
-                                hasError: true,
-                                errorCode: 408,
-                                errorMessage: 'Async Request Timed Out!'
-                            });
-                        } else if (typeof callbacks == 'object' && typeof callbacks.onResult == 'function') {
-                            callbacks.onResult({
-                                hasError: true,
-                                errorCode: 408,
-                                errorMessage: 'Async Request Timed Out!'
-                            });
-                        }
-
-                        if (messagesCallbacks[uniqueId]) {
-                            delete messagesCallbacks[uniqueId];
-                        }
-                        if (sendMessageCallbacks[uniqueId]) {
-                            delete sendMessageCallbacks[uniqueId];
-                        }
-                        if (!!threadCallbacks[threadId] && threadCallbacks[threadId][uniqueId]) {
-                            threadCallbacks[threadId][uniqueId] = {};
-                            delete threadCallbacks[threadId][uniqueId];
-                        }
-
-                    }, asyncRequestTimeout);
-                }
-
-                sendPingTimeout && clearTimeout(sendPingTimeout);
-                sendPingTimeout = setTimeout(function () {
-                    ping();
-                }, chatPingMessageInterval);
-
-                recursiveCallback && recursiveCallback();
-
-                return {
-                    uniqueId: uniqueId,
-                    threadId: threadId,
-                    participant: userInfo,
-                    content: params.content
-                };
-            },
-
-            sendCallMessage = function (message, callback) {
-                message.token = token;
-
-                var uniqueId;
-
-                if (typeof params.uniqueId != 'undefined') {
-                    uniqueId = params.uniqueId;
-                } else {
-                    uniqueId = Utility.generateUUID();
-                }
-
-                message.uniqueId = uniqueId;
-
-                var data = {
-                    type: 3,
-                    content: {
-                        peerName: callServerName,
-                        priority: 1,
-                        content: JSON.stringify(message),
-                        ttl: messageTtl
-                    }
-                };
-
-                if (typeof callback == 'function') {
-                    messagesCallbacks[uniqueId] = callback;
-                }
-
-                asyncClient.send(data, function (res) {
-                    if (!res.hasError && callback) {
-                        if (typeof callback == 'function') {
-                            callback(res);
-                        }
-
-                        if (messagesCallbacks[uniqueId]) {
-                            delete messagesCallbacks[uniqueId];
-                        }
-                    }
-                });
-
-                if (callRequestTimeout > 0) {
-                    asyncRequestTimeouts[uniqueId] && clearTimeout(asyncRequestTimeouts[uniqueId]);
-                    asyncRequestTimeouts[uniqueId] = setTimeout(function () {
-                        if (typeof callback == 'function') {
-                            callback({
-                                done: 'SKIP'
-                            });
-                        }
-
-                        if (messagesCallbacks[uniqueId]) {
-                            delete messagesCallbacks[uniqueId];
-                        }
-                    }, callRequestTimeout);
-                }
-            },
-
             sendSystemMessage = function (params) {
-                return sendMessage({
+                return chatMessaging.sendMessage({
                     chatMessageVOType: chatMessageVOTypes.SYSTEM_MESSAGE,
                     subjectId: params.threadId,
                     content: params.content,
@@ -1623,7 +1314,7 @@
                      * Getting chatSendQueue from either cache or
                      * memory and scrolling through the send queue
                      * to send all the messages which are waiting
-                     * for chatState to become TRUE
+                     * for chatMessaging.chatState to become TRUE
                      *
                      * There is a small possibility that a Message
                      * wouldn't make it through network, so it Will
@@ -1637,11 +1328,11 @@
                      * will have failed messages alongside with typical
                      * messages history.
                      */
-                    if (chatState) {
+                    if (chatMessaging.chatState) {
                         getChatSendQueue(0, function (chatSendQueue) {
                             deleteFromChatSentQueue(messageToBeSend,
                                 function () {
-                                    sendMessage(messageToBeSend.message, messageToBeSend.callbacks, function () {
+                                    chatMessaging.sendMessage(messageToBeSend.message, messageToBeSend.callbacks, function () {
                                         if (chatSendQueue.length) {
                                             chatSendQueueHandler();
                                         }
@@ -1689,7 +1380,7 @@
              */
             messagesDeliveryQueueHandler = function () {
                 if (Object.keys(messagesDelivery).length) {
-                    if (chatState) {
+                    if (chatMessaging.chatState) {
                         for (var key in messagesDelivery) {
                             deliver({
                                 messageId: messagesDelivery[key]
@@ -1714,7 +1405,7 @@
              */
             messagesSeenQueueHandler = function () {
                 if (Object.keys(messagesSeen).length) {
-                    if (chatState) {
+                    if (chatMessaging.chatState) {
                         for (var key in messagesSeen) {
                             seen({
                                 messageId: messagesSeen[key]
@@ -1723,32 +1414,6 @@
                             delete messagesSeen[key];
                         }
                     }
-                }
-            },
-
-            /**
-             * Ping
-             *
-             * This Function sends ping message to keep user connected to
-             * chat server and updates its status
-             *
-             * @access private
-             *
-             * @return {undefined}
-             */
-            ping = function () {
-                if (chatState && typeof userInfo !== 'undefined') {
-                    /**
-                     * Ping messages should be sent ASAP, because
-                     * we don't want to wait for send queue, we send them
-                     * right through async from here
-                     */
-                    sendMessage({
-                        chatMessageVOType: chatMessageVOTypes.PING,
-                        pushMsgType: 3
-                    });
-                } else {
-                    sendPingTimeout && clearTimeout(sendPingTimeout);
                 }
             },
 
@@ -1763,7 +1428,7 @@
              * @return {undefined}
              */
             clearChatServerCaches = function () {
-                sendMessage({
+                chatMessaging.sendMessage({
                     chatMessageVOType: chatMessageVOTypes.LOGOUT,
                     pushMsgType: 3
                 });
@@ -1795,28 +1460,8 @@
                     var content = JSON.parse(asyncMessage.content);
                     chatMessageHandler(content);
                 } else {
-                    callMessageHandler(asyncMessage);
+                    callModule.callMessageHandler(asyncMessage);
                 }
-            },
-
-            /**
-             * is Valid Json
-             *
-             * This functions checks if a string is valid json or not?
-             *
-             * @access private
-             *
-             * @param {string}  jsonString   Json String to be checked
-             *
-             * @return {boolean}
-             */
-            isValidJson = function (jsonString) {
-                try {
-                    JSON.parse(jsonString);
-                } catch (e) {
-                    return false;
-                }
-                return true;
             },
 
             /**
@@ -1833,14 +1478,14 @@
             chatMessageHandler = function (chatMessage) {
                 var threadId = chatMessage.subjectId,
                     type = chatMessage.type,
-                    messageContent = (typeof chatMessage.content === 'string' && isValidJson(chatMessage.content))
+                    messageContent = (typeof chatMessage.content === 'string' && Utility.isValidJson(chatMessage.content))
                         ? JSON.parse(chatMessage.content)
                         : chatMessage.content,
                     contentCount = chatMessage.contentCount,
                     uniqueId = chatMessage.uniqueId,
                     time = chatMessage.time;
 
-                asyncRequestTimeouts[uniqueId] && clearTimeout(asyncRequestTimeouts[uniqueId]);
+                chatMessaging.asyncRequestTimeouts[uniqueId] && clearTimeout(chatMessaging.asyncRequestTimeouts[uniqueId]);
 
                 switch (type) {
                     /**
@@ -1849,9 +1494,9 @@
                     case chatMessageVOTypes.CREATE_THREAD:
                         messageContent.uniqueId = uniqueId;
 
-                        if (messagesCallbacks[uniqueId]) {
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
                             createThread(messageContent, true, true);
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         } else {
                             createThread(messageContent, true, false);
                         }
@@ -1869,13 +1514,13 @@
                      * Type 3    Message Sent
                      */
                     case chatMessageVOTypes.SENT:
-                        if (sendMessageCallbacks[uniqueId] && sendMessageCallbacks[uniqueId].onSent) {
-                            sendMessageCallbacks[uniqueId].onSent({
+                        if (chatMessaging.sendMessageCallbacks[uniqueId] && chatMessaging.sendMessageCallbacks[uniqueId].onSent) {
+                            chatMessaging.sendMessageCallbacks[uniqueId].onSent({
                                 uniqueId: uniqueId,
                                 messageId: messageContent
                             });
-                            delete (sendMessageCallbacks[uniqueId].onSent);
-                            threadCallbacks[threadId][uniqueId].onSent = true;
+                            delete (chatMessaging.sendMessageCallbacks[uniqueId].onSent);
+                            chatMessaging.threadCallbacks[threadId][uniqueId].onSent = true;
                         }
                         break;
 
@@ -1890,7 +1535,7 @@
                             lastParticipantId: messageContent.participantId
                         };
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_LAST_ACTIVITY_TIME',
                             result: {
                                 thread: threadObject
@@ -1905,7 +1550,7 @@
                         //         cache: false
                         //     }, function (result) {
                         //         if (!result.hasError) {
-                        //             fireEvent('messageEvents', {
+                        //             chatEvents.fireEvent('messageEvents', {
                         //                 type: 'MESSAGE_DELIVERY',
                         //                 result: {
                         //                     message: result.result.history[0],
@@ -1916,7 +1561,7 @@
                         //         }
                         //     });
                         // } else {
-                        //     fireEvent('messageEvents', {
+                        //     chatEvents.fireEvent('messageEvents', {
                         //         type: 'MESSAGE_DELIVERY',
                         //         result: {
                         //             message: messageContent.messageId,
@@ -1940,14 +1585,14 @@
                             lastParticipantId: messageContent.participantId
                         };
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_LAST_ACTIVITY_TIME',
                             result: {
                                 thread: threadObject
                             }
                         });
 
-                        fireEvent('messageEvents', {
+                        chatEvents.fireEvent('messageEvents', {
                             type: 'MESSAGE_SEEN',
                             result: {
                                 message: messageContent.messageId,
@@ -1969,8 +1614,8 @@
                      * Type 7    Block Contact
                      */
                     case chatMessageVOTypes.BLOCK:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
                         break;
 
@@ -1978,8 +1623,8 @@
                      * Type 8    Unblock Blocked User
                      */
                     case chatMessageVOTypes.UNBLOCK:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
                         break;
 
@@ -1987,8 +1632,8 @@
                      * Type 9   Leave Thread
                      */
                     case chatMessageVOTypes.LEAVE_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
                         /**
@@ -2003,11 +1648,11 @@
                                 db.participants.where('threadId')
                                     .equals(parseInt(threadId))
                                     .and(function (participant) {
-                                        return (participant.id === messageContent.id || participant.owner === userInfo.id);
+                                        return (participant.id === messageContent.id || participant.owner === chatMessaging.userInfo.id);
                                     })
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -2020,16 +1665,16 @@
                                  * thread from this users cache database
                                  */
 
-                                if (messageContent.id === userInfo.id) {
+                                if (messageContent.id === chatMessaging.userInfo.id) {
 
                                     /**
                                      * Remove Thread from this users cache
                                      */
                                     db.threads.where('[owner+id]')
-                                        .equals([userInfo.id, threadId])
+                                        .equals([chatMessaging.userInfo.id, threadId])
                                         .delete()
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -2043,11 +1688,11 @@
                                     db.messages.where('threadId')
                                         .equals(parseInt(threadId))
                                         .and(function (message) {
-                                            return message.owner === userInfo.id;
+                                            return message.owner === chatMessaging.userInfo.id;
                                         })
                                         .delete()
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -2055,7 +1700,7 @@
                                         });
                                 }
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -2070,7 +1715,7 @@
                                 if (!threadsResult.cache) {
                                     var threads = threadsResult.result.threads;
                                     if (threads.length > 0) {
-                                        fireEvent('threadEvents', {
+                                        chatEvents.fireEvent('threadEvents', {
                                             type: 'THREAD_LEAVE_PARTICIPANT',
                                             result: {
                                                 thread: threads[0],
@@ -2078,14 +1723,14 @@
                                             }
                                         });
 
-                                        fireEvent('threadEvents', {
+                                        chatEvents.fireEvent('threadEvents', {
                                             type: 'THREAD_LAST_ACTIVITY_TIME',
                                             result: {
                                                 thread: threads[0]
                                             }
                                         });
                                     } else {
-                                        fireEvent('threadEvents', {
+                                        chatEvents.fireEvent('threadEvents', {
                                             type: 'THREAD_LEAVE_PARTICIPANT',
                                             result: {
                                                 threadId: threadId,
@@ -2096,7 +1741,7 @@
                                 }
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_LEAVE_PARTICIPANT',
                                 result: {
                                     thread: threadId,
@@ -2104,7 +1749,7 @@
                                 }
                             });
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_LAST_ACTIVITY_TIME',
                                 result: {
                                     thread: threadId
@@ -2117,8 +1762,8 @@
                      * Type 11    Add Participant to Thread
                      */
                     case chatMessageVOTypes.ADD_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
                         /**
@@ -2134,7 +1779,7 @@
                                             salt = Utility.generateUUID();
 
                                         tempData.id = messageContent.participants[i].id;
-                                        tempData.owner = userInfo.id;
+                                        tempData.owner = chatMessaging.userInfo.id;
                                         tempData.threadId = messageContent.id;
                                         tempData.notSeenDuration = messageContent.participants[i].notSeenDuration;
                                         tempData.admin = messageContent.participants[i].admin;
@@ -2148,7 +1793,7 @@
 
                                         cacheData.push(tempData);
                                     } catch (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -2158,14 +1803,14 @@
 
                                 db.participants.bulkPut(cacheData)
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -2180,14 +1825,14 @@
                                 var threads = threadsResult.result.threads;
 
                                 if (!threadsResult.cache) {
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_ADD_PARTICIPANTS',
                                         result: {
                                             thread: threads[0]
                                         }
                                     });
 
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_LAST_ACTIVITY_TIME',
                                         result: {
                                             thread: threads[0]
@@ -2196,14 +1841,14 @@
                                 }
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_ADD_PARTICIPANTS',
                                 result: {
                                     thread: messageContent
                                 }
                             });
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_LAST_ACTIVITY_TIME',
                                 result: {
                                     thread: messageContent
@@ -2216,8 +1861,8 @@
                      * Type 13    Get Contacts List
                      */
                     case chatMessageVOTypes.GET_CONTACTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -2225,8 +1870,8 @@
                      * Type 14    Get Threads List
                      */
                     case chatMessageVOTypes.GET_THREADS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount, uniqueId));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount, uniqueId));
                         }
                         break;
 
@@ -2234,8 +1879,8 @@
                      * Type 15    Get Message History of an Thread
                      */
                     case chatMessageVOTypes.GET_HISTORY:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -2244,7 +1889,7 @@
                      */
                     case chatMessageVOTypes.REMOVED_FROM_THREAD:
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_REMOVED_FROM',
                             result: {
                                 thread: threadId
@@ -2262,10 +1907,10 @@
                                  * Remove Thread from this users cache
                                  */
                                 db.threads.where('[owner+id]')
-                                    .equals([userInfo.id, threadId])
+                                    .equals([chatMessaging.userInfo.id, threadId])
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -2279,11 +1924,11 @@
                                 db.messages.where('threadId')
                                     .equals(parseInt(threadId))
                                     .and(function (message) {
-                                        return message.owner === userInfo.id;
+                                        return message.owner === chatMessaging.userInfo.id;
                                     })
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -2297,11 +1942,11 @@
                                 db.participants.where('threadId')
                                     .equals(parseInt(threadId))
                                     .and(function (participant) {
-                                        return participant.owner === userInfo.id;
+                                        return participant.owner === chatMessaging.userInfo.id;
                                     })
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -2309,7 +1954,7 @@
                                     });
 
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -2323,8 +1968,8 @@
                      * Type 18    Remove a participant from Thread
                      */
                     case chatMessageVOTypes.REMOVE_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
                         /**
@@ -2340,7 +1985,7 @@
                                         })
                                         .delete()
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -2348,7 +1993,7 @@
                                         });
                                 }
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -2363,14 +2008,14 @@
                                 var threads = threadsResult.result.threads;
 
                                 if (!threadsResult.cache) {
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_REMOVE_PARTICIPANTS',
                                         result: {
                                             thread: threads[0]
                                         }
                                     });
 
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_LAST_ACTIVITY_TIME',
                                         result: {
                                             thread: threads[0]
@@ -2379,14 +2024,14 @@
                                 }
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_REMOVE_PARTICIPANTS',
                                 result: {
                                     thread: threadId
                                 }
                             });
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_LAST_ACTIVITY_TIME',
                                 result: {
                                     thread: threadId
@@ -2399,8 +2044,8 @@
                      * Type 19    Mute Thread
                      */
                     case chatMessageVOTypes.MUTE_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -2410,7 +2055,7 @@
                                 var thread = threadsResult.result.threads[0];
                                 thread.mute = true;
 
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_MUTE',
                                     result: {
                                         thread: thread
@@ -2418,7 +2063,7 @@
                                 });
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_MUTE',
                                 result: {
                                     thread: threadId
@@ -2432,8 +2077,8 @@
                      * Type 20    Unmute muted Thread
                      */
                     case chatMessageVOTypes.UNMUTE_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -2443,7 +2088,7 @@
                                 var thread = threadsResult.result.threads[0];
                                 thread.mute = false;
 
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_UNMUTE',
                                     result: {
                                         thread: thread
@@ -2451,7 +2096,7 @@
                                 });
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_UNMUTE',
                                 result: {
                                     thread: threadId
@@ -2464,8 +2109,8 @@
                      * Type 21    Update Thread Info
                      */
                     case chatMessageVOTypes.UPDATE_THREAD_INFO:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -2486,13 +2131,13 @@
                                             var salt = Utility.generateUUID();
 
                                             tempData.id = thread.id;
-                                            tempData.owner = userInfo.id;
+                                            tempData.owner = chatMessaging.userInfo.id;
                                             tempData.title = Utility.crypt(thread.title, cacheSecret, salt);
                                             tempData.time = thread.time;
                                             tempData.data = Utility.crypt(JSON.stringify(unsetNotSeenDuration(thread)), cacheSecret, salt);
                                             tempData.salt = salt;
                                         } catch (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -2501,14 +2146,14 @@
 
                                         db.threads.put(tempData)
                                             .catch(function (error) {
-                                                fireEvent('error', {
+                                                chatEvents.fireEvent('error', {
                                                     code: error.code,
                                                     message: error.message,
                                                     error: error
                                                 });
                                             });
                                     } else {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: 6601,
                                             message: CHAT_ERRORS[6601],
                                             error: null
@@ -2516,7 +2161,7 @@
                                     }
                                 }
 
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_INFO_UPDATED',
                                     result: {
                                         thread: thread
@@ -2524,7 +2169,7 @@
                                 });
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_INFO_UPDATED',
                                 result: {
                                     thread: messageContent
@@ -2544,11 +2189,11 @@
                      * Type 23    User Info
                      */
                     case chatMessageVOTypes.USER_INFO:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('systemEvents', {
+                        chatEvents.fireEvent('systemEvents', {
                             type: 'SERVER_TIME',
                             result: {
                                 time: time
@@ -2561,8 +2206,8 @@
                      * Type 25    Get Blocked List
                      */
                     case chatMessageVOTypes.GET_BLOCKED:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -2570,8 +2215,8 @@
                      * Type 27    Thread Participants List
                      */
                     case chatMessageVOTypes.THREAD_PARTICIPANTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -2579,8 +2224,8 @@
                      * Type 28    Edit Message
                      */
                     case chatMessageVOTypes.EDIT_MESSAGE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         chatEditMessageHandler(threadId, messageContent);
                         break;
@@ -2589,8 +2234,8 @@
                      * Type 29    Delete Message
                      */
                     case chatMessageVOTypes.DELETE_MESSAGE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
                         if (messageContent.pinned) {
@@ -2607,18 +2252,18 @@
                                 db.messages.where('id')
                                     .equals(messageContent)
                                     .and(function (message) {
-                                        return message.owner === userInfo.id;
+                                        return message.owner === chatMessaging.userInfo.id;
                                     })
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: 6602,
                                             message: CHAT_ERRORS[6602],
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -2632,7 +2277,7 @@
                             }, function (threadsResult) {
                                 var threads = threadsResult.result.threads;
                                 if (!threadsResult.cache) {
-                                    fireEvent('messageEvents', {
+                                    chatEvents.fireEvent('messageEvents', {
                                         type: 'MESSAGE_DELETE',
                                         result: {
                                             message: {
@@ -2643,7 +2288,7 @@
                                         }
                                     });
                                     if (messageContent.pinned) {
-                                        fireEvent('threadEvents', {
+                                        chatEvents.fireEvent('threadEvents', {
                                             type: 'THREAD_LAST_ACTIVITY_TIME',
                                             result: {
                                                 thread: threads[0]
@@ -2653,7 +2298,7 @@
                                 }
                             });
                         } else {
-                            fireEvent('messageEvents', {
+                            chatEvents.fireEvent('messageEvents', {
                                 type: 'MESSAGE_DELETE',
                                 result: {
                                     message: {
@@ -2664,7 +2309,7 @@
                                 }
                             });
                             if (messageContent.pinned) {
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_LAST_ACTIVITY_TIME',
                                     result: {
                                         thread: threadId
@@ -2698,14 +2343,14 @@
                         //             var salt = Utility.generateUUID();
                         //
                         //             tempData.id = thread.id;
-                        //             tempData.owner = userInfo.id;
+                        //             tempData.owner = chatMessaging.userInfo.id;
                         //             tempData.title = Utility.crypt(thread.title, cacheSecret, salt);
                         //             tempData.time = thread.time;
                         //             tempData.data = Utility.crypt(JSON.stringify(unsetNotSeenDuration(thread)), cacheSecret, salt);
                         //             tempData.salt = salt;
                         //         }
                         //         catch (error) {
-                        //             fireEvent('error', {
+                        //             chatEvents.fireEvent('error', {
                         //                 code: error.code,
                         //                 message: error.message,
                         //                 error: error
@@ -2714,7 +2359,7 @@
                         //
                         //         db.threads.put(tempData)
                         //             .catch(function (error) {
-                        //                 fireEvent('error', {
+                        //                 chatEvents.fireEvent('error', {
                         //                     code: error.code,
                         //                     message: error.message,
                         //                     error: error
@@ -2722,14 +2367,14 @@
                         //             });
                         //     }
                         //     else {
-                        //         fireEvent('error', {
+                        //         chatEvents.fireEvent('error', {
                         //             code: 6601,
                         //             message: CHAT_ERRORS[6601],
                         //             error: null
                         //         });
                         //     }
                         // }
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_INFO_UPDATED',
                             result: {
                                 thread: thread
@@ -2744,7 +2389,7 @@
                         var threadObject = messageContent;
                         threadObject.unreadCount = (messageContent.unreadCount) ? messageContent.unreadCount : 0;
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_UNREAD_COUNT_UPDATED',
                             result: {
                                 thread: threadObject,
@@ -2759,7 +2404,7 @@
                         //         var threads = threadsResult.result.threads;
                         //
                         //         if (!threadsResult.cache) {
-                        //             fireEvent('threadEvents', {
+                        //             chatEvents.fireEvent('threadEvents', {
                         //                 type: 'THREAD_UNREAD_COUNT_UPDATED',
                         //                 result: {
                         //                     thread: threads[0],
@@ -2767,7 +2412,7 @@
                         //                 }
                         //             });
                         //
-                        //             fireEvent('threadEvents', {
+                        //             chatEvents.fireEvent('threadEvents', {
                         //                 type: 'THREAD_LAST_ACTIVITY_TIME',
                         //                 result: {
                         //                     thread: threads[0]
@@ -2776,7 +2421,7 @@
                         //         }
                         //     });
                         // } else {
-                        //     fireEvent('threadEvents', {
+                        //     chatEvents.fireEvent('threadEvents', {
                         //         type: 'THREAD_UNREAD_COUNT_UPDATED',
                         //         result: {
                         //             thread: threadId,
@@ -2784,7 +2429,7 @@
                         //         }
                         //     });
                         //
-                        //     fireEvent('threadEvents', {
+                        //     chatEvents.fireEvent('threadEvents', {
                         //         type: 'THREAD_LAST_ACTIVITY_TIME',
                         //         result: {
                         //             thread: threadId
@@ -2798,8 +2443,8 @@
                      * Type 32    Get Message Delivered List
                      */
                     case chatMessageVOTypes.GET_MESSAGE_DELEVERY_PARTICIPANTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -2807,8 +2452,8 @@
                      * Type 33    Get Message Seen List
                      */
                     case chatMessageVOTypes.GET_MESSAGE_SEEN_PARTICIPANTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -2816,8 +2461,8 @@
                      * Type 34    Is Public Group Name Available?
                      */
                     case chatMessageVOTypes.IS_NAME_AVAILABLE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -2825,8 +2470,8 @@
                      * Type 39    Join Public Group or Channel
                      */
                     case chatMessageVOTypes.JOIN_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -2834,7 +2479,7 @@
                      * Type 40    Bot Messages
                      */
                     case chatMessageVOTypes.BOT_MESSAGE:
-                        fireEvent('botEvents', {
+                        chatEvents.fireEvent('botEvents', {
                             type: 'BOT_MESSAGE',
                             result: {
                                 bot: messageContent
@@ -2846,8 +2491,8 @@
                      * Type 41    Spam P2P Thread
                      */
                     case chatMessageVOTypes.SPAM_PV_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
                         break;
 
@@ -2855,8 +2500,8 @@
                      * Type 42    Set Role To User
                      */
                     case chatMessageVOTypes.SET_ROLE_TO_USER:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -2866,7 +2511,7 @@
                                 var threads = threadsResult.result.threads;
 
                                 if (!threadsResult.cache) {
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_ADD_ADMIN',
                                         result: {
                                             thread: threads[0],
@@ -2874,7 +2519,7 @@
                                         }
                                     });
 
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_LAST_ACTIVITY_TIME',
                                         result: {
                                             thread: threads[0],
@@ -2884,7 +2529,7 @@
                                 }
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_ADD_ADMIN',
                                 result: {
                                     thread: threadId,
@@ -2892,7 +2537,7 @@
                                 }
                             });
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_LAST_ACTIVITY_TIME',
                                 result: {
                                     thread: threadId,
@@ -2907,8 +2552,8 @@
                      * Type 43    Remove Role From User
                      */
                     case chatMessageVOTypes.REMOVE_ROLE_FROM_USER:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -2918,7 +2563,7 @@
                                 var threads = threadsResult.result.threads;
 
                                 if (!threadsResult.cache) {
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_REMOVE_ADMIN',
                                         result: {
                                             thread: threads[0],
@@ -2926,7 +2571,7 @@
                                         }
                                     });
 
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_LAST_ACTIVITY_TIME',
                                         result: {
                                             thread: threads[0],
@@ -2936,7 +2581,7 @@
                                 }
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_REMOVE_ADMIN',
                                 result: {
                                     thread: threadId,
@@ -2944,7 +2589,7 @@
                                 }
                             });
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_LAST_ACTIVITY_TIME',
                                 result: {
                                     thread: threadId,
@@ -2959,8 +2604,8 @@
                      * Type 44    Clear History
                      */
                     case chatMessageVOTypes.CLEAR_HISTORY:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
                         break;
 
@@ -2968,7 +2613,7 @@
                      * Type 46    System Messages
                      */
                     case chatMessageVOTypes.SYSTEM_MESSAGE:
-                        fireEvent('systemEvents', {
+                        chatEvents.fireEvent('systemEvents', {
                             type: 'IS_TYPING',
                             result: {
                                 thread: threadId,
@@ -2981,8 +2626,8 @@
                      * Type 47    Get Not Seen Duration
                      */
                     case chatMessageVOTypes.GET_NOT_SEEN_DURATION:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
                         break;
 
@@ -2990,8 +2635,8 @@
                      * Type 48    Pin Thread
                      */
                     case chatMessageVOTypes.PIN_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -3000,7 +2645,7 @@
                             }, function (threadsResult) {
                                 var thread = threadsResult.result.threads[0];
 
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_PIN',
                                     result: {
                                         thread: thread
@@ -3008,7 +2653,7 @@
                                 });
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_PIN',
                                 result: {
                                     thread: threadId
@@ -3022,8 +2667,8 @@
                      * Type 49    UnPin Thread
                      */
                     case chatMessageVOTypes.UNPIN_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -3032,7 +2677,7 @@
                             }, function (threadsResult) {
                                 var thread = threadsResult.result.threads[0];
 
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_UNPIN',
                                     result: {
                                         thread: thread
@@ -3040,7 +2685,7 @@
                                 });
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_UNPIN',
                                 result: {
                                     thread: threadId
@@ -3054,10 +2699,10 @@
                      * Type 50    Pin Message
                      */
                     case chatMessageVOTypes.PIN_MESSAGE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'MESSAGE_PIN',
                             result: {
                                 thread: threadId,
@@ -3070,10 +2715,10 @@
                      * Type 51    UnPin Message
                      */
                     case chatMessageVOTypes.UNPIN_MESSAGE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'MESSAGE_UNPIN',
                             result: {
                                 thread: threadId,
@@ -3086,10 +2731,10 @@
                      * Type 52    Update Chat Profile
                      */
                     case chatMessageVOTypes.UPDATE_CHAT_PROFILE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
-                        fireEvent('userEvents', {
+                        chatEvents.fireEvent('userEvents', {
                             type: 'CHAT_PROFILE_UPDATED',
                             result: {
                                 user: messageContent
@@ -3101,11 +2746,11 @@
                      * Type 53    Change Thread Privacy
                      */
                     case chatMessageVOTypes.CHANGE_THREAD_PRIVACY:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_PRIVACY_CHANGED',
                             result: {
                                 thread: messageContent
@@ -3118,10 +2763,10 @@
                      * Type 54    Get Participant Roles
                      */
                     case chatMessageVOTypes.GET_PARTICIPANT_ROLES:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
-                        fireEvent('userEvents', {
+                        chatEvents.fireEvent('userEvents', {
                             type: 'GET_PARTICIPANT_ROLES',
                             result: {
                                 roles: messageContent
@@ -3133,7 +2778,7 @@
                      * Type 60    Get Contact Not Seen Duration
                      */
                     case chatMessageVOTypes.GET_CONTACT_NOT_SEEN_DURATION:
-                        fireEvent('contactEvents', {
+                        chatEvents.fireEvent('contactEvents', {
                             type: 'CONTACTS_LAST_SEEN',
                             result: messageContent
                         });
@@ -3143,11 +2788,11 @@
                      * Type 61      Get All Unread Message Count
                      */
                     case chatMessageVOTypes.ALL_UNREAD_MESSAGE_COUNT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('systemEvents', {
+                        chatEvents.fireEvent('systemEvents', {
                             type: 'ALL_UNREAD_MESSAGES_COUNT',
                             result: messageContent
                         });
@@ -3158,8 +2803,8 @@
                      * Type 62    Create Bot
                      */
                     case chatMessageVOTypes.CREATE_BOT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -3167,8 +2812,8 @@
                      * Type 63    Define Bot Commands
                      */
                     case chatMessageVOTypes.DEFINE_BOT_COMMAND:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -3176,8 +2821,8 @@
                      * Type 64    Start Bot
                      */
                     case chatMessageVOTypes.START_BOT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -3185,8 +2830,8 @@
                      * Type 65    Stop Bot
                      */
                     case chatMessageVOTypes.STOP_BOT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -3201,7 +2846,7 @@
                                 var threads = threadsResult.result.threads;
 
                                 if (!threadsResult.cache) {
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_INFO_UPDATED',
                                         result: {
                                             thread: threads[0]
@@ -3212,7 +2857,7 @@
                         } else {
                             var thread = formatDataToMakeConversation(messageContent);
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_INFO_UPDATED',
                                 result: {
                                     thread: thread
@@ -3232,7 +2877,7 @@
                                 var threads = threadsResult.result.threads;
 
                                 if (!threadsResult.cache) {
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_INFO_UPDATED',
                                         result: {
                                             thread: threads[0]
@@ -3243,7 +2888,7 @@
                         } else {
                             var thread = formatDataToMakeConversation(messageContent);
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_INFO_UPDATED',
                                 result: {
                                     thread: thread
@@ -3256,8 +2901,8 @@
                      * Type 68    Get Bot Commands List
                      */
                     case chatMessageVOTypes.BOT_COMMANDS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -3265,8 +2910,8 @@
                      * Type 69    Get Thread All Bots
                      */
                     case chatMessageVOTypes.THREAD_ALL_BOTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -3274,358 +2919,54 @@
                      * Type 70    Send Call Request
                      */
                     case chatMessageVOTypes.CALL_REQUEST:
-                        callRequestController.callRequestReceived = true;
-                        callReceived({
-                            callId: messageContent.callId
-                        }, function (r) {
-
-                        });
-
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'RECEIVE_CALL',
-                            result: messageContent
-                        });
-
-                        currentCallId = messageContent.callId;
-
-                        break;
-
-                    /**
-                     * Type 71    Accept Call Request
-                     */
                     case chatMessageVOTypes.ACCEPT_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'ACCEPT_CALL',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 72    Reject Call Request
-                     */
                     case chatMessageVOTypes.REJECT_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'REJECT_CALL',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 73    Receive Call Request
-                     */
-                    case chatMessageVOTypes.RECIVE_CALL_REQUEST:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        if (messageContent.callId > 0) {
-                            fireEvent('callEvents', {
-                                type: 'RECEIVE_CALL',
-                                result: messageContent
-                            });
-                        }
-
-                        currentCallId = messageContent.callId;
-
-                        break;
-
-                    /**
-                     * Type 74    Start Call Request
-                     */
+                    case chatMessageVOTypes.RECEIVE_CALL_REQUEST:
                     case chatMessageVOTypes.START_CALL:
-                        if(!callRequestController.iCanAcceptTheCall()) {
-                            fireEvent('callEvents', {
-                                type: 'CALL_STARTED_ELSEWHERE',
-                                message: 'Call already started somewhere else..., aborting...'
-                            });
-                            return;
-                        }
-
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_STARTED',
-                            result: messageContent
-                        });
-
-                        for (var peer in webpeers) {
-                            if (webpeers[peer]) {
-                                webpeers[peer].dispose();
-                                delete webpeers[peer];
-                            }
-                        }
-                        webpeers = {};
-
-                        if (typeof messageContent === 'object'
-                            && messageContent.hasOwnProperty('chatDataDto')
-                            && !!messageContent.chatDataDto.kurentoAddress) {
-
-                            setCallServerName(messageContent.chatDataDto.kurentoAddress.split(',')[0]);
-
-                            startCallWebRTCFunctions({
-                                video: messageContent.clientDTO.video,
-                                mute: messageContent.clientDTO.mute,
-                                sendingTopic: messageContent.clientDTO.topicSend,
-                                receiveTopic: messageContent.clientDTO.topicReceive,
-                                brokerAddress: messageContent.chatDataDto.brokerAddressWeb,
-                                turnAddress: messageContent.chatDataDto.turnAddress,
-                            }, function (callDivs) {
-                                fireEvent('callEvents', {
-                                    type: 'CALL_DIVS',
-                                    result: callDivs
-                                });
-                            });
-                        } else {
-                            fireEvent('callEvents', {
-                                type: 'CALL_ERROR',
-                                message: 'Chat Data DTO is not present!'
-                            });
-                        }
-
-                        break;
-
-                    /**
-                     * Type 75    End Call Request
-                     */
                     case chatMessageVOTypes.END_CALL_REQUEST:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'END_CALL',
-                            result: messageContent
-                        });
-
-                        callStop();
-
-                        break;
-
-                    /**
-                     * Type 76   Call Ended
-                     */
                     case chatMessageVOTypes.END_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_ENDED',
-                            result: messageContent
-                        });
-
-                        callStop();
-
-                        break;
-
-                    /**
-                     * Type 77    Get Calls History
-                     */
                     case chatMessageVOTypes.GET_CALLS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        break;
-
-                    /**
-                     * Type 78    Call Partner Reconnecting
-                     */
                     case chatMessageVOTypes.RECONNECT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_RECONNETING',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 79    Call Partner Connects
-                     */
                     case chatMessageVOTypes.CONNECT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_CONNECTED',
-                            result: messageContent
-                        });
-
-                        restartMedia(callTopics['sendVideoTopic']);
-
+                    case chatMessageVOTypes.GROUP_CALL_REQUEST:
+                    case chatMessageVOTypes.LEAVE_CALL:
+                    case chatMessageVOTypes.ADD_CALL_PARTICIPANT:
+                    case chatMessageVOTypes.CALL_PARTICIPANT_JOINED:
+                    case chatMessageVOTypes.REMOVE_CALL_PARTICIPANT:
+                    case chatMessageVOTypes.TERMINATE_CALL:
+                    case chatMessageVOTypes.MUTE_CALL_PARTICIPANT:
+                    case chatMessageVOTypes.UNMUTE_CALL_PARTICIPANT:
+                    case chatMessageVOTypes.RECORD_CALL:
+                    case chatMessageVOTypes.END_RECORD_CALL:
+                    case chatMessageVOTypes.START_SCREEN_SHARE:
+                    case chatMessageVOTypes.END_SCREEN_SHARE:
+                    case chatMessageVOTypes.DELETE_FROM_CALL_HISTORY:
+                    case chatMessageVOTypes.TURN_ON_VIDEO_CALL:
+                    case chatMessageVOTypes.TURN_OFF_VIDEO_CALL:
+                    case chatMessageVOTypes.ACTIVE_CALL_PARTICIPANTS:
+                    case chatMessageVOTypes.CALL_SESSION_CREATED:
+                        callModule.handleChatMessages(type, chatMessageVOTypes, messageContent, contentCount, threadId, uniqueId);
                         break;
 
                     /**
                      * Type 90    Contacts Synced
                      */
                     case chatMessageVOTypes.CONTACT_SYNCED:
-                        fireEvent('contactEvents', {
+                        chatEvents.fireEvent('contactEvents', {
                             type: 'CONTACTS_SYNCED',
                             result: messageContent
                         });
                         break;
 
                     /**
-                     * Type 91    Send Group Call Request
-                     */
-                    case chatMessageVOTypes.GROUP_CALL_REQUEST:
-                        callReceived({
-                            callId: messageContent.callId
-                        }, function (r) {
-                        });
-
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'RECEIVE_CALL',
-                            result: messageContent
-                        });
-
-                        currentCallId = messageContent.callId;
-
-                        break;
-
-                    /**
-                     * Type 92    Call Partner Leave
-                     */
-                    case chatMessageVOTypes.LEAVE_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_LEFT',
-                            result: messageContent
-                        });
-
-                        if (!!messageContent[0].sendTopic) {
-                            removeFromCallUI(messageContent[0].sendTopic);
-                        }
-
-                        break;
-
-                    /**
-                     * Type 93    Add Call Participant
-                     */
-                    case chatMessageVOTypes.ADD_CALL_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        break;
-
-                    /**
-                     * Type 94    Call Participant Joined
-                     */
-                    case chatMessageVOTypes.CALL_PARTICIPANT_JOINED:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_JOINED',
-                            result: messageContent
-                        });
-
-                        restartMedia(callTopics['sendVideoTopic']);
-
-                        break;
-
-                    /**
-                     * Type 95    Remove Call Participant
-                     */
-                    case chatMessageVOTypes.REMOVE_CALL_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_REMOVED',
-                            result: messageContent
-                        });
-
-
-                        break;
-
-                    /**
-                     * Type 96    Terminate Call
-                     */
-                    case chatMessageVOTypes.TERMINATE_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'TERMINATE_CALL',
-                            result: messageContent
-                        });
-
-                        callStop();
-
-                        break;
-
-                    /**
-                     * Type 97    Mute Call Participant
-                     */
-                    case chatMessageVOTypes.MUTE_CALL_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_MUTE',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 98    UnMute Call Participant
-                     */
-                    case chatMessageVOTypes.UNMUTE_CALL_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_UNMUTE',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
                      * Type 101    Location Ping
                      */
                     case chatMessageVOTypes.LOCATION_PING:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('systemEvents', {
+                        chatEvents.fireEvent('systemEvents', {
                             type: 'LOCATION_PING',
                             result: messageContent
                         });
@@ -3635,8 +2976,8 @@
                      * Type 102    Close Thread
                      */
                     case chatMessageVOTypes.CLOSE_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -3646,7 +2987,7 @@
                                 var thread = threadsResult.result.threads[0];
                                 thread.mute = true;
 
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_CLOSE',
                                     result: {
                                         thread: thread
@@ -3654,7 +2995,7 @@
                                 });
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_CLOSE',
                                 result: {
                                     thread: threadId
@@ -3668,8 +3009,8 @@
                      * Type 104    Remove Bot Commands
                      */
                     case chatMessageVOTypes.REMOVE_BOT_COMMANDS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -3677,11 +3018,11 @@
                      * Type 107    Register Assistant
                      */
                     case chatMessageVOTypes.REGISTER_ASSISTANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANT_REGISTER',
                             result: messageContent
                         });
@@ -3692,11 +3033,11 @@
                      * Type 108    Deactivate Assistant
                      */
                     case chatMessageVOTypes.DEACTIVATE_ASSISTANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANT_DEACTIVATE',
                             result: messageContent
                         });
@@ -3707,67 +3048,12 @@
                      * Type 109    Get Assistants List
                      */
                     case chatMessageVOTypes.GET_ASSISTANTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANTS_LIST',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 110    Active Call Participants List
-                     */
-                    case chatMessageVOTypes.ACTIVE_CALL_PARTICIPANTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-                        break;
-
-                    /**
-                     * Type 111    Kafka Call Session Created
-                     */
-                    case chatMessageVOTypes.CALL_SESSION_CREATED:
-                        if(!callRequestController.callEstablishedInMySide)
-                            return;
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_SESSION_CREATED',
-                            result: messageContent
-                        });
-
-                        currentCallId = messageContent.callId;
-
-                        break;
-
-                    /**
-                     * Type 113    Turn On Video Call
-                     */
-                    case chatMessageVOTypes.TURN_ON_VIDEO_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'TURN_ON_VIDEO_CALL',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 114    Turn Off Video Call
-                     */
-                    case chatMessageVOTypes.TURN_OFF_VIDEO_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'TURN_OFF_VIDEO_CALL',
                             result: messageContent
                         });
 
@@ -3777,11 +3063,11 @@
                      * Type 115    Get Assistants History
                      */
                     case chatMessageVOTypes.ASSISTANT_HISTORY:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANTS_HSITORY',
                             result: messageContent
                         });
@@ -3792,11 +3078,11 @@
                      * Type 116    Block Assistants
                      */
                     case chatMessageVOTypes.BLOCK_ASSISTANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANT_BLOCK',
                             result: messageContent
                         });
@@ -3807,11 +3093,11 @@
                      * Type 117    UnBlock Assistant
                      */
                     case chatMessageVOTypes.UNBLOCK_ASSISTANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANT_UNBLOCK',
                             result: messageContent
                         });
@@ -3822,89 +3108,12 @@
                      * Type 118    Blocked Assistants List
                      */
                     case chatMessageVOTypes.BLOCKED_ASSISTANTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANTS_BLOCKED_LIST',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 121    Record Call Request
-                     */
-                    case chatMessageVOTypes.RECORD_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'START_RECORDING_CALL',
-                            result: messageContent
-                        });
-
-                        restartMedia(callTopics['sendVideoTopic']);
-
-                        break;
-
-                    /**
-                     * Type 122   End Record Call Request
-                     */
-                    case chatMessageVOTypes.END_RECORD_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'STOP_RECORDING_CALL',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 123   Start Screen Share
-                     */
-                    case chatMessageVOTypes.START_SCREEN_SHARE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'START_SCREEN_SHARE',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 124   End Screen Share
-                     */
-                    case chatMessageVOTypes.END_SCREEN_SHARE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'END_SCREEN_SHARE',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 125   Delete From Call List
-                     */
-                    case chatMessageVOTypes.DELETE_FROM_CALL_HISTORY:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'DELETE_FROM_CALL_LIST',
                             result: messageContent
                         });
 
@@ -3914,11 +3123,11 @@
                      * Type 130    Mutual Groups
                      */
                     case chatMessageVOTypes.MUTUAL_GROUPS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'MUTUAL_GROUPS',
                             result: messageContent
                         });
@@ -3929,11 +3138,11 @@
                      * Type 140    Create Tag
                      */
                     case chatMessageVOTypes.CREATE_TAG:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'NEW_TAG',
                             result: messageContent
                         });
@@ -3944,11 +3153,11 @@
                      * Type 141    Edit Tag
                      */
                     case chatMessageVOTypes.EDIT_TAG:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'EDIT_TAG',
                             result: messageContent
                         });
@@ -3959,11 +3168,11 @@
                      * Type 142    Delete Tag
                      */
                     case chatMessageVOTypes.DELETE_TAG:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'DELETE_TAG',
                             result: messageContent
                         });
@@ -3974,11 +3183,11 @@
                      * Type 143    Delete Tag
                      */
                     case chatMessageVOTypes.ADD_TAG_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'ADD_TAG_PARTICIPANT',
                             result: messageContent
                         });
@@ -3989,11 +3198,11 @@
                      * Type 144    Delete Tag
                      */
                     case chatMessageVOTypes.REMOVE_TAG_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'REMOVE_TAG_PARTICIPANT',
                             result: messageContent
                         });
@@ -4004,11 +3213,11 @@
                      * Type 145    Delete Tag
                      */
                     case chatMessageVOTypes.GET_TAG_LIST:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'TAG_LIST',
                             result: messageContent
                         });
@@ -4019,11 +3228,11 @@
                      * Type 151    Delete Message Thread
                      */
                     case chatMessageVOTypes.DELETE_MESSAGE_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'DELETE_THREAD',
                             result: messageContent
                         });
@@ -4034,8 +3243,8 @@
                      * Type 999   All unknown errors
                      */
                     case chatMessageVOTypes.ERROR:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(true, messageContent.message, messageContent.code, messageContent, 0));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(true, messageContent.message, messageContent.code, messageContent, 0));
                         }
 
                         /**
@@ -4044,7 +3253,7 @@
                          */
                         if (messageContent.code === 21) {
                             // TODO: Temporarily removed due to unknown side-effects
-                            // chatState = false;
+                            // chatMessaging.chatState = false;
                             // asyncClient.logout();
                             // clearChatServerCaches();
                         }
@@ -4053,9 +3262,9 @@
                          * has been blocked cause of spam activity
                          */
                         if (messageContent.code === 208) {
-                            if (sendMessageCallbacks[uniqueId]) {
+                            if (chatMessaging.sendMessageCallbacks[uniqueId]) {
                                 getItemFromChatWaitQueue(uniqueId, function (message) {
-                                    fireEvent('messageEvents', {
+                                    chatEvents.fireEvent('messageEvents', {
                                         type: 'MESSAGE_FAILED',
                                         cache: false,
                                         result: {
@@ -4066,89 +3275,13 @@
                             }
                         }
 
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: messageContent.code,
                             message: messageContent.message,
                             error: messageContent,
                             uniqueId: uniqueId
                         });
 
-                        break;
-                }
-            },
-
-            callMessageHandler = function (callMessage) {
-                var jsonMessage = (typeof callMessage.content === 'string' && isValidJson(callMessage.content))
-                    ? JSON.parse(callMessage.content)
-                    : callMessage.content,
-                    uniqueId = jsonMessage.uniqueId;
-
-
-                asyncRequestTimeouts[uniqueId] && clearTimeout(asyncRequestTimeouts[uniqueId]);
-
-                switch (jsonMessage.id) {
-                    case 'PROCESS_SDP_ANSWER':
-                        handleProcessSdpAnswer(jsonMessage);
-                        break;
-
-                    case 'ADD_ICE_CANDIDATE':
-                        handleAddIceCandidate(jsonMessage);
-                        break;
-
-                    case 'GET_KEY_FRAME':
-                        setTimeout(function () {
-                            restartMedia(callTopics['sendVideoTopic']);
-                        }, 2000);
-                        setTimeout(function () {
-                            restartMedia(callTopics['sendVideoTopic']);
-                        }, 4000);
-                        setTimeout(function () {
-                            restartMedia(callTopics['sendVideoTopic']);
-                        }, 8000);
-                        setTimeout(function () {
-                            restartMedia(callTopics['sendVideoTopic']);
-                        }, 12000);
-                        break;
-
-                    case 'FREEZED':
-                        handlePartnerFreeze(jsonMessage);
-                        break;
-
-                    /*case 'STOPALL':
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](jsonMessage);
-                        }
-                        break;*/
-
-                    case 'CLOSE':
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](jsonMessage);
-                        }
-                        break;
-
-                    case 'SESSION_NEW_CREATED':
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](jsonMessage);
-                        }
-                        break;
-
-                    case 'SESSION_REFRESH':
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](jsonMessage);
-                        }
-                        break;
-
-                    case 'ERROR':
-                        handleError(jsonMessage, params.sendingTopic, params.receiveTopic);
-                        break;
-
-                    default:
-                        console.warn("[onmessage] Invalid message, id: " + jsonMessage.id, jsonMessage);
-                        if (jsonMessage.match(/NOT CREATE SESSION/g)) {
-                            if (currentCallParams && Object.keys(currentCallParams)) {
-                                handleCallSocketOpen(currentCallParams);
-                            }
-                        }
                         break;
                 }
             },
@@ -4173,20 +3306,20 @@
                 switch (actionType) {
 
                     case chatMessageVOTypes.DELIVERY:
-                        if (threadCallbacks[threadId]) {
-                            var lastThreadCallbackIndex = Object.keys(threadCallbacks[threadId])
+                        if (chatMessaging.threadCallbacks[threadId]) {
+                            var lastThreadCallbackIndex = Object.keys(chatMessaging.threadCallbacks[threadId])
                                 .indexOf(uniqueId);
                             if (typeof lastThreadCallbackIndex !== 'undefined') {
                                 while (lastThreadCallbackIndex > -1) {
-                                    var tempUniqueId = Object.entries(threadCallbacks[threadId])[lastThreadCallbackIndex][0];
-                                    if (sendMessageCallbacks[tempUniqueId] && sendMessageCallbacks[tempUniqueId].onDeliver) {
-                                        if (threadCallbacks[threadId][tempUniqueId] && threadCallbacks[threadId][tempUniqueId].onSent) {
-                                            sendMessageCallbacks[tempUniqueId].onDeliver(
+                                    var tempUniqueId = Object.entries(chatMessaging.threadCallbacks[threadId])[lastThreadCallbackIndex][0];
+                                    if (chatMessaging.sendMessageCallbacks[tempUniqueId] && chatMessaging.sendMessageCallbacks[tempUniqueId].onDeliver) {
+                                        if (chatMessaging.threadCallbacks[threadId][tempUniqueId] && chatMessaging.threadCallbacks[threadId][tempUniqueId].onSent) {
+                                            chatMessaging.sendMessageCallbacks[tempUniqueId].onDeliver(
                                                 {
                                                     uniqueId: tempUniqueId
                                                 });
-                                            delete (sendMessageCallbacks[tempUniqueId].onDeliver);
-                                            threadCallbacks[threadId][tempUniqueId].onDeliver = true;
+                                            delete (chatMessaging.sendMessageCallbacks[tempUniqueId].onDeliver);
+                                            chatMessaging.threadCallbacks[threadId][tempUniqueId].onDeliver = true;
                                         }
                                     }
 
@@ -4197,37 +3330,37 @@
                         break;
 
                     case chatMessageVOTypes.SEEN:
-                        if (threadCallbacks[threadId]) {
-                            var lastThreadCallbackIndex = Object.keys(threadCallbacks[threadId])
+                        if (chatMessaging.threadCallbacks[threadId]) {
+                            var lastThreadCallbackIndex = Object.keys(chatMessaging.threadCallbacks[threadId])
                                 .indexOf(uniqueId);
                             if (typeof lastThreadCallbackIndex !== 'undefined') {
                                 while (lastThreadCallbackIndex > -1) {
-                                    var tempUniqueId = Object.entries(threadCallbacks[threadId])[lastThreadCallbackIndex][0];
+                                    var tempUniqueId = Object.entries(chatMessaging.threadCallbacks[threadId])[lastThreadCallbackIndex][0];
 
-                                    if (sendMessageCallbacks[tempUniqueId] && sendMessageCallbacks[tempUniqueId].onSeen) {
-                                        if (threadCallbacks[threadId][tempUniqueId] && threadCallbacks[threadId][tempUniqueId].onSent) {
-                                            if (!threadCallbacks[threadId][tempUniqueId].onDeliver) {
-                                                sendMessageCallbacks[tempUniqueId].onDeliver(
+                                    if (chatMessaging.sendMessageCallbacks[tempUniqueId] && chatMessaging.sendMessageCallbacks[tempUniqueId].onSeen) {
+                                        if (chatMessaging.threadCallbacks[threadId][tempUniqueId] && chatMessaging.threadCallbacks[threadId][tempUniqueId].onSent) {
+                                            if (!chatMessaging.threadCallbacks[threadId][tempUniqueId].onDeliver) {
+                                                chatMessaging.sendMessageCallbacks[tempUniqueId].onDeliver(
                                                     {
                                                         uniqueId: tempUniqueId
                                                     });
-                                                delete (sendMessageCallbacks[tempUniqueId].onDeliver);
-                                                threadCallbacks[threadId][tempUniqueId].onDeliver = true;
+                                                delete (chatMessaging.sendMessageCallbacks[tempUniqueId].onDeliver);
+                                                chatMessaging.threadCallbacks[threadId][tempUniqueId].onDeliver = true;
                                             }
 
-                                            sendMessageCallbacks[tempUniqueId].onSeen(
+                                            chatMessaging.sendMessageCallbacks[tempUniqueId].onSeen(
                                                 {
                                                     uniqueId: tempUniqueId
                                                 });
 
-                                            delete (sendMessageCallbacks[tempUniqueId].onSeen);
-                                            threadCallbacks[threadId][tempUniqueId].onSeen = true;
+                                            delete (chatMessaging.sendMessageCallbacks[tempUniqueId].onSeen);
+                                            chatMessaging.threadCallbacks[threadId][tempUniqueId].onSeen = true;
 
-                                            if (threadCallbacks[threadId][tempUniqueId].onSent &&
-                                                threadCallbacks[threadId][tempUniqueId].onDeliver &&
-                                                threadCallbacks[threadId][tempUniqueId].onSeen) {
-                                                delete threadCallbacks[threadId][tempUniqueId];
-                                                delete sendMessageCallbacks[tempUniqueId];
+                                            if (chatMessaging.threadCallbacks[threadId][tempUniqueId].onSent &&
+                                                chatMessaging.threadCallbacks[threadId][tempUniqueId].onDeliver &&
+                                                chatMessaging.threadCallbacks[threadId][tempUniqueId].onSeen) {
+                                                delete chatMessaging.threadCallbacks[threadId][tempUniqueId];
+                                                delete chatMessaging.sendMessageCallbacks[tempUniqueId];
                                             }
                                         }
                                     }
@@ -4278,7 +3411,7 @@
                         try {
                             var salt = Utility.generateUUID();
                             tempData.id = parseInt(message.id);
-                            tempData.owner = parseInt(userInfo.id);
+                            tempData.owner = parseInt(chatMessaging.userInfo.id);
                             tempData.threadId = parseInt(message.threadId);
                             tempData.time = message.time;
                             tempData.message = Utility.crypt(message.message, cacheSecret, salt);
@@ -4287,7 +3420,7 @@
                             tempData.sendStatus = 'sent';
 
                         } catch (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
@@ -4296,14 +3429,14 @@
 
                         db.messages.put(tempData)
                             .catch(function (error) {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: error.code,
                                     message: error.message,
                                     error: error
                                 });
                             });
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6601,
                             message: CHAT_ERRORS[6601],
                             error: null
@@ -4311,7 +3444,7 @@
                     }
                 }
 
-                fireEvent('messageEvents', {
+                chatEvents.fireEvent('messageEvents', {
                     type: 'MESSAGE_NEW',
                     cache: false,
                     result: {
@@ -4328,7 +3461,7 @@
                 threadObject.lastParticipantName = (!!message.participant && message.participant.hasOwnProperty('name')) ? message.participant.name : '';
                 threadObject.lastMessage = (message.hasOwnProperty('message')) ? message.message : '';
 
-                fireEvent('threadEvents', {
+                chatEvents.fireEvent('threadEvents', {
                     type: 'THREAD_UNREAD_COUNT_UPDATED',
                     result: {
                         thread: threadObject,
@@ -4336,7 +3469,7 @@
                     }
                 });
 
-                fireEvent('threadEvents', {
+                chatEvents.fireEvent('threadEvents', {
                     type: 'THREAD_LAST_ACTIVITY_TIME',
                     result: {
                         thread: threadObject
@@ -4349,7 +3482,7 @@
                 //     }, function (threadsResult) {
                 //         var threads = threadsResult.result.threads;
                 //
-                //         fireEvent('threadEvents', {
+                //         chatEvents.fireEvent('threadEvents', {
                 //             type: 'THREAD_UNREAD_COUNT_UPDATED',
                 //             result: {
                 //                 thread: threads[0],
@@ -4357,7 +3490,7 @@
                 //             }
                 //         });
                 //
-                //         fireEvent('threadEvents', {
+                //         chatEvents.fireEvent('threadEvents', {
                 //             type: 'THREAD_LAST_ACTIVITY_TIME',
                 //             result: {
                 //                 thread: threads[0]
@@ -4366,14 +3499,14 @@
                 //
                 //     });
                 // } else {
-                //     fireEvent('threadEvents', {
+                //     chatEvents.fireEvent('threadEvents', {
                 //         type: 'THREAD_LAST_ACTIVITY_TIME',
                 //         result: {
                 //             thread: threadId
                 //         }
                 //     });
                 //
-                //     fireEvent('threadEvents', {
+                //     chatEvents.fireEvent('threadEvents', {
                 //         type: 'THREAD_UNREAD_COUNT_UPDATED',
                 //         result: {
                 //             thread: messageContent.id,
@@ -4414,7 +3547,7 @@
                             var tempData = {},
                                 salt = Utility.generateUUID();
                             tempData.id = parseInt(message.id);
-                            tempData.owner = parseInt(userInfo.id);
+                            tempData.owner = parseInt(chatMessaging.userInfo.id);
                             tempData.threadId = parseInt(message.threadId);
                             tempData.time = message.time;
                             tempData.message = Utility.crypt(message.message, cacheSecret, salt);
@@ -4426,21 +3559,21 @@
                              */
                             db.messages.put(tempData)
                                 .catch(function (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: error.code,
                                         message: error.message,
                                         error: error
                                     });
                                 });
                         } catch (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
                             });
                         }
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6601,
                             message: CHAT_ERRORS[6601],
                             error: null
@@ -4454,14 +3587,14 @@
                     }, function (threadsResult) {
                         var threads = threadsResult.result.threads;
                         if (!threadsResult.cache) {
-                            fireEvent('messageEvents', {
+                            chatEvents.fireEvent('messageEvents', {
                                 type: 'MESSAGE_EDIT',
                                 result: {
                                     message: message
                                 }
                             });
                             if (message.pinned) {
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_LAST_ACTIVITY_TIME',
                                     result: {
                                         thread: threads[0]
@@ -4471,14 +3604,14 @@
                         }
                     });
                 } else {
-                    fireEvent('messageEvents', {
+                    chatEvents.fireEvent('messageEvents', {
                         type: 'MESSAGE_EDIT',
                         result: {
                             message: message
                         }
                     });
                     if (message.pinned) {
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_LAST_ACTIVITY_TIME',
                             result: {
                                 thread: threadId
@@ -4509,7 +3642,7 @@
                 var redirectToThread = (showThread === true) ? showThread : false;
 
                 if (addFromService) {
-                    fireEvent('threadEvents', {
+                    chatEvents.fireEvent('threadEvents', {
                         type: 'THREAD_NEW',
                         redirectToThread: redirectToThread,
                         result: {
@@ -4528,13 +3661,13 @@
                                 var salt = Utility.generateUUID();
 
                                 tempData.id = threadData.id;
-                                tempData.owner = userInfo.id;
+                                tempData.owner = chatMessaging.userInfo.id;
                                 tempData.title = Utility.crypt(threadData.title, cacheSecret, salt);
                                 tempData.time = threadData.time;
                                 tempData.data = Utility.crypt(JSON.stringify(unsetNotSeenDuration(threadData)), cacheSecret, salt);
                                 tempData.salt = salt;
                             } catch (error) {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: error.code,
                                     message: error.message,
                                     error: error
@@ -4543,14 +3676,14 @@
 
                             db.threads.put(tempData)
                                 .catch(function (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: error.code,
                                         message: error.message,
                                         error: error
                                     });
                                 });
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 6601,
                                 message: CHAT_ERRORS[6601],
                                 error: null
@@ -4880,65 +4013,6 @@
                 // Add chatProfileVO if exist
                 if (messageContent.chatProfileVO) {
                     participant.chatProfileVO = messageContent.chatProfileVO;
-                }
-
-                // return participant;
-                return JSON.parse(JSON.stringify(participant));
-            },
-
-            /**
-             * Format Data To Make Call Participant
-             *
-             * This functions reformats given JSON to proper Object
-             *
-             * @access private
-             *
-             * @param {object}  messageContent    Json object of thread taken from chat server
-             *
-             * @param threadId
-             * @return {object} participant Object
-             */
-            formatDataToMakeCallParticipant = function (messageContent) {
-                /**
-                 * + CallParticipantVO                   {object}
-                 *    - id                           {int}
-                 *    - joinTime                     {int}
-                 *    - leaveTime                    {int}
-                 *    - threadParticipant            {object}
-                 *    - sendTopic                    {string}
-                 *    - receiveTopic                 {string}
-                 *    - brokerAddress                {string}
-                 *    - active                       {boolean}
-                 *    - callSession                  {object}
-                 *    - callStatus                   {int}
-                 *    - createTime                   {int}
-                 *    - sendKey                      {string}
-                 *    - mute                         {boolean}
-                 */
-
-                var participant = {
-                    id: messageContent.id,
-                    joinTime: messageContent.joinTime,
-                    leaveTime: messageContent.leaveTime,
-                    sendTopic: messageContent.sendTopic,
-                    receiveTopic: messageContent.receiveTopic,
-                    brokerAddress: messageContent.brokerAddress,
-                    active: messageContent.active,
-                    callSession: messageContent.callSession,
-                    callStatus: messageContent.callStatus,
-                    createTime: messageContent.createTime,
-                    sendKey: messageContent.sendKey,
-                    mute: messageContent.mute
-                };
-
-                // Add Chat Participant if exist
-                if (messageContent.participantVO) {
-                    participant.participantVO = messageContent.participantVO;
-                }
-
-                // Add Call Session if exist
-                if (messageContent.callSession) {
-                    participant.callSession = messageContent.callSession;
                 }
 
                 // return participant;
@@ -5304,50 +4378,6 @@
             },
 
             /**
-             * Format Data To Make Call Message
-             *
-             * This functions reformats given JSON to proper Object
-             *
-             * @access private
-             *
-             * @param {object}  messageContent    Json object of thread taken from chat server
-             *
-             * @return {object} Call message Object
-             */
-            formatDataToMakeCallMessage = function (threadId, pushMessageVO) {
-                /**
-                 * + CallVO                   {object}
-                 *    - id                    {int}
-                 *    - creatorId             {int}
-                 *    - type                  {int}
-                 *    - createTime            {string}
-                 *    - startTime             {string}
-                 *    - endTime               {string}
-                 *    - status                {int}
-                 *    - isGroup               {boolean}
-                 *    - callParticipants      {object}
-                 *    - partnerParticipantVO  {object}
-                 *    - conversationVO        {object}
-                 */
-                var callMessage = {
-                    id: pushMessageVO.id,
-                    creatorId: pushMessageVO.creatorId,
-                    type: pushMessageVO.type,
-                    createTime: pushMessageVO.createTime,
-                    startTime: pushMessageVO.startTime,
-                    endTime: pushMessageVO.endTime,
-                    status: pushMessageVO.status,
-                    isGroup: pushMessageVO.isGroup,
-                    callParticipants: pushMessageVO.callParticipants,
-                    partnerParticipantVO: pushMessageVO.partnerParticipantVO,
-                    conversationVO: pushMessageVO.conversationVO
-                };
-
-                // return pinMessage;
-                return JSON.parse(JSON.stringify(callMessage));
-            },
-
-            /**
              * Reformat Thread History
              *
              * This functions reformats given Array of thread Messages
@@ -5388,29 +4418,6 @@
 
                 for (var i = 0; i < participantsContent.length; i++) {
                     returnData.push(formatDataToMakeParticipant(participantsContent[i], threadId));
-                }
-
-                return returnData;
-            },
-
-            /**
-             * Reformat Call Participants
-             *
-             * This functions reformats given Array of call Participants
-             * into proper call participant
-             *
-             * @access private
-             *
-             * @param {object}  participantsContent   Array of Call Participant Objects
-             * @param {int}    threadId              Id of call
-             *
-             * @return {object} Formatted Call Participant Array
-             */
-            reformatCallParticipants = function (participantsContent) {
-                var returnData = [];
-
-                for (var i = 0; i < participantsContent.length; i++) {
-                    returnData.push(formatDataToMakeCallParticipant(participantsContent[i]));
                 }
 
                 return returnData;
@@ -5554,20 +4561,20 @@
 
                         if (Object.keys(whereClause).length === 0) {
                             thenAble = db.threads.where('[owner+time]')
-                                .between([userInfo.id, minIntegerValue], [userInfo.id, maxIntegerValue * 1000])
+                                .between([chatMessaging.userInfo.id, minIntegerValue], [chatMessaging.userInfo.id, maxIntegerValue * 1000])
                                 .reverse();
                         } else {
                             if (whereClause.hasOwnProperty('threadIds')) {
                                 thenAble = db.threads.where('id')
                                     .anyOf(whereClause.threadIds)
                                     .and(function (thread) {
-                                        return thread.owner === userInfo.id;
+                                        return thread.owner === chatMessaging.userInfo.id;
                                     });
                             }
 
                             if (whereClause.hasOwnProperty('name')) {
                                 thenAble = db.threads.where('owner')
-                                    .equals(parseInt(userInfo.id))
+                                    .equals(parseInt(chatMessaging.userInfo.id))
                                     .filter(function (thread) {
                                         var reg = new RegExp(whereClause.name);
                                         return reg.test(chatDecrypt(thread.title, cacheSecret, thread.salt));
@@ -5576,7 +4583,7 @@
 
                             if (whereClause.hasOwnProperty('creatorCoreUserId')) {
                                 thenAble = db.threads.where('owner')
-                                    .equals(parseInt(userInfo.id))
+                                    .equals(parseInt(chatMessaging.userInfo.id))
                                     .filter(function (thread) {
                                         var threadObject = JSON.parse(chatDecrypt(thread.data, cacheSecret, thread.salt), false);
                                         return parseInt(threadObject.inviter.coreUserId) === parseInt(whereClause.creatorCoreUserId);
@@ -5589,7 +4596,7 @@
                             .toArray()
                             .then(function (threads) {
                                 db.threads.where('owner')
-                                    .equals(parseInt(userInfo.id))
+                                    .equals(parseInt(chatMessaging.userInfo.id))
                                     .count()
                                     .then(function (threadsCount) {
                                         var cacheData = [];
@@ -5598,7 +4605,7 @@
                                             try {
                                                 cacheData.push(createThread(JSON.parse(chatDecrypt(threads[i].data, cacheSecret, threads[i].salt)), false));
                                             } catch (error) {
-                                                fireEvent('error', {
+                                                chatEvents.fireEvent('error', {
                                                     code: error.code,
                                                     message: error.message,
                                                     error: error
@@ -5627,14 +4634,14 @@
                                     });
                             })
                             .catch(function (error) {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: error.code,
                                     message: error.message,
                                     error: error
                                 });
                             });
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6601,
                             message: CHAT_ERRORS[6601],
                             error: null
@@ -5645,7 +4652,7 @@
                 /**
                  * Retrive get threads response from server
                  */
-                return sendMessage(sendMessageParams, {
+                return chatMessaging.sendMessage(sendMessageParams, {
                     onResult: function (result) {
                         var returnData = {
                             hasError: result.hasError,
@@ -5731,7 +4738,7 @@
 
                                 var workerCommand = {
                                     type: 'getThreads',
-                                    userId: userInfo.id,
+                                    userId: chatMessaging.userInfo.id,
                                     data: JSON.stringify(resultData.threads)
                                 };
 
@@ -5770,7 +4777,7 @@
                                                 salt = Utility.generateUUID();
 
                                             tempData.id = resultData.threads[i].id;
-                                            tempData.owner = userInfo.id;
+                                            tempData.owner = chatMessaging.userInfo.id;
                                             tempData.title = Utility.crypt(resultData.threads[i].title, cacheSecret, salt);
                                             tempData.pin = resultData.threads[i].pin;
                                             tempData.time = (resultData.threads[i].pin) ? resultData.threads[i].time * pinnedThreadsOrderTime : resultData.threads[i].time;
@@ -5780,7 +4787,7 @@
                                             cacheData.push(tempData);
                                             pinnedThreadsOrderTime--;
                                         } catch (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -5790,14 +4797,14 @@
 
                                     db.threads.bulkPut(cacheData)
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
                                             });
                                         });
                                 } else {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: 6601,
                                         message: CHAT_ERRORS[6601],
                                         error: null
@@ -5814,7 +4821,7 @@
                         callback = undefined;
 
                         if (!returnData.hasError && returnCache) {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREADS_LIST_CHANGE',
                                 result: returnData.result
                             });
@@ -5832,7 +4839,7 @@
 
                 sendMessageParams.content.summary = params.summary;
 
-                return sendMessage(sendMessageParams, {
+                return chatMessaging.sendMessage(sendMessageParams, {
                     onResult: function (result) {
 
                         if (!result.hasError) {
@@ -5844,20 +4851,20 @@
                                     }
                                     db.threads
                                         .where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .and(function (thread) {
                                             return allThreads.indexOf(thread.id) < 0;
                                         })
                                         .delete()
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
                                             });
                                         });
                                 } else {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: 6601,
                                         message: CHAT_ERRORS[6601],
                                         error: null
@@ -5940,7 +4947,7 @@
 
                                 sendingQueueMessages.push(formatDataToMakeMessage(sendQueueMessages[i].threadId, {
                                     uniqueId: sendQueueMessages[i].uniqueId,
-                                    ownerId: userInfo.id,
+                                    ownerId: chatMessaging.userInfo.id,
                                     message: sendQueueMessages[i].content,
                                     metadata: sendQueueMessages[i].metadata,
                                     systemMetadata: sendQueueMessages[i].systemMetadata,
@@ -5957,7 +4964,7 @@
                     if (uploadingQueue) {
                         getChatUploadQueue(parseInt(params.threadId), function (uploadQueueMessages) {
                             for (var i = 0; i < uploadQueueMessages.length; i++) {
-                                uploadQueueMessages[i].message.participant = userInfo;
+                                uploadQueueMessages[i].message.participant = chatMessaging.userInfo;
                                 var time = new Date().getTime();
                                 uploadQueueMessages[i].message.time = time;
                                 uploadQueueMessages[i].message.timeNanos = (time % 1000) * 1000000;
@@ -5981,13 +4988,13 @@
                                 failedQueueMessages[i] = formatDataToMakeMessage(waitQueueMessages[i].threadId,
                                     {
                                         uniqueId: decryptedEnqueuedMessage.uniqueId,
-                                        ownerId: userInfo.id,
+                                        ownerId: chatMessaging.userInfo.id,
                                         message: decryptedEnqueuedMessage.content,
                                         metadata: decryptedEnqueuedMessage.metadata,
                                         systemMetadata: decryptedEnqueuedMessage.systemMetadata,
                                         replyInfo: decryptedEnqueuedMessage.replyInfo,
                                         forwardInfo: decryptedEnqueuedMessage.forwardInfo,
-                                        participant: userInfo,
+                                        participant: chatMessaging.userInfo,
                                         time: time,
                                         timeNanos: (time % 1000) * 1000000
                                     }
@@ -6088,13 +5095,13 @@
                                     collection = table.where('id')
                                         .equals(parseInt(params.id))
                                         .and(function (message) {
-                                            return message.owner === userInfo.id;
+                                            return message.owner === chatMessaging.userInfo.id;
                                         })
                                         .reverse();
                                 } else {
                                     collection = table.where('[threadId+owner+time]')
-                                        .between([parseInt(params.threadId), parseInt(userInfo.id), minIntegerValue],
-                                            [parseInt(params.threadId), parseInt(userInfo.id), maxIntegerValue * 1000])
+                                        .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), minIntegerValue],
+                                            [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), maxIntegerValue * 1000])
                                         .reverse();
                                 }
 
@@ -6163,8 +5170,8 @@
                                             if (cacheFirstMessage && cacheFirstMessage.time > 0) {
                                                 db.messageGaps
                                                     .where('[threadId+owner+time]')
-                                                    .between([parseInt(params.threadId), parseInt(userInfo.id), cacheFirstMessage.time],
-                                                        [parseInt(params.threadId), parseInt(userInfo.id), maxIntegerValue * 1000], true, true)
+                                                    .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), cacheFirstMessage.time],
+                                                        [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), maxIntegerValue * 1000], true, true)
                                                     .toArray()
                                                     .then(function (gaps) {
                                                         // TODO fill these gaps in a worker
@@ -6173,7 +5180,7 @@
                                                         }
                                                     })
                                                     .catch(function (error) {
-                                                        fireEvent('error', {
+                                                        chatEvents.fireEvent('error', {
                                                             code: error.code,
                                                             message: error.message,
                                                             error: error
@@ -6213,7 +5220,7 @@
                                                                         tempMessage.systemMetadata]))
                                                                 };
                                                             } catch (error) {
-                                                                fireEvent('error', {
+                                                                chatEvents.fireEvent('error', {
                                                                     code: error.code,
                                                                     message: error.message,
                                                                     error: error
@@ -6273,7 +5280,7 @@
                                                                     callback = undefined;
                                                                 })
                                                                 .catch(function (error) {
-                                                                    fireEvent('error', {
+                                                                    chatEvents.fireEvent('error', {
                                                                         code: error.code,
                                                                         message: error.message,
                                                                         error: error
@@ -6282,7 +5289,7 @@
                                                         }
                                                     })
                                                     .catch(function (error) {
-                                                        fireEvent('error', {
+                                                        chatEvents.fireEvent('error', {
                                                             code: error.code,
                                                             message: error.message,
                                                             error: error
@@ -6292,14 +5299,14 @@
                                         }
                                     })
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -6310,7 +5317,7 @@
                         /**
                          * Get Thread Messages From Server
                          */
-                        return sendMessage(sendMessageParams, {
+                        return chatMessaging.sendMessage(sendMessageParams, {
                             onResult: function (result) {
 
                                 var returnData = {
@@ -6337,7 +5344,7 @@
                                         /**
                                          * Sending Delivery for Last Message of Thread
                                          */
-                                        if (userInfo.id !== firstMessage.participant.id && !firstMessage.delivered) {
+                                        if (chatMessaging.userInfo.id !== firstMessage.participant.id && !firstMessage.delivered) {
                                             putInMessagesDeliveryQueue(params.threadId, firstMessage.id);
                                         }
                                     }
@@ -6396,11 +5403,11 @@
                                                             var finalMessageTime = cacheFirstMessage.time;
 
                                                             db.messages.where('[threadId+owner+time]')
-                                                                .between([parseInt(params.threadId), parseInt(userInfo.id), finalMessageTime],
-                                                                    [parseInt(params.threadId), parseInt(userInfo.id), maxIntegerValue * 1000], true, false)
+                                                                .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), finalMessageTime],
+                                                                    [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), maxIntegerValue * 1000], true, false)
                                                                 .delete()
                                                                 .catch(function (error) {
-                                                                    fireEvent('error', {
+                                                                    chatEvents.fireEvent('error', {
                                                                         code: error.code,
                                                                         message: error.message,
                                                                         error: error
@@ -6420,11 +5427,11 @@
                                                             var finalMessageTime = cacheFirstMessage.time;
 
                                                             db.messages.where('[threadId+owner+time]')
-                                                                .between([parseInt(params.threadId), parseInt(userInfo.id), 0],
-                                                                    [parseInt(params.threadId), parseInt(userInfo.id), finalMessageTime], true, true)
+                                                                .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), 0],
+                                                                    [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), finalMessageTime], true, true)
                                                                 .delete()
                                                                 .catch(function (error) {
-                                                                    fireEvent('error', {
+                                                                    chatEvents.fireEvent('error', {
                                                                         code: error.code,
                                                                         message: error.message,
                                                                         error: error
@@ -6459,11 +5466,11 @@
                                                                 : firstMessage.time;
 
                                                             db.messages.where('[threadId+owner+time]')
-                                                                .between([parseInt(params.threadId), parseInt(userInfo.id), 0],
-                                                                    [parseInt(params.threadId), parseInt(userInfo.id), finalMessageTime], true, false)
+                                                                .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), 0],
+                                                                    [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), finalMessageTime], true, false)
                                                                 .delete()
                                                                 .catch(function (error) {
-                                                                    fireEvent('error', {
+                                                                    chatEvents.fireEvent('error', {
                                                                         code: error.code,
                                                                         message: error.message,
                                                                         error: error
@@ -6494,11 +5501,11 @@
                                                                 var finalMessageTime = firstMessage.time;
 
                                                                 db.messages.where('[threadId+owner+time]')
-                                                                    .between([parseInt(params.threadId), parseInt(userInfo.id), 0],
-                                                                        [parseInt(params.threadId), parseInt(userInfo.id), finalMessageTime], true, false)
+                                                                    .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), 0],
+                                                                        [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), finalMessageTime], true, false)
                                                                     .delete()
                                                                     .catch(function (error) {
-                                                                        fireEvent('error', {
+                                                                        chatEvents.fireEvent('error', {
                                                                             code: error.code,
                                                                             message: error.message,
                                                                             error: error
@@ -6520,11 +5527,11 @@
                                                                 var finalMessageTime = firstMessage.time;
 
                                                                 db.messages.where('[threadId+owner+time]')
-                                                                    .between([parseInt(params.threadId), parseInt(userInfo.id), finalMessageTime],
-                                                                        [parseInt(params.threadId), parseInt(userInfo.id), maxIntegerValue * 1000], false, true)
+                                                                    .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), finalMessageTime],
+                                                                        [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), maxIntegerValue * 1000], false, true)
                                                                     .delete()
                                                                     .catch(function (error) {
-                                                                        fireEvent('error', {
+                                                                        chatEvents.fireEvent('error', {
                                                                             code: error.code,
                                                                             message: error.message,
                                                                             error: error
@@ -6549,11 +5556,11 @@
                                                                 : lastMessage.time;
 
                                                         db.messages.where('[threadId+owner+time]')
-                                                            .between([parseInt(params.threadId), parseInt(userInfo.id), boundryStartMessageTime],
-                                                                [parseInt(params.threadId), parseInt(userInfo.id), boundryEndMessageTime], true, true)
+                                                            .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), boundryStartMessageTime],
+                                                                [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), boundryEndMessageTime], true, true)
                                                             .delete()
                                                             .catch(function (error) {
-                                                                fireEvent('error', {
+                                                                chatEvents.fireEvent('error', {
                                                                     code: error.code,
                                                                     message: error.message,
                                                                     error: error
@@ -6584,11 +5591,11 @@
                                                         db.messages.where('id')
                                                             .equals(parseInt(whereClause.id))
                                                             .and(function (message) {
-                                                                return message.owner === userInfo.id;
+                                                                return message.owner === chatMessaging.userInfo.id;
                                                             })
                                                             .delete()
                                                             .catch(function (error) {
-                                                                fireEvent('error', {
+                                                                chatEvents.fireEvent('error', {
                                                                     code: error.code,
                                                                     message: error.message,
                                                                     error: error
@@ -6606,15 +5613,15 @@
                                                      */
                                                     if (whereClause.hasOwnProperty('query') && typeof whereClause.query == 'string') {
                                                         db.messages.where('[threadId+owner+time]')
-                                                            .between([parseInt(params.threadId), parseInt(userInfo.id), minIntegerValue],
-                                                                [parseInt(params.threadId), parseInt(userInfo.id), maxIntegerValue * 1000])
+                                                            .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), minIntegerValue],
+                                                                [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), maxIntegerValue * 1000])
                                                             .and(function (message) {
                                                                 var reg = new RegExp(whereClause.query);
                                                                 return reg.test(chatDecrypt(message.message, cacheSecret, message.salt));
                                                             })
                                                             .delete()
                                                             .catch(function (error) {
-                                                                fireEvent('error', {
+                                                                chatEvents.fireEvent('error', {
                                                                     code: error.code,
                                                                     message: error.message,
                                                                     error: error
@@ -6657,11 +5664,11 @@
                                                                         : (whereClause.toTime + 1) * 1000000;
 
                                                                 db.messages.where('[threadId+owner+time]')
-                                                                    .between([parseInt(params.threadId), parseInt(userInfo.id), fromTime],
-                                                                        [parseInt(params.threadId), parseInt(userInfo.id), toTime], true, true)
+                                                                    .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), fromTime],
+                                                                        [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), toTime], true, true)
                                                                     .delete()
                                                                     .catch(function (error) {
-                                                                        fireEvent('error', {
+                                                                        chatEvents.fireEvent('error', {
                                                                             code: error.code,
                                                                             message: error.message,
                                                                             error: error
@@ -6682,11 +5689,11 @@
                                                                     : whereClause.fromTime * 1000000;
 
                                                                 db.messages.where('[threadId+owner+time]')
-                                                                    .between([parseInt(params.threadId), parseInt(userInfo.id), fromTime],
-                                                                        [parseInt(params.threadId), parseInt(userInfo.id), maxIntegerValue * 1000], true, false)
+                                                                    .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), fromTime],
+                                                                        [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), maxIntegerValue * 1000], true, false)
                                                                     .delete()
                                                                     .catch(function (error) {
-                                                                        fireEvent('error', {
+                                                                        chatEvents.fireEvent('error', {
                                                                             code: error.code,
                                                                             message: error.message,
                                                                             error: error
@@ -6706,11 +5713,11 @@
                                                                     : (whereClause.toTime + 1) * 1000000;
 
                                                                 db.messages.where('[threadId+owner+time]')
-                                                                    .between([parseInt(params.threadId), parseInt(userInfo.id), minIntegerValue],
-                                                                        [parseInt(params.threadId), parseInt(userInfo.id), toTime], true, true)
+                                                                    .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), minIntegerValue],
+                                                                        [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), toTime], true, true)
                                                                     .delete()
                                                                     .catch(function (error) {
-                                                                        fireEvent('error', {
+                                                                        chatEvents.fireEvent('error', {
                                                                             code: error.code,
                                                                             message: error.message,
                                                                             error: error
@@ -6737,11 +5744,11 @@
                                                                     : lastMessage.time;
 
                                                             db.messages.where('[threadId+owner+time]')
-                                                                .between([parseInt(params.threadId), parseInt(userInfo.id), boundryStartMessageTime],
-                                                                    [parseInt(params.threadId), parseInt(userInfo.id), boundryEndMessageTime], true, true)
+                                                                .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), boundryStartMessageTime],
+                                                                    [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), boundryEndMessageTime], true, true)
                                                                 .delete()
                                                                 .catch(function (error) {
-                                                                    fireEvent('error', {
+                                                                    chatEvents.fireEvent('error', {
                                                                         code: error.code,
                                                                         message: error.message,
                                                                         error: error
@@ -6771,7 +5778,7 @@
                                                     var tempData = {},
                                                         salt = Utility.generateUUID();
                                                     tempData.id = parseInt(history[i].id);
-                                                    tempData.owner = parseInt(userInfo.id);
+                                                    tempData.owner = parseInt(chatMessaging.userInfo.id);
                                                     tempData.threadId = parseInt(history[i].threadId);
                                                     tempData.time = history[i].time;
                                                     tempData.message = Utility.crypt(history[i].message, cacheSecret, salt);
@@ -6783,7 +5790,7 @@
                                                     cacheData.push(tempData);
                                                     resultMessagesId.push(history[i].id);
                                                 } catch (error) {
-                                                    fireEvent('error', {
+                                                    chatEvents.fireEvent('error', {
                                                         code: error.code,
                                                         message: error.message,
                                                         error: error
@@ -6805,7 +5812,7 @@
                                                          */
                                                         db.messages
                                                             .where('[owner+id]')
-                                                            .between([userInfo.id, lastMessage.previousId], [userInfo.id, lastMessage.previousId], true, true)
+                                                            .between([chatMessaging.userInfo.id, lastMessage.previousId], [chatMessaging.userInfo.id, lastMessage.previousId], true, true)
                                                             .toArray()
                                                             .then(function (messages) {
                                                                 if (messages.length === 0) {
@@ -6818,16 +5825,16 @@
                                                                     db.messageGaps
                                                                         .put({
                                                                             id: parseInt(lastMessage.id),
-                                                                            owner: parseInt(userInfo.id),
+                                                                            owner: parseInt(chatMessaging.userInfo.id),
                                                                             waitsFor: parseInt(lastMessage.previousId),
                                                                             threadId: parseInt(lastMessage.threadId),
                                                                             time: lastMessage.time
                                                                         })
                                                                         .then(function () {
                                                                             db.messages
-                                                                                .update([userInfo.id, lastMessage.id], {hasGap: true})
+                                                                                .update([chatMessaging.userInfo.id, lastMessage.id], {hasGap: true})
                                                                                 .catch(function (error) {
-                                                                                    fireEvent('error', {
+                                                                                    chatEvents.fireEvent('error', {
                                                                                         code: error.code,
                                                                                         message: error.message,
                                                                                         error: error
@@ -6835,7 +5842,7 @@
                                                                                 });
                                                                         })
                                                                         .catch(function (error) {
-                                                                            fireEvent('error', {
+                                                                            chatEvents.fireEvent('error', {
                                                                                 code: error.code,
                                                                                 message: error.message,
                                                                                 error: error
@@ -6844,7 +5851,7 @@
                                                                 }
                                                             })
                                                             .catch(function (error) {
-                                                                fireEvent('error', {
+                                                                chatEvents.fireEvent('error', {
                                                                     code: error.code,
                                                                     message: error.message,
                                                                     error: error
@@ -6862,7 +5869,7 @@
                                                         .where('waitsFor')
                                                         .anyOf(resultMessagesId)
                                                         .and(function (messages) {
-                                                            return messages.owner === userInfo.id;
+                                                            return messages.owner === chatMessaging.userInfo.id;
                                                         })
                                                         .toArray()
                                                         .then(function (needsToBeDeleted) {
@@ -6875,22 +5882,22 @@
                                                                  * set hasGap for those messages as false
                                                                  */
                                                                 db.messages
-                                                                    .update([userInfo.id, msg.id], {hasGap: false})
+                                                                    .update([chatMessaging.userInfo.id, msg.id], {hasGap: false})
                                                                     .catch(function (error) {
-                                                                        fireEvent('error', {
+                                                                        chatEvents.fireEvent('error', {
                                                                             code: error.code,
                                                                             message: error.message,
                                                                             error: error
                                                                         });
                                                                     });
 
-                                                                return [userInfo.id, msg.id];
+                                                                return [chatMessaging.userInfo.id, msg.id];
                                                             });
 
                                                             db.messageGaps.bulkDelete(messagesToBeDeleted);
                                                         })
                                                         .catch(function (error) {
-                                                            fireEvent('error', {
+                                                            chatEvents.fireEvent('error', {
                                                                 code: error.code,
                                                                 message: error.message,
                                                                 error: error
@@ -6898,7 +5905,7 @@
                                                         });
                                                 })
                                                 .catch(function (error) {
-                                                    fireEvent('error', {
+                                                    chatEvents.fireEvent('error', {
                                                         code: error.code,
                                                         message: error.message,
                                                         error: error
@@ -6919,7 +5926,7 @@
                                                         contentCount: result.contentCount
                                                     })
                                                     .catch(function (error) {
-                                                        fireEvent('error', {
+                                                        chatEvents.fireEvent('error', {
                                                             code: error.code,
                                                             message: error.message,
                                                             error: error
@@ -6927,7 +5934,7 @@
                                                     });
                                             }
                                         } else {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: 6601,
                                                 message: CHAT_ERRORS[6601],
                                                 error: null
@@ -6977,7 +5984,7 @@
                                                     threadId: cacheResult[key].threadId
                                                 });
 
-                                                // fireEvent('messageEvents', {
+                                                // chatEvents.fireEvent('messageEvents', {
                                                 //     type: 'MESSAGE_DELETE',
                                                 //     result: {
                                                 //         message: {
@@ -6991,7 +5998,7 @@
                                         }
 
                                         if (batchDeleteMessage.length) {
-                                            fireEvent('messageEvents', {
+                                            chatEvents.fireEvent('messageEvents', {
                                                 type: 'MESSAGE_DELETE_BATCH',
                                                 cache: true,
                                                 result: batchDeleteMessage
@@ -7013,7 +6020,7 @@
 
                                                     batchEditMessage.push(history[serverResult[key].index]);
 
-                                                    // fireEvent('messageEvents', {
+                                                    // chatEvents.fireEvent('messageEvents', {
                                                     //     type: 'MESSAGE_EDIT',
                                                     //     result: {
                                                     //         message: history[serverResult[key].index]
@@ -7028,7 +6035,7 @@
 
                                                 batchNewMessage.push(history[serverResult[key].index]);
 
-                                                // fireEvent('messageEvents', {
+                                                // chatEvents.fireEvent('messageEvents', {
                                                 //     type: 'MESSAGE_NEW',
                                                 //     cache: true,
                                                 //     result: {
@@ -7039,7 +6046,7 @@
                                         }
 
                                         if (batchEditMessage.length) {
-                                            fireEvent('messageEvents', {
+                                            chatEvents.fireEvent('messageEvents', {
                                                 type: 'MESSAGE_EDIT_BATCH',
                                                 cache: true,
                                                 result: batchEditMessage
@@ -7047,7 +6054,7 @@
                                         }
 
                                         if (batchNewMessage.length) {
-                                            fireEvent('messageEvents', {
+                                            chatEvents.fireEvent('messageEvents', {
                                                 type: 'MESSAGE_NEW_BATCH',
                                                 cache: true,
                                                 result: batchNewMessage
@@ -7062,7 +6069,7 @@
                         });
                     });
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Thread ID is required for Getting history!'
                     });
@@ -7101,7 +6108,7 @@
 
                 if (params) {
                     if (!params.userGroupHash || params.userGroupHash.length === 0 || typeof (params.userGroupHash) !== 'string') {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6304,
                             message: CHAT_ERRORS[6304]
                         });
@@ -7114,7 +6121,7 @@
                         threadId = parseInt(params.threadId);
                         updateThreadInfoData.subjectId = threadId;
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 999,
                             message: 'Thread ID is required for Updating thread info!'
                         });
@@ -7185,7 +6192,7 @@
                                         }
                                     });
                                 } else {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: 999,
                                         message: 'Thread picture can be a image type only!'
                                     });
@@ -7203,7 +6210,7 @@
                             }
                         });
 
-                        return sendMessage({
+                        return chatMessaging.sendMessage({
                             chatMessageVOType: chatMessageVOTypes.UPDATE_THREAD_INFO,
                             typeCode: params.typeCode,
                             subjectId: threadId,
@@ -7222,7 +6229,7 @@
                             delete threadInfoContent.metadata;
                         }
 
-                        return sendMessage({
+                        return chatMessaging.sendMessage({
                             chatMessageVOType: chatMessageVOTypes.UPDATE_THREAD_INFO,
                             typeCode: params.typeCode,
                             subjectId: threadId,
@@ -7273,7 +6280,7 @@
                         updateChatProfileData.content.metadata = params.metadata;
                     }
                 }
-                return sendMessage(updateChatProfileData, {
+                return chatMessaging.sendMessage(updateChatProfileData, {
                     onResult: function (result) {
                         callback && callback(result);
                     }
@@ -7300,7 +6307,7 @@
                     subjectId: params.threadId,
                     token: token
                 };
-                return sendMessage(updateChatProfileData, {
+                return chatMessaging.sendMessage(updateChatProfileData, {
                     onResult: function (result) {
                         callback && callback(result);
                     }
@@ -7368,14 +6375,14 @@
                                     thenAble = db.participants.where('threadId')
                                         .equals(parseInt(params.threadId))
                                         .and(function (participant) {
-                                            return participant.owner === userInfo.id;
+                                            return participant.owner === chatMessaging.userInfo.id;
                                         });
                                 } else {
                                     if (whereClause.hasOwnProperty('name')) {
                                         thenAble = db.participants.where('threadId')
                                             .equals(parseInt(params.threadId))
                                             .and(function (participant) {
-                                                return participant.owner === userInfo.id;
+                                                return participant.owner === chatMessaging.userInfo.id;
                                             })
                                             .filter(function (contact) {
                                                 var reg = new RegExp(whereClause.name);
@@ -7394,7 +6401,7 @@
                                         db.participants.where('threadId')
                                             .equals(parseInt(params.threadId))
                                             .and(function (participant) {
-                                                return participant.owner === userInfo.id;
+                                                return participant.owner === chatMessaging.userInfo.id;
                                             })
                                             .count()
                                             .then(function (participantsCount) {
@@ -7406,7 +6413,7 @@
                                                         cacheData.push(formatDataToMakeParticipant(
                                                             JSON.parse(chatDecrypt(participants[i].data, cacheSecret, participants[i].salt)), participants[i].threadId));
                                                     } catch (error) {
-                                                        fireEvent('error', {
+                                                        chatEvents.fireEvent('error', {
                                                             code: error.code,
                                                             message: error.message,
                                                             error: error
@@ -7435,7 +6442,7 @@
                                             });
                                     })
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -7443,14 +6450,14 @@
                                     });
                             })
                             .catch(function (error) {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: error.code,
                                     message: error.message,
                                     error: error
                                 });
                             });
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6601,
                             message: CHAT_ERRORS[6601],
                             error: null
@@ -7458,7 +6465,7 @@
                     }
                 }
 
-                return sendMessage(sendMessageParams, {
+                return chatMessaging.sendMessage(sendMessageParams, {
                     onResult: function (result) {
                         var returnData = {
                             hasError: result.hasError,
@@ -7493,7 +6500,7 @@
                                                 salt = Utility.generateUUID();
 
                                             tempData.id = parseInt(resultData.participants[i].id);
-                                            tempData.owner = parseInt(userInfo.id);
+                                            tempData.owner = parseInt(chatMessaging.userInfo.id);
                                             tempData.threadId = parseInt(resultData.participants[i].threadId);
                                             tempData.notSeenDuration = resultData.participants[i].notSeenDuration;
                                             tempData.admin = resultData.participants[i].admin;
@@ -7507,7 +6514,7 @@
 
                                             cacheData.push(tempData);
                                         } catch (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -7517,14 +6524,14 @@
 
                                     db.participants.bulkPut(cacheData)
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
                                             });
                                         });
                                 } else {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: 6601,
                                         message: CHAT_ERRORS[6601],
                                         error: null
@@ -7541,7 +6548,7 @@
                         callback = undefined;
 
                         if (!returnData.hasError && returnCache) {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_PARTICIPANTS_LIST_CHANGE',
                                 threadId: params.threadId,
                                 result: returnData.result
@@ -7563,7 +6570,7 @@
              * @return {object} Instant sendMessage result
              */
             deliver = function (params) {
-                return sendMessage({
+                return chatMessaging.sendMessage({
                     chatMessageVOType: chatMessageVOTypes.DELIVERY,
                     typeCode: params.typeCode,
                     content: params.messageId,
@@ -7583,7 +6590,7 @@
              * @return {object} Instant sendMessage result
              */
             seen = function (params) {
-                return sendMessage({
+                return chatMessaging.sendMessage({
                     chatMessageVOType: chatMessageVOTypes.SEEN,
                     typeCode: params.typeCode,
                     content: params.messageId,
@@ -8078,7 +7085,7 @@
                 return {
                     uniqueId: uploadUniqueId,
                     threadId: uploadThreadId,
-                    participant: userInfo,
+                    participant: chatMessaging.userInfo,
                     content: {
                         caption: params.content,
                         file: {
@@ -8148,7 +7155,7 @@
                         uploadFileData.uniqueId = uploadUniqueId;
                     }
                     if (typeof params.userGroupHash == 'string') {
-                        userGroupHash = params.userGroupHash;
+                        //userGroupHash = params.userGroupHash;
                         uploadFileData.userGroupHash = params.userGroupHash;
                     } else {
                         callback({
@@ -8201,7 +7208,7 @@
                 return {
                     uniqueId: uploadUniqueId,
                     threadId: uploadThreadId,
-                    participant: userInfo,
+                    participant: chatMessaging.userInfo,
                     content: {
                         caption: params.content,
                         file: {
@@ -8307,7 +7314,7 @@
                 return {
                     uniqueId: uploadUniqueId,
                     threadId: uploadThreadId,
-                    participant: userInfo,
+                    participant: chatMessaging.userInfo,
                     content: {
                         file: {
                             uniqueId: uploadUniqueId,
@@ -8453,7 +7460,7 @@
                     return {
                         uniqueId: uploadUniqueId,
                         threadId: uploadThreadId,
-                        participant: userInfo,
+                        participant: chatMessaging.userInfo,
                         content: {
                             caption: params.content,
                             file: {
@@ -8521,7 +7528,7 @@
                 };
                 reader.readAsDataURL(params.image);
 
-                continueImageUpload = function (params) {
+                var continueImageUpload = function (params) {
                     if (imageMimeTypes.indexOf(fileType) >= 0 || imageExtentions.indexOf(fileExtension) >= 0) {
                         var uploadImageData = {};
                         if (params) {
@@ -8611,7 +7618,7 @@
                         return {
                             uniqueId: uploadUniqueId,
                             threadId: uploadThreadId,
-                            participant: userInfo,
+                            participant: chatMessaging.userInfo,
                             content: {
                                 caption: params.content,
                                 file: {
@@ -8766,7 +7773,7 @@
                         return {
                             uniqueId: uploadUniqueId,
                             threadId: uploadThreadId,
-                            participant: userInfo,
+                            participant: chatMessaging.userInfo,
                             content: {
                                 caption: params.content,
                                 file: {
@@ -8810,7 +7817,7 @@
                     fileUniqueId = (typeof params.fileUniqueId == 'string' && params.fileUniqueId.length > 0) ? params.fileUniqueId : Utility.generateUUID();
                 if (params) {
                     if (!params.userGroupHash || params.userGroupHash.length === 0 || typeof (params.userGroupHash) !== 'string') {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6304,
                             message: CHAT_ERRORS[6304]
                         });
@@ -8894,56 +7901,8 @@
                 }
             },
 
-            /**
-             * Fire Event
-             *
-             * Fires given Event with given parameters
-             *
-             * @access private
-             *
-             * @param {string}  eventName       name of event to be fired
-             * @param {object}  param           params to be sent to the event function
-             *
-             * @return {undefined}
-             */
-            fireEvent = function (eventName, param) {
-                if (eventName === "chatReady") {
-                    if (typeof navigator === "undefined") {
-                        consoleLogging && console.log("\x1b[90m    ☰ \x1b[0m\x1b[90m%s\x1b[0m", "Chat is Ready 😉");
-                    } else {
-                        consoleLogging && console.log("%c   Chat is Ready 😉", 'border-left: solid #666 10px; color: #666;');
-                    }
-                }
 
-                if (eventName === "error" || (eventName === "callEvents" && param.type === "CALL_ERROR")) {
-                    try {
-                        throw new PodChatErrorException(param);
-                    } catch (err) {
-                        if (!!Sentry) {
-                            Sentry.setExtra('errorMessage', err.message);
-                            Sentry.setExtra('errorCode', err.code);
-                            Sentry.setExtra('uniqueId', err.uniqueId);
-                            Sentry.setExtra('token', err.token);
-                            Sentry.setTag('Error code:', (err.code ? err.code : ''))
-                            Sentry.captureException(err.error, {
-                                logger: eventName
-                            });
-                        }
-                    }
-                }
 
-                for (var id in eventCallbacks[eventName]) {
-                    eventCallbacks[eventName][id](param);
-                }
-            },
-
-            PodChatErrorException = function (error) {
-                this.code = error.error ? error.error.code : error.code;
-                this.message = error.error ? error.error.message : error.message;
-                this.uniqueId = error.uniqueId ? error.uniqueId : '';
-                this.token = token;
-                this.error =  JSON.stringify((error.error ? error.error : error));
-            },
 
             /**
              * Delete Cache Database
@@ -9003,35 +7962,35 @@
                     cacheDeletingInProgress = true;
                     db.threads
                         .where('owner')
-                        .equals(parseInt(userInfo.id))
+                        .equals(parseInt(chatMessaging.userInfo.id))
                         .delete()
                         .then(function () {
                             consoleLogging && console.log('Threads table deleted');
 
                             db.contacts
                                 .where('owner')
-                                .equals(parseInt(userInfo.id))
+                                .equals(parseInt(chatMessaging.userInfo.id))
                                 .delete()
                                 .then(function () {
                                     consoleLogging && console.log('Contacts table deleted');
 
                                     db.messages
                                         .where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .delete()
                                         .then(function () {
                                             consoleLogging && console.log('Messages table deleted');
 
                                             db.participants
                                                 .where('owner')
-                                                .equals(parseInt(userInfo.id))
+                                                .equals(parseInt(chatMessaging.userInfo.id))
                                                 .delete()
                                                 .then(function () {
                                                     consoleLogging && console.log('Participants table deleted');
 
                                                     db.messageGaps
                                                         .where('owner')
-                                                        .equals(parseInt(userInfo.id))
+                                                        .equals(parseInt(chatMessaging.userInfo.id))
                                                         .delete()
                                                         .then(function () {
                                                             consoleLogging && console.log('MessageGaps table deleted');
@@ -9043,7 +8002,7 @@
                                 });
                         })
                         .catch(function (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
@@ -9151,7 +8110,7 @@
                         queueDb.waitQ.where('threadId')
                             .equals(threadId)
                             .and(function (item) {
-                                return item.owner === parseInt(userInfo.id);
+                                return item.owner === parseInt(chatMessaging.userInfo.id);
                             })
                             .toArray()
                             .then(function (waitQueueOnCache) {
@@ -9161,8 +8120,8 @@
                                     uniqueIds.push(waitQueueOnCache[i].uniqueId);
                                 }
 
-                                if (uniqueIds.length && chatState) {
-                                    sendMessage({
+                                if (uniqueIds.length && chatMessaging.chatState) {
+                                    chatMessaging.sendMessage({
                                         chatMessageVOType: chatMessageVOTypes.GET_HISTORY,
                                         content: {
                                             uniqueIds: uniqueIds
@@ -9214,7 +8173,7 @@
                                 }
                             })
                             .catch(function (error) {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: error.code,
                                     message: error.message,
                                     error: error
@@ -9232,7 +8191,7 @@
                         }
 
                         if (uniqueIds.length) {
-                            sendMessage({
+                            chatMessaging.sendMessage({
                                 chatMessageVOType: chatMessageVOTypes.GET_HISTORY,
                                 content: {
                                     uniqueIds: uniqueIds
@@ -9321,14 +8280,14 @@
                     queueDb.waitQ.where('uniqueId')
                         .equals(item.uniqueId)
                         .and(function (item) {
-                            return item.owner === parseInt(userInfo.id);
+                            return item.owner === parseInt(chatMessaging.userInfo.id);
                         })
                         .delete()
                         .then(function () {
                             callback && callback();
                         })
                         .catch(function (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
@@ -9368,14 +8327,14 @@
                     queueDb.waitQ.where('threadId')
                         .equals(threadId)
                         .and(function (item) {
-                            return item.owner === parseInt(userInfo.id);
+                            return item.owner === parseInt(chatMessaging.userInfo.id);
                         })
                         .delete()
                         .then(function () {
                             callback && callback();
                         })
                         .catch(function (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
@@ -9438,14 +8397,14 @@
                                 .put({
                                     threadId: parseInt(item.subjectId),
                                     uniqueId: waitQueueUniqueId,
-                                    owner: parseInt(userInfo.id),
+                                    owner: parseInt(chatMessaging.userInfo.id),
                                     message: Utility.crypt(item, cacheSecret)
                                 })
                                 .then(function () {
                                     callback && callback();
                                 })
                                 .catch(function (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: error.code,
                                         message: error.message,
                                         error: error
@@ -9466,7 +8425,7 @@
                     queueDb.waitQ.where('uniqueId')
                         .equals(uniqueId)
                         .and(function (item) {
-                            return item.owner === parseInt(userInfo.id);
+                            return item.owner === parseInt(chatMessaging.userInfo.id);
                         })
                         .toArray()
                         .then(function (messages) {
@@ -9474,13 +8433,13 @@
                             if (decryptedEnqueuedMessage.uniqueId === uniqueId) {
                                 var message = formatDataToMakeMessage(messages[0].threadId, {
                                     uniqueId: decryptedEnqueuedMessage.uniqueId,
-                                    ownerId: userInfo.id,
+                                    ownerId: chatMessaging.userInfo.id,
                                     message: decryptedEnqueuedMessage.content,
                                     metadata: decryptedEnqueuedMessage.metadata,
                                     systemMetadata: decryptedEnqueuedMessage.systemMetadata,
                                     replyInfo: decryptedEnqueuedMessage.replyInfo,
                                     forwardInfo: decryptedEnqueuedMessage.forwardInfo,
-                                    participant: userInfo,
+                                    participant: chatMessaging.userInfo,
                                     time: decryptedEnqueuedMessage.time,
                                     timeNanos: decryptedEnqueuedMessage.timeNanos
                                 });
@@ -9488,7 +8447,7 @@
                             }
                         })
                         .catch(function (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
@@ -9501,13 +8460,13 @@
                             var time = new Date().getTime();
                             var message = formatDataToMakeMessage(decryptedEnqueuedMessage.threadId, {
                                 uniqueId: decryptedEnqueuedMessage.uniqueId,
-                                ownerId: userInfo.id,
+                                ownerId: chatMessaging.userInfo.id,
                                 message: decryptedEnqueuedMessage.content,
                                 metadata: decryptedEnqueuedMessage.metadata,
                                 systemMetadata: decryptedEnqueuedMessage.systemMetadata,
                                 replyInfo: decryptedEnqueuedMessage.replyInfo,
                                 forwardInfo: decryptedEnqueuedMessage.forwardInfo,
-                                participant: userInfo,
+                                participant: chatMessaging.userInfo,
                                 time: time,
                                 timeNanos: (time % 1000) * 1000000
                             });
@@ -9624,7 +8583,7 @@
                         if (db) {
                             db.threads
                                 .where('owner')
-                                .equals(parseInt(userInfo.id))
+                                .equals(parseInt(chatMessaging.userInfo.id))
                                 .count()
                                 .then(function (threadsCount) {
                                     if (threadsCount > 0) {
@@ -9694,7 +8653,7 @@
                     }
                 }
 
-                return sendMessage(setRoleData, {
+                return chatMessaging.sendMessage(setRoleData, {
                     onResult: function (result) {
                         callback && callback(result);
                     }
@@ -9733,7 +8692,7 @@
                     }
                 }
 
-                return sendMessage(setAdminData, {
+                return chatMessaging.sendMessage(setAdminData, {
                     onResult: function (result) {
                         callback && callback(result);
                     }
@@ -9741,7 +8700,7 @@
             },
 
             unPinMessage = function (params, callback) {
-                return sendMessage({
+                return chatMessaging.sendMessage({
                     chatMessageVOType: chatMessageVOTypes.UNPIN_MESSAGE,
                     typeCode: params.typeCode,
                     subjectId: params.messageId,
@@ -9773,7 +8732,7 @@
                     fileExtension = params.file.name.split('.')
                         .pop();
 
-                    fireEvent('fileUploadEvents', {
+                    chatEvents.fireEvent('fileUploadEvents', {
                         threadId: params.threadId,
                         uniqueId: fileUniqueId,
                         state: 'NOT_STARTED',
@@ -9814,7 +8773,7 @@
                     chatUploadHandlerResult.originalFileName = fileName;
                     callbacks && callbacks(chatUploadHandlerResult, metadata, fileType, fileExtension);
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 6302,
                         message: CHAT_ERRORS[6302]
                     });
@@ -9822,7 +8781,7 @@
                 return {
                     uniqueId: fileUniqueId,
                     threadId: params.threadId,
-                    participant: userInfo,
+                    participant: chatMessaging.userInfo,
                     content: {
                         caption: params.content,
                         file: {
@@ -9874,80 +8833,6 @@
                 });
             },
 
-            callReceived = function (params, callback) {
-                var receiveCallData = {
-                    chatMessageVOType: chatMessageVOTypes.RECIVE_CALL_REQUEST,
-                    typeCode: params.typeCode,
-                    pushMsgType: 3,
-                    token: token
-                };
-
-                if (params) {
-                    if (typeof +params.callId === 'number' && params.callId > 0) {
-                        receiveCallData.subjectId = +params.callId;
-                    } else {
-                        fireEvent('error', {
-                            code: 999,
-                            message: 'Invalid call id!'
-                        });
-                        return;
-                    }
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'No params have been sent to ReceiveCall()'
-                    });
-                    return;
-                }
-
-                return sendMessage(receiveCallData, {
-                    onResult: function (result) {
-                        callback && callback(result);
-                    }
-                });
-            },
-
-            endCall = function (params, callback) {
-                consoleLogging && console.log('endCall called...');
-
-                var endCallData = {
-                    chatMessageVOType: chatMessageVOTypes.END_CALL_REQUEST,
-                    typeCode: params.typeCode,
-                    pushMsgType: 3,
-                    token: token
-                };
-
-                if(!callRequestController.callEstablishedInMySide){
-                    return;
-                }
-
-                if (params) {
-                    if (typeof +params.callId === 'number' && params.callId > 0) {
-                        endCallData.subjectId = +params.callId;
-                    } else {
-                        fireEvent('error', {
-                            code: 999,
-                            message: 'Invalid call id!'
-                        });
-                        return;
-                    }
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'No params have been sent to End the call!'
-                    });
-                    return;
-                }
-
-                callStop();
-
-                return sendMessage(endCallData, {
-                    onResult: function (result) {
-                        callback && callback(result);
-                    }
-                });
-            },
-
             mapReverse = function (params, callback) {
                 var data = {};
 
@@ -9987,7 +8872,7 @@
                         callback && callback(returnData);
 
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: result.errorCode,
                             message: result.errorMessage,
                             error: result
@@ -10039,7 +8924,7 @@
                         callback && callback(returnData);
 
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: result.errorCode,
                             message: result.errorMessage,
                             error: result
@@ -10101,7 +8986,7 @@
                         callback && callback(returnData);
 
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: result.errorCode,
                             message: result.errorMessage,
                             error: result
@@ -10145,7 +9030,7 @@
                             data.center = params.center.lat + ',' + parseFloat(params.center.lng);
                         } else {
                             hasError = true;
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 6700,
                                 message: CHAT_ERRORS[6700],
                                 error: undefined
@@ -10153,7 +9038,7 @@
                         }
                     } else {
                         hasError = true;
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6700,
                             message: CHAT_ERRORS[6700],
                             error: undefined
@@ -10221,925 +9106,25 @@
                 }
 
                 getImageFromLinkObjects[uniqueId].src = url;
-            },
-
-            /*
-             * Call Functionalities
-             */
-            startCallWebRTCFunctions = function (params, callback) {
-                if (callDivId) {
-                    var callParentDiv,
-                        callVideo = (typeof params.video === 'boolean') ? params.video : true,
-                        callMute = (typeof params.mute === 'boolean') ? params.mute : false,
-                        sendingTopic = params.sendingTopic,
-                        receiveTopic = params.receiveTopic;
-
-                    callTopics['sendVideoTopic'] = 'Vi-' + sendingTopic;
-                    callTopics['sendAudioTopic'] = 'Vo-' + sendingTopic;
-                    callTopics['receiveVideoTopic'] = 'Vi-' + receiveTopic;
-                    callTopics['receiveAudioTopic'] = 'Vo-' + receiveTopic;
-
-                    webpeersMetadata[callTopics['sendVideoTopic']] = {
-                        interval: null,
-                        receivedSdpAnswer: false
-                    };
-                    webpeersMetadata[callTopics['sendAudioTopic']] = {
-                        interval: null,
-                        receivedSdpAnswer: false
-                    };
-                    webpeersMetadata[callTopics['receiveVideoTopic']] = {
-                        interval: null,
-                        receivedSdpAnswer: false
-                    };
-                    webpeersMetadata[callTopics['receiveAudioTopic']] = {
-                        interval: null,
-                        receivedSdpAnswer: false
-                    };
-
-                    callParentDiv = document.getElementById(callDivId);
-
-                    // Local Video Tag
-                    if (callVideo && !uiRemoteMedias[callTopics['sendVideoTopic']]) {
-                        uiRemoteMedias[callTopics['sendVideoTopic']] = document.createElement('video');
-                        uiRemoteMedias[callTopics['sendVideoTopic']].setAttribute('id', 'uiRemoteVideo-' + callTopics['sendVideoTopic']);
-                        uiRemoteMedias[callTopics['sendVideoTopic']].setAttribute('class', callVideoTagClassName);
-                        uiRemoteMedias[callTopics['sendVideoTopic']].setAttribute('playsinline', '');
-                        uiRemoteMedias[callTopics['sendVideoTopic']].setAttribute('muted', '');
-                        uiRemoteMedias[callTopics['sendVideoTopic']].setAttribute('width', callVideoMinWidth + 'px');
-                        uiRemoteMedias[callTopics['sendVideoTopic']].setAttribute('height', callVideoMinHeight + 'px');
-                    }
-
-                    // Local Audio Tag
-                    if (!uiRemoteMedias[callTopics['sendAudioTopic']]) {
-                        uiRemoteMedias[callTopics['sendAudioTopic']] = document.createElement('audio');
-                        uiRemoteMedias[callTopics['sendAudioTopic']].setAttribute('id', 'uiRemoteAudio-' + callTopics['sendAudioTopic']);
-                        uiRemoteMedias[callTopics['sendAudioTopic']].setAttribute('class', callAudioTagClassName);
-                        uiRemoteMedias[callTopics['sendAudioTopic']].setAttribute('autoplay', '');
-                        uiRemoteMedias[callTopics['sendAudioTopic']].setAttribute('muted', '');
-                        uiRemoteMedias[callTopics['sendAudioTopic']].setAttribute('controls', '');
-                    }
-
-                    // Remote Video Tag
-                    if (callVideo && !uiRemoteMedias[callTopics['receiveVideoTopic']]) {
-                        uiRemoteMedias[callTopics['receiveVideoTopic']] = document.createElement('video');
-                        uiRemoteMedias[callTopics['receiveVideoTopic']].setAttribute('id', 'uiRemoteVideo-' + callTopics['receiveVideoTopic']);
-                        uiRemoteMedias[callTopics['receiveVideoTopic']].setAttribute('class', callVideoTagClassName);
-                        uiRemoteMedias[callTopics['receiveVideoTopic']].setAttribute('playsinline', '');
-                        uiRemoteMedias[callTopics['receiveVideoTopic']].setAttribute('muted', '');
-                        uiRemoteMedias[callTopics['receiveVideoTopic']].setAttribute('width', callVideoMinWidth + 'px');
-                        uiRemoteMedias[callTopics['receiveVideoTopic']].setAttribute('height', callVideoMinHeight + 'px');
-                    }
-
-                    // Remote Audio Tag
-                    if (!uiRemoteMedias[callTopics['receiveAudioTopic']]) {
-                        uiRemoteMedias[callTopics['receiveAudioTopic']] = document.createElement('audio');
-                        uiRemoteMedias[callTopics['receiveAudioTopic']].setAttribute('id', 'uiRemoteAudio-' + callTopics['receiveAudioTopic']);
-                        uiRemoteMedias[callTopics['receiveAudioTopic']].setAttribute('class', callAudioTagClassName);
-                        uiRemoteMedias[callTopics['receiveAudioTopic']].setAttribute('autoplay', '');
-                        callMute && uiRemoteMedias[callTopics['receiveAudioTopic']].setAttribute('muted', '');
-                        uiRemoteMedias[callTopics['receiveAudioTopic']].setAttribute('controls', '');
-                    }
-
-                    if (callParentDiv) {
-                        callVideo && callParentDiv.appendChild(uiRemoteMedias[callTopics['sendVideoTopic']]);
-                        callParentDiv.appendChild(uiRemoteMedias[callTopics['sendAudioTopic']]);
-                        callVideo && callParentDiv.appendChild(uiRemoteMedias[callTopics['receiveVideoTopic']]);
-                        callParentDiv.appendChild(uiRemoteMedias[callTopics['receiveAudioTopic']]);
-
-                        callback && callback({
-                            'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
-                            'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
-                            'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                            'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]
-                        });
-                    } else {
-                        callback && callback({
-                            'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
-                            'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
-                            'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                            'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]
-                        });
-                    }
-
-                    /*sendCallMessage({
-                        id: 'STOPALL'
-                    }, function (result) {*/
-                    handleCallSocketOpen({
-                        brokerAddress: params.brokerAddress,
-                        turnAddress: params.turnAddress,
-                        callVideo: callVideo,
-                        callAudio: !callMute
-                    });
-                   /* });*/
-                } else {
-                    consoleLogging && console.log('No Call DIV has been declared!');
-                    return;
-                }
-            },
-
-            handleCallSocketOpen = function (params) {
-                currentCallParams = params;
-
-                sendCallMessage({
-                    id: 'CREATE_SESSION',
-                    brokerAddress: params.brokerAddress,
-                    turnAddress: params.turnAddress.split(',')[0]
-                }, function (res) {
-                    if (res.done === 'TRUE') {
-                        callStopQueue.callStarted = true;
-                        generateAndSendSdpOffers(params);
-                    } else if (res.done === 'SKIP') {
-                        callStopQueue.callStarted = true;
-                        generateAndSendSdpOffers(params);
-                    } else {
-                        consoleLogging && console.log('CREATE_SESSION faced a problem', res);
-                        endCall({
-                            callId: currentCallId
-                        });
-                    }
-                });
-            },
-
-            shouldReconnectCall = function () {
-                if (currentCallParams && Object.keys(currentCallParams).length) {
-                    for (var peer in webpeers) {
-                        if (webpeers[peer]) {
-                            if (webpeers[peer].peerConnection.iceConnectionState != 'connected') {
-                                fireEvent('callEvents', {
-                                    type: 'CALL_STATUS',
-                                    errorCode: 7000,
-                                    errorMessage: `Call Peer (${peer}) is not in connected state, Restarting call in progress ...!`,
-                                    errorInfo: webpeers[peer]
-                                });
-
-                                sendCallMessage({
-                                    id: 'STOPALL'
-                                }, function (result) {
-                                    if (result.done === 'TRUE') {
-                                        handleCallSocketOpen(currentCallParams);
-                                    } else if (result.done === 'SKIP') {
-                                        handleCallSocketOpen(currentCallParams);
-                                    } else {
-                                        consoleLogging && console.log('STOPALL faced a problem', result);
-                                        endCall({
-                                            callId: currentCallId
-                                        });
-                                        callStop();
-                                    }
-                                });
-
-                                break;
-                            }
-                        }
-                    }
-                }
-            },
-
-            generateAndSendSdpOffers = function (params) {
-                var turnServers = [];
-
-                if (!!params.turnAddress && params.turnAddress.length > 0) {
-                    var serversTemp = params.turnAddress.split(',');
-
-                    turnServers = [
-                        //{"urls": "stun:" + serversTemp[0]},
-                        {
-                            "urls": "turn:" + serversTemp[0],
-                            "username": "mkhorrami",
-                            "credential": "mkh_123456"
-                        }
-                    ];
-                } else {
-                    turnServers = [
-                        //{"urls": "stun:" + callTurnIp + ":3478"},
-                        {
-                            "urls": "turn:" + callTurnIp + ":3478",
-                            "username": "mkhorrami",
-                            "credential": "mkh_123456"
-                        }
-                    ];
-                }
-
-                // Video Topics
-                if (params.callVideo) {
-                    const sendVideoOptions = {
-                        localVideo: uiRemoteMedias[callTopics['sendVideoTopic']],
-                        mediaConstraints: {
-                            audio: false,
-                            video: {
-                                width: callVideoMinWidth,
-                                height: callVideoMinHeight,
-                                framerate: 15
-                            }
-                        },
-                        iceTransportPolicy: 'relay',
-                        onicecandidate: (candidate) => {
-                            if (webpeersMetadata[callTopics['sendVideoTopic']].interval !== null) {
-                                clearInterval(webpeersMetadata[callTopics['sendVideoTopic']].interval);
-                            }
-                            webpeersMetadata[callTopics['sendVideoTopic']].interval = setInterval(function() {
-                                if(webpeersMetadata[callTopics['sendVideoTopic']].sdpAnswerReceived === true) {
-                                    webpeersMetadata[callTopics['sendVideoTopic']].sdpAnswerReceived = false;
-                                    clearInterval(webpeersMetadata[callTopics['sendVideoTopic']].interval);
-                                    sendCallMessage({
-                                        id: 'ADD_ICE_CANDIDATE',
-                                        topic: callTopics['sendVideoTopic'],
-                                        candidateDto: candidate
-                                    })
-                                }
-                            }, 500, {candidate: candidate});
-                            /*setTimeout(function () {
-                                sendCallMessage({
-                                    id: 'ADD_ICE_CANDIDATE',
-                                    topic: callTopics['sendVideoTopic'],
-                                    candidateDto: candidate
-                                })
-                            }, 2000, {candidate: candidate});*/
-                        },
-                        configuration: {
-                            iceServers: turnServers
-                        }
-                    };
-
-                    const receiveVideoOptions = {
-                        remoteVideo: uiRemoteMedias[callTopics['receiveVideoTopic']],
-                        mediaConstraints: {audio: false, video: true},
-                        iceTransportPolicy: 'relay',
-                        onicecandidate: (candidate) => {
-                            if (webpeersMetadata[callTopics['receiveVideoTopic']].interval !== null) {
-                                clearInterval(webpeersMetadata[callTopics['receiveVideoTopic']].interval);
-                            }
-                            webpeersMetadata[callTopics['receiveVideoTopic']].interval = setInterval(function() {
-                                if(webpeersMetadata[callTopics['receiveVideoTopic']].sdpAnswerReceived === true) {
-                                    webpeersMetadata[callTopics['receiveVideoTopic']].sdpAnswerReceived = false;
-                                    clearInterval(webpeersMetadata[callTopics['receiveVideoTopic']].interval);
-                                    sendCallMessage({
-                                        id: 'ADD_ICE_CANDIDATE',
-                                        topic: callTopics['receiveVideoTopic'],
-                                        candidateDto: candidate
-                                    })
-                                }
-                            }, 500, {candidate: candidate});
-
-/*                            setTimeout(function () {
-                                sendCallMessage({
-                                    id: 'ADD_ICE_CANDIDATE',
-                                    topic: callTopics['receiveVideoTopic'],
-                                    candidateDto: candidate
-                                })
-                            }, 2000, {candidate: candidate});*/
-                        },
-                        configuration: {
-                            iceServers: turnServers
-                        }
-                    };
-
-                    webpeers[callTopics['receiveVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveVideoOptions, function (err) {
-                        if (err) {
-                            console.error("[start/webRtcReceiveVideoPeer] Error: " + explainUserMediaError(err, 'video'));
-                            return;
-                        }
-
-                        watchRTCPeerConnection(callTopics['receiveVideoTopic']);
-
-                        webpeers[callTopics['receiveVideoTopic']].generateOffer((err, sdpOffer) => {
-                            if (err) {
-                                console.error("[start/WebRtcVideoPeerReceiveOnly/generateOffer] " + err);
-                                return;
-                            }
-
-                            sendCallMessage({
-                                id: 'RECIVE_SDP_OFFER',
-                                sdpOffer: sdpOffer,
-                                useComedia: true,
-                                useSrtp: false,
-                                topic: callTopics['receiveVideoTopic'],
-                                mediaType: 2
-                            });
-                        });
-                    });
-
-                    setTimeout(function () {
-                        webpeers[callTopics['sendVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendVideoOptions, function (err) {
-                            if (err) {
-                                sendCallSocketError("[start/WebRtcVideoPeerSendOnly] Error: " + explainUserMediaError(err, 'video'));
-                                //callStop();
-                                return;
-                            }
-
-                            watchRTCPeerConnection(callTopics['sendVideoTopic']);
-                            startMedia(uiRemoteMedias[callTopics['sendVideoTopic']]);
-
-                            webpeers[callTopics['sendVideoTopic']].generateOffer((err, sdpOffer) => {
-                                if (err) {
-                                    sendCallSocketError("[start/WebRtcVideoPeerSendOnly/generateOffer] Error: " + err);
-                                    //callStop();
-                                    return;
-                                }
-
-                                sendCallMessage({
-                                    id: 'SEND_SDP_OFFER',
-                                    topic: callTopics['sendVideoTopic'],
-                                    sdpOffer: sdpOffer,
-                                    mediaType: 2
-                                });
-                            });
-                        });
-                    }, 2000);
-                }
-
-                // Audio Topics
-                if (params.callAudio) {
-                    const sendAudioOptions = {
-                        localVideo: uiRemoteMedias[callTopics['sendAudioTopic']],
-                        mediaConstraints: {audio: true, video: false},
-                        iceTransportPolicy: 'relay',
-                        onicecandidate: (candidate) => {
-                            if (webpeersMetadata[callTopics['sendAudioTopic']].interval !== null) {
-                                clearInterval(webpeersMetadata[callTopics['sendAudioTopic']].interval);
-                            }
-                            webpeersMetadata[callTopics['sendAudioTopic']].interval = setInterval(function() {
-                                if(webpeersMetadata[callTopics['sendAudioTopic']].sdpAnswerReceived === true) {
-                                    webpeersMetadata[callTopics['sendAudioTopic']].sdpAnswerReceived = false;
-                                    clearInterval(webpeersMetadata[callTopics['sendAudioTopic']].interval);
-                                    sendCallMessage({
-                                        id: 'ADD_ICE_CANDIDATE',
-                                        topic: callTopics['sendAudioTopic'],
-                                        candidateDto: candidate,
-                                    })
-                                }
-                            }, 500, {candidate: candidate});
-/*                            setTimeout(function () {
-                                sendCallMessage({
-                                    id: 'ADD_ICE_CANDIDATE',
-                                    topic: callTopics['sendAudioTopic'],
-                                    candidateDto: candidate,
-                                })
-                            }, 2000, {candidate: candidate});*/
-                        },
-                        configuration: {
-                            iceServers: turnServers
-                        }
-                    };
-
-                    const receiveAudioOptions = {
-                        remoteVideo: uiRemoteMedias[callTopics['receiveAudioTopic']],
-                        mediaConstraints: {audio: true, video: false},
-                        iceTransportPolicy: 'relay',
-                        onicecandidate: (candidate) => {
-                            if (webpeersMetadata[callTopics['receiveAudioTopic']].interval !== null) {
-                                clearInterval(webpeersMetadata[callTopics['receiveAudioTopic']].interval);
-                            }
-                            webpeersMetadata[callTopics['receiveAudioTopic']].interval = setInterval(function() {
-                                if(webpeersMetadata[callTopics['receiveAudioTopic']].sdpAnswerReceived === true) {
-                                    webpeersMetadata[callTopics['receiveAudioTopic']].sdpAnswerReceived = false;
-                                    clearInterval(webpeersMetadata[callTopics['receiveAudioTopic']].interval);
-                                    sendCallMessage({
-                                        id: 'ADD_ICE_CANDIDATE',
-                                        topic: callTopics['receiveAudioTopic'],
-                                        candidateDto: candidate,
-                                    })
-                                }
-                            }, 500, {candidate: candidate});
-
-/*                            setTimeout(function () {
-                                sendCallMessage({
-                                    id: 'ADD_ICE_CANDIDATE',
-                                    topic: callTopics['receiveAudioTopic'],
-                                    candidateDto: candidate,
-                                })
-                            }, 2000, {candidate: candidate});*/
-                        },
-                        configuration: {
-                            iceServers: turnServers
-                        }
-                    };
-
-                    webpeers[callTopics['receiveAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveAudioOptions, function (err) {
-                        if (err) {
-                            console.error("[start/WebRtcAudioPeerReceiveOnly] Error: " + explainUserMediaError(err, 'audio'));
-                            return;
-                        }
-
-                        watchRTCPeerConnection(callTopics['receiveAudioTopic']);
-
-                        webpeers[callTopics['receiveAudioTopic']].generateOffer((err, sdpOffer) => {
-                            if (err) {
-                                console.error("[start/WebRtcAudioPeerReceiveOnly/generateOffer] " + err);
-                                return;
-                            }
-                            sendCallMessage({
-                                id: 'RECIVE_SDP_OFFER',
-                                sdpOffer: sdpOffer,
-                                useComedia: false,
-                                useSrtp: false,
-                                mediaType: 1,
-                                topic: callTopics['receiveAudioTopic']
-                            });
-                        });
-                    });
-
-                    setTimeout(function () {
-                        webpeers[callTopics['sendAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendAudioOptions, function (err) {
-                            if (err) {
-                                sendCallSocketError("[start/WebRtcAudioPeerSendOnly] Error: " + explainUserMediaError(err, 'audio'));
-                                //callStop();
-                                return;
-                            }
-                            watchRTCPeerConnection(callTopics['sendAudioTopic']);
-                            startMedia(uiRemoteMedias[callTopics['sendAudioTopic']]);
-
-                            webpeers[callTopics['sendAudioTopic']].generateOffer((err, sdpOffer) => {
-                                if (err) {
-                                    sendCallSocketError("[start/WebRtcAudioPeerSendOnly/generateOffer] Error: " + err);
-                                    //callStop();
-                                    return;
-                                }
-                                sendCallMessage({
-                                    id: 'SEND_SDP_OFFER',
-                                    topic: callTopics['sendAudioTopic'],
-                                    sdpOffer: sdpOffer,
-                                    mediaType: 1
-                                });
-                            });
-                        });
-                    }, 2000);
-                }
-
-                /*setTimeout(function () {
-                    for (var peer in webpeers) {
-                        console.log("set callback on webpeers: ",  peer);
-                        if (webpeers[peer]) {
-                            webpeers[peer].peerConnection.onconnectionstatechange = function () {
-                                console.log("on connection state change, ", "peer: ", peer, "peerConnection.connectionState: ", webpeers[peer].peerConnection.connectionState);
-                                if (webpeers[peer].peerConnection.connectionState == 'disconnected') {
-                                    console.log(peer, 'peerConnection.onconnectionstatechange: disconnected');
-                                }
-                            }
-
-                            webpeers[peer].peerConnection.oniceconnectionstatechange = function () {
-                                console.log("on ice connection state change:  ", peer, webpeers[peer].peerConnection.connectionState);
-                                if (webpeers[peer].peerConnection.iceConnectionState == 'disconnected') {
-                                    console.log(  peer , '>>>>>>>>>>>>> disconnected');
-                                    fireEvent('callEvents', {
-                                        type: 'CALL_STATUS',
-                                        errorCode: 7000,
-                                        errorMessage: `Call Peer (${peer}) is disconnected!`,
-                                        errorInfo: webpeers[peer]
-                                    });
-
-                                    setTimeout(function () {
-                                        restartMedia(callTopics['sendVideoTopic'])
-                                    }, 2000);
-
-                                    setTimeout(function () {
-                                        restartMedia(callTopics['sendVideoTopic'])
-                                    }, 6000);
-
-                                    alert('Internet connection failed, Reconnect your call');
-                                    /!*shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
-                                    shouldReconnectCallTimeout = setTimeout(function () {
-                                        shouldReconnectCall();
-                                    }, 7000);*!/
-                                }
-
-                                if (webpeers[peer].peerConnection.iceConnectionState === "failed") {
-                                    fireEvent('callEvents', {
-                                        type: 'CALL_STATUS',
-                                        errorCode: 7000,
-                                        errorMessage: `Call Peer (${peer}) has failed!`,
-                                        errorInfo: webpeers[peer]
-                                    });
-                                }
-
-                                if (webpeers[peer].peerConnection.iceConnectionState === "connected") {
-                                    fireEvent('callEvents', {
-                                        type: 'CALL_STATUS',
-                                        errorCode: 7000,
-                                        errorMessage: `Call Peer (${peer}) has connected!`,
-                                        errorInfo: webpeers[peer]
-                                    });
-
-                                    setTimeout(function () {
-                                        restartMedia(callTopics['sendVideoTopic'])
-                                    }, 2000);
-
-                                    setTimeout(function () {
-                                        restartMedia(callTopics['sendVideoTopic'])
-                                    }, 6000);
-                                }
-                            }
-                        }
-                    }
-                }, 6000);*/
-
-                setTimeout(function () {
-                    restartMedia(callTopics['sendVideoTopic'])
-                }, 4000);
-                setTimeout(function () {
-                    restartMedia(callTopics['sendVideoTopic'])
-                }, 8000);
-                setTimeout(function () {
-                    restartMedia(callTopics['sendVideoTopic'])
-                }, 12000);
-                setTimeout(function () {
-                    restartMedia(callTopics['sendVideoTopic'])
-                }, 20000);
-            },
-            watchRTCPeerConnection = function (topic) {
-                console.log("set callback on webpeers: ",  topic);
-                if (webpeers[topic]) {
-                    webpeers[topic].peerConnection.onconnectionstatechange = function () {
-                        console.log("on connection state change, ", "peer: ", topic, "peerConnection.connectionState: ", webpeers[topic].peerConnection.connectionState);
-                        if (webpeers[topic].peerConnection.connectionState == 'disconnected') {
-                            console.log(topic, 'peerConnection.onconnectionstatechange: disconnected');
-                        }
-                    }
-
-                    webpeers[topic].peerConnection.oniceconnectionstatechange = function () {
-                        console.log("on ice connection state change:  ", topic, webpeers[topic].peerConnection.iceConnectionState);
-                        if (webpeers[topic].peerConnection.iceConnectionState == 'disconnected') {
-                            console.log(  topic , 'peerConnection.oniceconnectionstatechange disconnected');
-                            fireEvent('callEvents', {
-                                type: 'CALL_STATUS',
-                                errorCode: 7000,
-                                errorMessage: `Call Peer (${topic}) is disconnected!`,
-                                errorInfo: webpeers[topic]
-                            });
-
-                            /*setTimeout(function () {
-                                restartMedia(callTopics['sendVideoTopic'])
-                            }, 2000);*/
-
-                            /*setTimeout(function () {
-                                restartMedia(callTopics['sendVideoTopic'])
-                            }, 6000);*/
-
-                            console.log('Internet connection failed, Reconnect your call, topic:', topic);
-                            //shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
-                            /*shouldReconnectCallTimeout = setTimeout(function () {
-                                shouldReconnectCall(topic);
-                            }, 7000);*/
-                        }
-
-                        if (webpeers[topic].peerConnection.iceConnectionState === "failed") {
-                            fireEvent('callEvents', {
-                                type: 'CALL_STATUS',
-                                errorCode: 7000,
-                                errorMessage: `Call Peer (${topic}) has failed!`,
-                                errorInfo: webpeers[topic]
-                            });
-                        }
-
-                        if (webpeers[topic].peerConnection.iceConnectionState === "connected") {
-                            callRequestController.callEstablishedInMySide = true;
-                            fireEvent('callEvents', {
-                                type: 'CALL_STATUS',
-                                errorCode: 7000,
-                                errorMessage: `Call Peer (${topic}) has connected!`,
-                                errorInfo: webpeers[topic]
-                            });
-
-                            /*setTimeout(function () {
-                                restartMedia(callTopics['sendVideoTopic'])
-                            }, 2000);*/
-
-                            /*setTimeout(function () {
-                                restartMedia(callTopics['sendVideoTopic'])
-                            }, 6000);*/
-                        }
-                    }
-                }
-
-            },
-            sendCallSocketError = function (message) {
-                fireEvent('callEvents', {
-                    type: 'CALL_ERROR',
-                    code: 7000,
-                    message: message
-                });
-
-                sendCallMessage({
-                    id: 'ERROR',
-                    message: message,
-                });
-            },
-
-            explainUserMediaError = function (err, deviceType) {
-                fireEvent('callEvents', {
-                    type: 'CALL_ERROR',
-                    code: 7000,
-                    message: err
-                });
-
-                const n = err.name;
-                if (n === 'NotFoundError' || n === 'DevicesNotFoundError') {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks"
-                    });
-                    alert("Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks");
-                    return "Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks";
-                } else if (n === 'NotReadableError' || n === 'TrackStartError') {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use"
-                    });
-
-                    alert( (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use");
-                    return  (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use";
-                } else if (n === 'OverconstrainedError' || n === 'ConstraintNotSatisfiedError') {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks"
-                    });
-                    alert((deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks");
-                    return (deviceType === 'video' ? 'Webcam' : 'Mice') +  " doesn't provide required tracks";
-                } else if (n === 'NotAllowedError' || n === 'PermissionDeniedError') {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " permission has been denied by the user"
-                    });
-                    alert((deviceType === 'video' ? 'Webcam' : 'Mice') + " permission has been denied by the user");
-                    return (deviceType === 'video' ? 'Webcam' : 'Mice') +  " permission has been denied by the user";
-                } else if (n === 'TypeError') {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "No media tracks have been requested"
-                    });
-                    return "No media tracks have been requested";
-                } else {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "Unknown error: " + err
-                    });
-                    return "Unknown error: " + err;
-                }
-            },
-
-            setCallServerName = function (serverName) {
-                if (!!serverName) {
-                    callServerName = serverName;
-                }
-            },
-
-            startMedia = function (media) {
-                media.play().catch((err) => {
-                    if (err.name === 'NotAllowedError') {
-                        fireEvent('callEvents', {
-                            type: 'CALL_ERROR',
-                            code: 7000,
-                            message: "[start] Browser doesn't allow playing media: " + err
-                        });
-                    } else {
-                        fireEvent('callEvents', {
-                            type: 'CALL_ERROR',
-                            code: 7000,
-                            message: "[start] Error in media.play(): " + err
-                        });
-                    }
-                });
-            },
-
-            restartMedia = function (videoTopicParam) {
-                if (currentCallParams && Object.keys(currentCallParams).length) {
-                    consoleLogging && console.log('Sending Key Frame ...');
-
-                    var videoTopic = !!videoTopicParam ? videoTopicParam : callTopics['sendVideoTopic'];
-                    let videoElement = document.getElementById(`uiRemoteVideo-${videoTopic}`);
-
-                    if (videoElement) {
-                        let videoTrack = videoElement.srcObject.getTracks()[0];
-
-                        if (navigator && !!navigator.userAgent.match(/firefox/gi)) {
-                            videoTrack.enable = false;
-                            let newWidth = callVideoMinWidth - (Math.ceil(Math.random() * 50) + 20);
-                            let newHeight = callVideoMinHeight - (Math.ceil(Math.random() * 50) + 20);
-
-                            videoTrack.applyConstraints({
-                                width: {
-                                    min: newWidth,
-                                    ideal: 1280
-                                },
-                                height: {
-                                    min: newHeight,
-                                    ideal: 720
-                                },
-                                advanced: [
-                                    {
-                                        width: newWidth,
-                                        height: newHeight
-                                    },
-                                    {
-                                        aspectRatio: 1.333
-                                    }
-                                ]
-                            }).then((res) => {
-                                videoTrack.enabled = true;
-                                setTimeout(() => {
-                                    videoTrack.applyConstraints({
-                                        "width": callVideoMinWidth,
-                                        "height": callVideoMinHeight
-                                    });
-                                }, 500);
-                            }).catch(e => consoleLogging && console.log(e));
-                        } else {
-                            videoTrack.applyConstraints({
-                                "width": callVideoMinWidth - (Math.ceil(Math.random() * 5) + 5)
-                            }).then((res) => {
-                                setTimeout(function () {
-                                    videoTrack.applyConstraints({
-                                        "width": callVideoMinWidth
-                                    });
-                                }, 500);
-                            }).catch(e => consoleLogging && console.log(e));
-                        }
-                    }
-                }
-            },
-
-            handleProcessSdpAnswer = function (jsonMessage) {
-                let sampleWebRtc = webpeers[jsonMessage.topic];
-
-                if (sampleWebRtc == null) {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "[handleProcessSdpAnswer] Skip, no WebRTC Peer",
-                        error: webpeers[jsonMessage.topic]
-                    });
-                    return;
-                }
-
-                sampleWebRtc.processAnswer(jsonMessage.sdpAnswer, (err) => {
-                    if (err) {
-                        sendCallSocketError("[handleProcessSdpAnswer] Error: " + err);
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_ERROR',
-                            code: 7000,
-                            message: "[handleProcessSdpAnswer] Error: " + err
-                        });
-
-                        return;
-                    }
-
-                    if(webpeersMetadata[jsonMessage.topic].interval !== null) {
-                        webpeersMetadata[jsonMessage.topic].sdpAnswerReceived = true;
-                    }
-                    startMedia(uiRemoteMedias[jsonMessage.topic]);
-                });
-            },
-
-            handleAddIceCandidate = function (jsonMessage) {
-                let sampleWebRtc = webpeers[jsonMessage.topic];
-                if (sampleWebRtc == null) {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "[handleAddIceCandidate] Skip, no WebRTC Peer",
-                        error: JSON.stringify(webpeers[jsonMessage.topic])
-                    });
-                    return;
-                }
-
-                sampleWebRtc.addIceCandidate(jsonMessage.candidate, (err) => {
-                    if (err) {
-                        console.error("[handleAddIceCandidate] " + err);
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_ERROR',
-                            code: 7000,
-                            message: "[handleAddIceCandidate] " + err,
-                            error: JSON.stringify(jsonMessage.candidate)
-                        });
-
-                        return;
-                    }
-                });
-            },
-
-            handlePartnerFreeze = function (jsonMessage) {
-                if (!!jsonMessage && !!jsonMessage.topic && jsonMessage.topic.substring(0, 2) === 'Vi') {
-                    restartMedia(jsonMessage.topic);
-                    setTimeout(function () {
-                        restartMedia(jsonMessage.topic)
-                    }, 4000);
-                    setTimeout(function () {
-                        restartMedia(jsonMessage.topic)
-                    }, 8000);
-                }
-            },
-
-            handleError = function (jsonMessage, sendingTopic, receiveTopic) {
-                const errMessage = jsonMessage.message;
-
-                fireEvent('callEvents', {
-                    type: 'CALL_ERROR',
-                    code: 7000,
-                    essage: "Kurento error: " + errMessage
-                });
-            },
-
-            callStop = function () {
-                consoleLogging && console.log('Call is stopping ...');
-
-                for (var media in uiRemoteMedias) {
-                    removeStreamFromWebRTC(media);
-                }
-
-                for (var i in webpeers) {
-                    if (webpeers[i]) {
-                        webpeers[i].dispose();
-                        webpeers[i] = null;
-                    }
-                }
-
-                if(callStopQueue.callStarted) {
-                    sendCallMessage({
-                        id: 'CLOSE'
-                    });
-                    callStopQueue.callStarted = false;
-                }
-
-                callRequestController.callEstablishedInMySide = false;
-                callRequestController.callRequestReceived = false;
-                currentCallParams = {};
-                currentCallId = null;
-            },
-
-            removeStreamFromWebRTC = function (RTCStream) {
-                var callParentDiv = document.getElementById(callDivId);
-
-                if (uiRemoteMedias.hasOwnProperty(RTCStream)) {
-                    const stream = uiRemoteMedias[RTCStream].srcObject;
-                    if (!!stream) {
-                        const tracks = stream.getTracks();
-
-                        if (!!tracks) {
-                            tracks.forEach(function (track) {
-                                track.stop();
-                            });
-                        }
-
-                        uiRemoteMedias[RTCStream].srcObject = null;
-                    }
-
-                    uiRemoteMedias[RTCStream].remove();
-                    delete (uiRemoteMedias[RTCStream]);
-                }
-            },
-
-            removeFromCallUI = function (topic) {
-                var videoElement = 'Vi-' + topic;
-                var audioElement = 'Vo-' + topic;
-
-                if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(videoElement)) {
-                    removeStreamFromWebRTC(videoElement);
-                }
-
-                if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(audioElement)) {
-                    removeStreamFromWebRTC(audioElement);
-                }
             };
 
         /******************************************************
          *             P U B L I C   M E T H O D S            *
          ******************************************************/
 
-        this.on = function (eventName, callback) {
-            if (eventCallbacks[eventName]) {
-                var id = Utility.generateUUID();
-                eventCallbacks[eventName][id] = callback;
-                return id;
-            }
-        };
-
-        this.off = function (eventName, eventId) {
-            if (eventCallbacks[eventName]) {
-                if (eventCallbacks[eventName].hasOwnProperty(eventId)) {
-                    delete eventCallbacks[eventName][eventId];
-                    return eventId;
-                }
-            }
-        }
+        this.on = chatEvents.on;
+        this.off = chatEvents.off;
 
         this.getPeerId = function () {
             return peerId;
         };
 
         this.getCurrentUser = function () {
-            return userInfo;
+            return chatMessaging.userInfo;
         };
 
         this.getUserInfo = function (callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.USER_INFO,
                 typeCode: generalTypeCode
             }, {
@@ -11203,7 +9188,7 @@
         };
 
         this.getAllUnreadMessagesCount = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.ALL_UNREAD_MESSAGE_COUNT,
                 typeCode: params.typeCode,
                 content: JSON.stringify({
@@ -11300,11 +9285,11 @@
 
                             if (Object.keys(whereClause).length === 0) {
                                 thenAble = db.contacts.where('owner')
-                                    .equals(parseInt(userInfo.id));
+                                    .equals(parseInt(chatMessaging.userInfo.id));
                             } else {
                                 if (whereClause.hasOwnProperty('query')) {
                                     thenAble = db.contacts.where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .filter(function (contact) {
                                             var reg = new RegExp(whereClause.query);
                                             return reg.test(chatDecrypt(contact.firstName, cacheSecret, contact.salt) + ' '
@@ -11320,7 +9305,7 @@
                                 .toArray()
                                 .then(function (contacts) {
                                     db.contacts.where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .count()
                                         .then(function (contactsCount) {
                                             var cacheData = [];
@@ -11329,7 +9314,7 @@
                                                 try {
                                                     cacheData.push(formatDataToMakeContact(JSON.parse(chatDecrypt(contacts[i].data, cacheSecret, contacts[i].salt))));
                                                 } catch (error) {
-                                                    fireEvent('error', {
+                                                    chatEvents.fireEvent('error', {
                                                         code: error.code,
                                                         message: error.message,
                                                         error: error
@@ -11358,7 +9343,7 @@
                                         });
                                 })
                                 .catch(function (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: error.code,
                                         message: error.message,
                                         error: error
@@ -11366,14 +9351,14 @@
                                 });
                         })
                         .catch(function (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
                             });
                         });
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 6601,
                         message: CHAT_ERRORS[6601],
                         error: null
@@ -11384,7 +9369,7 @@
             /**
              * Retrieve Contacts from server
              */
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -11426,7 +9411,7 @@
                                         var tempData = {},
                                             salt = Utility.generateUUID();
                                         tempData.id = resultData.contacts[i].id;
-                                        tempData.owner = userInfo.id;
+                                        tempData.owner = chatMessaging.userInfo.id;
                                         tempData.uniqueId = resultData.contacts[i].uniqueId;
                                         tempData.userId = Utility.crypt(resultData.contacts[i].userId, cacheSecret, salt);
                                         tempData.cellphoneNumber = Utility.crypt(resultData.contacts[i].cellphoneNumber, cacheSecret, salt);
@@ -11439,7 +9424,7 @@
 
                                         cacheData.push(tempData);
                                     } catch (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -11449,14 +9434,14 @@
 
                                 db.contacts.bulkPut(cacheData)
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -11473,7 +9458,7 @@
                     callback = undefined;
 
                     if (!returnData.hasError && returnCache) {
-                        fireEvent('contactEvents', {
+                        chatEvents.fireEvent('contactEvents', {
                             type: 'CONTACTS_LIST_CHANGE',
                             result: returnData.result
                         });
@@ -11545,7 +9530,7 @@
                 }
             }
 
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -11589,7 +9574,7 @@
                 }
             }
 
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -11642,7 +9627,7 @@
                 }
             }
 
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -11780,7 +9765,7 @@
                 content: content
             };
 
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -11871,7 +9856,7 @@
                 content: content
             };
 
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -11924,7 +9909,7 @@
             return {
                 uniqueId: uniqueId,
                 threadId: params.threadId,
-                participant: userInfo,
+                participant: chatMessaging.userInfo,
                 content: params.content
             };
         };
@@ -11932,7 +9917,7 @@
         this.sendBotMessage = function (params, callbacks) {
             var metadata = {};
 
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.BOT_MESSAGE,
                 typeCode: params.typeCode,
                 subjectId: params.messageId,
@@ -12006,7 +9991,7 @@
                 typeCode: params.typeCode,
                 content: content
             };
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -12063,7 +10048,7 @@
                         data.center = params.mapCenter.lat + ',' + parseFloat(params.mapCenter.lng);
                     } else {
                         hasError = true;
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6700,
                             message: CHAT_ERRORS[6700],
                             error: undefined
@@ -12071,7 +10056,7 @@
                     }
                 } else {
                     hasError = true;
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 6700,
                         message: CHAT_ERRORS[6700],
                         error: undefined
@@ -12115,7 +10100,7 @@
             return {
                 uniqueId: fileUniqueId,
                 threadId: params.threadId,
-                participant: userInfo,
+                participant: chatMessaging.userInfo,
                 cancel: function () {
                     if (typeof getImageFromLinkObjects !== 'undefined' && getImageFromLinkObjects.hasOwnProperty(fileUniqueId)) {
                         getImageFromLinkObjects[fileUniqueId].onload = function () {
@@ -12138,7 +10123,7 @@
                 queueDb.waitQ.where('uniqueId')
                     .equals(uniqueId)
                     .and(function (item) {
-                        return item.owner === parseInt(userInfo.id);
+                        return item.owner === parseInt(chatMessaging.userInfo.id);
                     })
                     .toArray()
                     .then(function (messages) {
@@ -12152,7 +10137,7 @@
                         }
                     })
                     .catch(function (error) {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: error.code,
                             message: error.message,
                             error: error
@@ -12193,7 +10178,7 @@
                 }
             }
 
-            return sendMessage(clearHistoryParams, {
+            return chatMessaging.sendMessage(clearHistoryParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -12215,18 +10200,18 @@
                                 db.messages.where('threadId')
                                     .equals(parseInt(result.result))
                                     .and(function (message) {
-                                        return message.owner === userInfo.id;
+                                        return message.owner === chatMessaging.userInfo.id;
                                     })
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -12257,7 +10242,7 @@
         this.cancelFileDownload = cancelFileDownload;
 
         this.editMessage = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.EDIT_MESSAGE,
                 typeCode: params.typeCode,
                 messageType: params.messageType,
@@ -12294,7 +10279,7 @@
                                     var tempData = {},
                                         salt = Utility.generateUUID();
                                     tempData.id = parseInt(resultData.editedMessage.id);
-                                    tempData.owner = parseInt(userInfo.id);
+                                    tempData.owner = parseInt(chatMessaging.userInfo.id);
                                     tempData.threadId = parseInt(resultData.editedMessage.threadId);
                                     tempData.time = resultData.editedMessage.time;
                                     tempData.message = Utility.crypt(resultData.editedMessage.message, cacheSecret, salt);
@@ -12306,21 +10291,21 @@
                                      */
                                     db.messages.put(tempData)
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
                                             });
                                         });
                                 } catch (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: error.code,
                                         message: error.message,
                                         error: error
                                     });
                                 }
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -12335,7 +10320,7 @@
         };
 
         this.deleteMessage = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.DELETE_MESSAGE,
                 typeCode: params.typeCode,
                 subjectId: params.messageId,
@@ -12375,14 +10360,14 @@
                                     .equals(parseInt(result.result))
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: 6602,
                                             message: CHAT_ERRORS[6602],
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -12405,7 +10390,7 @@
                 var uniqueId = Utility.generateUUID();
                 uniqueIdsList.push(uniqueId);
 
-                messagesCallbacks[uniqueId] = function (result) {
+                chatMessaging.messagesCallbacks[uniqueId] = function (result) {
                     var returnData = {
                         hasError: result.hasError,
                         cache: false,
@@ -12435,14 +10420,14 @@
                                     .equals(parseInt(result.result))
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: 6602,
                                             message: CHAT_ERRORS[6602],
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -12456,7 +10441,7 @@
                 };
             }
 
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.DELETE_MESSAGE,
                 typeCode: params.typeCode,
                 content: {
@@ -12498,7 +10483,7 @@
             return {
                 uniqueId: uniqueId,
                 threadId: params.threadId,
-                participant: userInfo,
+                participant: chatMessaging.userInfo,
                 content: params.content
             };
         };
@@ -12508,7 +10493,7 @@
                 fileUploadParams = {},
                 fileUniqueId = Utility.generateUUID();
             if (!params.userGroupHash || params.userGroupHash.length === 0 || typeof (params.userGroupHash) !== 'string') {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 6304,
                     message: CHAT_ERRORS[6304]
                 });
@@ -12585,31 +10570,31 @@
                 uniqueIdsList = [];
 
             for (var i in messageIdsList) {
-                if (!threadCallbacks[threadId]) {
-                    threadCallbacks[threadId] = {};
+                if (!chatMessaging.threadCallbacks[threadId]) {
+                    chatMessaging.threadCallbacks[threadId] = {};
                 }
 
                 var uniqueId = Utility.generateUUID();
                 uniqueIdsList.push(uniqueId);
 
-                threadCallbacks[threadId][uniqueId] = {};
+                chatMessaging.threadCallbacks[threadId][uniqueId] = {};
 
-                sendMessageCallbacks[uniqueId] = {};
+                chatMessaging.sendMessageCallbacks[uniqueId] = {};
 
                 if (callbacks.onSent) {
-                    sendMessageCallbacks[uniqueId].onSent = callbacks.onSent;
-                    threadCallbacks[threadId][uniqueId].onSent = false;
-                    threadCallbacks[threadId][uniqueId].uniqueId = uniqueId;
+                    chatMessaging.sendMessageCallbacks[uniqueId].onSent = callbacks.onSent;
+                    chatMessaging.threadCallbacks[threadId][uniqueId].onSent = false;
+                    chatMessaging.threadCallbacks[threadId][uniqueId].uniqueId = uniqueId;
                 }
 
                 if (callbacks.onSeen) {
-                    sendMessageCallbacks[uniqueId].onSeen = callbacks.onSeen;
-                    threadCallbacks[threadId][uniqueId].onSeen = false;
+                    chatMessaging.sendMessageCallbacks[uniqueId].onSeen = callbacks.onSeen;
+                    chatMessaging.threadCallbacks[threadId][uniqueId].onSeen = false;
                 }
 
                 if (callbacks.onDeliver) {
-                    sendMessageCallbacks[uniqueId].onDeliver = callbacks.onDeliver;
-                    threadCallbacks[threadId][uniqueId].onDeliver = false;
+                    chatMessaging.sendMessageCallbacks[uniqueId].onDeliver = callbacks.onDeliver;
+                    chatMessaging.threadCallbacks[threadId][uniqueId].onDeliver = false;
                 }
             }
 
@@ -12678,7 +10663,7 @@
                 }
             }
 
-            return sendMessage(deliveryListData, {
+            return chatMessaging.sendMessage(deliveryListData, {
                 onResult: function (result) {
                     if (typeof result.result == 'object') {
                         for (var i = 0; i < result.result.length; i++) {
@@ -12706,7 +10691,7 @@
                 }
             }
 
-            return sendMessage(seenListData, {
+            return chatMessaging.sendMessage(seenListData, {
                 onResult: function (result) {
                     if (typeof result.result == 'object') {
                         for (var i = 0; i < result.result.length; i++) {
@@ -12723,7 +10708,7 @@
         this.updateChatProfile = updateChatProfile;
 
         this.muteThread = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.MUTE_THREAD,
                 typeCode: params.typeCode,
                 subjectId: params.threadId,
@@ -12738,7 +10723,7 @@
         };
 
         this.unMuteThread = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.UNMUTE_THREAD,
                 typeCode: params.typeCode,
                 subjectId: params.threadId,
@@ -12753,7 +10738,7 @@
         };
 
         this.closeThread = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.CLOSE_THREAD,
                 typeCode: params.typeCode,
                 subjectId: params.threadId,
@@ -12780,7 +10765,7 @@
                     joinThreadData.content = params.uniqueName;
                 }
             }
-            return sendMessage(joinThreadData, {
+            return chatMessaging.sendMessage(joinThreadData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -12800,7 +10785,7 @@
                     isNameAvailableData.content = params.uniqueName;
                 }
             }
-            return sendMessage(isNameAvailableData, {
+            return chatMessaging.sendMessage(isNameAvailableData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -12821,7 +10806,7 @@
                 if (parseInt(params.threadId) > 0) {
                     sendData.subjectId = +params.threadId;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: `No Thread Id has been sent!`
                     });
@@ -12833,7 +10818,7 @@
                         if (typeof params.uniqueName === 'string' && params.uniqueName.length > 0) {
                             sendData.content.uniqueName = params.uniqueName;
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 999,
                                 message: `Public Threads need a unique name! One must enter a unique name for this thread.`
                             });
@@ -12843,7 +10828,7 @@
 
                     sendData.content.type = createThreadTypes[params.threadType.toUpperCase()];
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: `No thread type has been declared! Possible inputs are (${Object.keys(createThreadTypes).join(',')})`
                     });
@@ -12851,14 +10836,14 @@
                 }
 
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Change thread Privacy!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -12866,7 +10851,7 @@
         };
 
         this.pinThread = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.PIN_THREAD,
                 typeCode: params.typeCode,
                 subjectId: params.threadId,
@@ -12881,7 +10866,7 @@
         };
 
         this.unPinThread = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.UNPIN_THREAD,
                 typeCode: params.typeCode,
                 subjectId: params.threadId,
@@ -12906,14 +10891,14 @@
                     sendData.subjectId = +params.threadId;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Delete Thread!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -12931,7 +10916,7 @@
         };
 
         this.pinMessage = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.PIN_MESSAGE,
                 typeCode: params.typeCode,
                 subjectId: params.messageId,
@@ -12964,7 +10949,7 @@
                 }
             }
 
-            return sendMessage(spamData, {
+            return chatMessaging.sendMessage(spamData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -12996,7 +10981,7 @@
                 }
             }
 
-            return sendMessage(blockData, {
+            return chatMessaging.sendMessage(blockData, {
                 onResult: function (result) {
                     if (typeof result.result == 'object') {
                         result.result = formatDataToMakeBlockedUser(result.result);
@@ -13034,7 +11019,7 @@
                 }
             }
 
-            return sendMessage(unblockData, {
+            return chatMessaging.sendMessage(unblockData, {
                 onResult: function (result) {
                     if (typeof result.result == 'object') {
                         result.result = formatDataToMakeBlockedUser(result.result);
@@ -13072,7 +11057,7 @@
                 timeout: params.timeout
             };
 
-            return sendMessage(getBlockedData, {
+            return chatMessaging.sendMessage(getBlockedData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -13125,7 +11110,7 @@
                 timeout: params.timeout
             };
 
-            return sendMessage(getNotSeenDurationData, {
+            return chatMessaging.sendMessage(getNotSeenDurationData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -13235,7 +11220,7 @@
                                         var tempData = {},
                                             salt = Utility.generateUUID();
                                         tempData.id = resultData.contacts[i].id;
-                                        tempData.owner = userInfo.id;
+                                        tempData.owner = chatMessaging.userInfo.id;
                                         tempData.uniqueId = resultData.contacts[i].uniqueId;
                                         tempData.userId = Utility.crypt(resultData.contacts[i].userId, cacheSecret, salt);
                                         tempData.cellphoneNumber = Utility.crypt(resultData.contacts[i].cellphoneNumber, cacheSecret, salt);
@@ -13248,7 +11233,7 @@
 
                                         cacheData.push(tempData);
                                     } catch (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -13258,14 +11243,14 @@
 
                                 db.contacts.bulkPut(cacheData)
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -13278,7 +11263,7 @@
                     callback && callback(returnData);
 
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: result.errorCode,
                         message: result.errorMessage,
                         error: result
@@ -13294,7 +11279,7 @@
                 if (parseInt(params.id) > 0) {
                     data.id = parseInt(params.id);
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'ID is required for Updating Contact!',
                         error: undefined
@@ -13304,7 +11289,7 @@
                 if (typeof params.firstName === 'string') {
                     data.firstName = params.firstName;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'firstName is required for Updating Contact!'
                     });
@@ -13313,7 +11298,7 @@
                 if (typeof params.lastName === 'string') {
                     data.lastName = params.lastName;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'lastName is required for Updating Contact!'
                     });
@@ -13322,7 +11307,7 @@
                 if (typeof params.cellphoneNumber === 'string') {
                     data.cellphoneNumber = params.cellphoneNumber;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'cellphoneNumber is required for Updating Contact!'
                     });
@@ -13331,7 +11316,7 @@
                 if (typeof params.email === 'string') {
                     data.email = params.email;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'email is required for Updating Contact!'
                     });
@@ -13392,7 +11377,7 @@
                                         var tempData = {},
                                             salt = Utility.generateUUID();
                                         tempData.id = resultData.contacts[i].id;
-                                        tempData.owner = userInfo.id;
+                                        tempData.owner = chatMessaging.userInfo.id;
                                         tempData.uniqueId = resultData.contacts[i].uniqueId;
                                         tempData.userId = Utility.crypt(resultData.contacts[i].userId, cacheSecret, salt);
                                         tempData.cellphoneNumber = Utility.crypt(resultData.contacts[i].cellphoneNumber, cacheSecret, salt);
@@ -13405,7 +11390,7 @@
 
                                         cacheData.push(tempData);
                                     } catch (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -13415,14 +11400,14 @@
 
                                 db.contacts.bulkPut(cacheData)
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -13435,7 +11420,7 @@
                     callback && callback(returnData);
 
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: result.errorCode,
                         message: result.errorMessage,
                         error: result
@@ -13451,7 +11436,7 @@
                 if (parseInt(params.id) > 0) {
                     data.id = parseInt(params.id);
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'ID is required for Deleting Contact!',
                         error: undefined
@@ -13493,14 +11478,14 @@
                                 .equals(parseInt(params.id))
                                 .delete()
                                 .catch(function (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: 6602,
                                         message: CHAT_ERRORS[6602],
                                         error: error
                                     });
                                 });
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 6601,
                                 message: CHAT_ERRORS[6601],
                                 error: null
@@ -13511,7 +11496,7 @@
                     callback && callback(returnData);
 
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: result.errorCode,
                         message: result.errorMessage,
                         error: result
@@ -13607,24 +11592,24 @@
 
                             if (Object.keys(whereClause).length === 0) {
                                 thenAble = db.contacts.where('owner')
-                                    .equals(parseInt(userInfo.id));
+                                    .equals(parseInt(chatMessaging.userInfo.id));
                             } else {
                                 if (whereClause.hasOwnProperty('id')) {
                                     thenAble = db.contacts.where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .and(function (contact) {
                                             return contact.id === whereClause.id;
                                         });
                                 } else if (whereClause.hasOwnProperty('uniqueId')) {
                                     thenAble = db.contacts.where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .and(function (contact) {
                                             return contact.uniqueId === whereClause.uniqueId;
                                         });
                                 } else {
                                     if (whereClause.hasOwnProperty('firstName')) {
                                         thenAble = db.contacts.where('owner')
-                                            .equals(parseInt(userInfo.id))
+                                            .equals(parseInt(chatMessaging.userInfo.id))
                                             .filter(function (contact) {
                                                 var reg = new RegExp(whereClause.firstName);
                                                 return reg.test(chatDecrypt(contact.firstName, cacheSecret, contact.salt));
@@ -13633,7 +11618,7 @@
 
                                     if (whereClause.hasOwnProperty('lastName')) {
                                         thenAble = db.contacts.where('owner')
-                                            .equals(parseInt(userInfo.id))
+                                            .equals(parseInt(chatMessaging.userInfo.id))
                                             .filter(function (contact) {
                                                 var reg = new RegExp(whereClause.lastName);
                                                 return reg.test(chatDecrypt(contact.lastName, cacheSecret, contact.salt));
@@ -13642,7 +11627,7 @@
 
                                     if (whereClause.hasOwnProperty('email')) {
                                         thenAble = db.contacts.where('owner')
-                                            .equals(parseInt(userInfo.id))
+                                            .equals(parseInt(chatMessaging.userInfo.id))
                                             .filter(function (contact) {
                                                 var reg = new RegExp(whereClause.email);
                                                 return reg.test(chatDecrypt(contact.email, cacheSecret, contact.salt));
@@ -13651,7 +11636,7 @@
 
                                     if (whereClause.hasOwnProperty('q')) {
                                         thenAble = db.contacts.where('owner')
-                                            .equals(parseInt(userInfo.id))
+                                            .equals(parseInt(chatMessaging.userInfo.id))
                                             .filter(function (contact) {
                                                 var reg = new RegExp(whereClause.q);
                                                 return reg.test(chatDecrypt(contact.firstName, cacheSecret, contact.salt) + ' ' +
@@ -13667,7 +11652,7 @@
                                 .toArray()
                                 .then(function (contacts) {
                                     db.contacts.where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .count()
                                         .then(function (contactsCount) {
                                             var cacheData = [];
@@ -13676,7 +11661,7 @@
                                                 try {
                                                     cacheData.push(formatDataToMakeContact(JSON.parse(chatDecrypt(contacts[i].data, cacheSecret, ontacts[i].salt))));
                                                 } catch (error) {
-                                                    fireEvent('error', {
+                                                    chatEvents.fireEvent('error', {
                                                         code: error.code,
                                                         message: error.message,
                                                         error: error
@@ -13704,7 +11689,7 @@
                                             }
                                         })
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -13712,7 +11697,7 @@
                                         });
                                 })
                                 .catch(function (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: error.code,
                                         message: error.message,
                                         error: error
@@ -13720,14 +11705,14 @@
                                 });
                         })
                         .catch(function (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
                             });
                         });
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 6601,
                         message: CHAT_ERRORS[6601],
                         error: null
@@ -13780,7 +11765,7 @@
                                             salt = Utility.generateUUID();
 
                                         tempData.id = resultData.contacts[i].id;
-                                        tempData.owner = userInfo.id;
+                                        tempData.owner = chatMessaging.userInfo.id;
                                         tempData.uniqueId = resultData.contacts[i].uniqueId;
                                         tempData.userId = Utility.crypt(resultData.contacts[i].userId, cacheSecret, salt);
                                         tempData.cellphoneNumber = Utility.crypt(resultData.contacts[i].cellphoneNumber, cacheSecret, salt);
@@ -13793,7 +11778,7 @@
 
                                         cacheData.push(tempData);
                                     } catch (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -13803,14 +11788,14 @@
 
                                 db.contacts.bulkPut(cacheData)
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -13827,13 +11812,13 @@
                     callback = undefined;
 
                     if (!returnData.hasError && returnCache) {
-                        fireEvent('contactEvents', {
+                        chatEvents.fireEvent('contactEvents', {
                             type: 'CONTACTS_SEARCH_RESULT_CHANGE',
                             result: returnData.result
                         });
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: result.errorCode,
                         message: result.errorMessage,
                         error: result
@@ -13855,27 +11840,27 @@
                     if (params.botName.substr(-3) === "BOT") {
                         createBotData.content = params.botName;
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 999,
                             message: 'Bot name should end in "BOT", ex. "testBOT"'
                         });
                         return;
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Insert a bot name to create one!'
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'Insert a bot name to create one!'
                 });
                 return;
             }
-            return sendMessage(createBotData, {
+            return chatMessaging.sendMessage(createBotData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -13892,14 +11877,14 @@
             }, commandList = [];
             if (params) {
                 if (typeof params.botName !== 'string' || params.botName.length === 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You need to insert a botName!'
                     });
                     return;
                 }
                 if (!Array.isArray(params.commandList) || !params.commandList.length) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Bot Commands List has to be an array of strings.'
                     });
@@ -13914,13 +11899,13 @@
                     commandList: commandList
                 };
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to create bot commands'
                 });
                 return;
             }
-            return sendMessage(defineBotCommandData, {
+            return chatMessaging.sendMessage(defineBotCommandData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -13938,7 +11923,7 @@
 
             if (params) {
                 if (typeof params.botName !== 'string' || params.botName.length === 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You need to insert a botName!'
                     });
@@ -13946,7 +11931,7 @@
                 }
 
                 if (!Array.isArray(params.commandList) || !params.commandList.length) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Bot Commands List has to be an array of strings.'
                     });
@@ -13963,14 +11948,14 @@
                 };
 
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to remove bot commands'
                 });
                 return;
             }
 
-            return sendMessage(defineBotCommandData, {
+            return chatMessaging.sendMessage(defineBotCommandData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -13987,14 +11972,14 @@
             };
             if (params) {
                 if (typeof +params.threadId !== 'number' || params.threadId < 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Enter a valid Thread Id for Bot to start in!'
                     });
                     return;
                 }
                 if (typeof params.botName !== 'string' || params.botName.length === 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You need to insert a botName!'
                     });
@@ -14005,13 +11990,13 @@
                     botName: params.botName.trim()
                 });
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to create bot commands'
                 });
                 return;
             }
-            return sendMessage(startBotData, {
+            return chatMessaging.sendMessage(startBotData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -14028,14 +12013,14 @@
             };
             if (params) {
                 if (typeof +params.threadId !== 'number' || params.threadId < 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Enter a valid Thread Id for Bot to stop on!'
                     });
                     return;
                 }
                 if (typeof params.botName !== 'string' || params.botName.length === 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You need to insert a botName!'
                     });
@@ -14046,13 +12031,13 @@
                     botName: params.botName.trim()
                 });
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to create bot commands'
                 });
                 return;
             }
-            return sendMessage(stopBotData, {
+            return chatMessaging.sendMessage(stopBotData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -14070,7 +12055,7 @@
 
             if (params) {
                 if (typeof params.botName !== 'string' || params.botName.length === 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You need to insert a botName!'
                     });
@@ -14082,14 +12067,14 @@
                 });
 
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to get bot commands'
                 });
                 return;
             }
 
-            return sendMessage(getBotCommandsListData, {
+            return chatMessaging.sendMessage(getBotCommandsListData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -14107,7 +12092,7 @@
 
             if (params) {
                 if (typeof +params.threadId !== 'number' || params.threadId < 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Enter a valid Thread Id to get all Bots List!'
                     });
@@ -14117,14 +12102,14 @@
                 getThreadBotsData.subjectId = +params.threadId;
 
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to get thread\' bots list!'
                 });
                 return;
             }
 
-            return sendMessage(getThreadBotsData, {
+            return chatMessaging.sendMessage(getThreadBotsData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -14144,21 +12129,21 @@
                 if (typeof params.tagName === 'string' && params.tagName.length > 0) {
                     createTagData.content.name = params.tagName;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: `No tag name has been declared!`
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Create New Tag!'
                 });
                 return;
             }
 
-            return sendMessage(createTagData, {
+            return chatMessaging.sendMessage(createTagData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -14178,7 +12163,7 @@
                 if (parseInt(params.tagId) > 0) {
                     sendData.subjectId = +params.tagId;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: `No Tag Id has been sent!`
                     });
@@ -14188,21 +12173,21 @@
                 if (typeof params.tagName === 'string' && params.tagName.length > 0) {
                     sendData.content.name = params.tagName;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: `No tag name has been declared!`
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Edit Tag!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -14222,21 +12207,21 @@
                 if (parseInt(params.tagId) > 0) {
                     sendData.subjectId = +params.tagId;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: `No Tag Id has been sent!`
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Delete Tag!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -14252,7 +12237,7 @@
                 token: token
             };
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -14275,14 +12260,14 @@
                     sendData.content = params.threadIds;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Add Tag PArticipants!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -14315,14 +12300,14 @@
                     sendData.content = params.threadIds;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Remove Tag Participants!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -14369,7 +12354,7 @@
                                 }
                             });
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 999,
                                 message: 'You should send an array of Assistant Objects each containing of contactType, roleTypes and assistant itself!'
                             });
@@ -14377,21 +12362,21 @@
                         }
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You should send an array of Assistant Objects each containing of contactType, roleTypes and assistant itself!'
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Create Assistants!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -14431,7 +12416,7 @@
                                 }
                             });
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 999,
                                 message: 'You should send an array of Assistant Objects each containing of an assistant!'
                             });
@@ -14439,21 +12424,21 @@
                         }
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You should send an array of Assistant Objects each containing of an assistant!'
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Deactivate Assistants!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -14493,7 +12478,7 @@
                                 }
                             });
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 999,
                                 message: 'You should send an array of Assistant Objects each containing of an assistant!'
                             });
@@ -14501,21 +12486,21 @@
                         }
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You should send an array of Assistant Objects each containing of an assistant!'
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Block Assistants!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -14555,7 +12540,7 @@
                                 }
                             });
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 999,
                                 message: 'You should send an array of Assistant Objects each containing of an assistant!'
                             });
@@ -14563,21 +12548,21 @@
                         }
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You should send an array of Assistant Objects each containing of an assistant!'
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Unblock Assistants!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -14607,7 +12592,7 @@
                 if (typeof params.contactType === 'string' && params.contactType.length) {
                     sendData.content.contactType = params.contactType;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Enter a ContactType to get all related Assistants!'
                     });
@@ -14617,14 +12602,14 @@
                 sendData.content.count = !!params.count ? +params.count : 50;
                 sendData.content.offset = !!params.offset ? +params.offset : 0;
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to get Assistants list!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -14644,7 +12629,7 @@
                 if (typeof params.contactType === 'string' && params.contactType.length) {
                     sendData.content.contactType = params.contactType;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Enter a ContactType to get all Blocked Assistants!'
                     });
@@ -14654,14 +12639,14 @@
                 sendData.content.count = !!params.count ? +params.count : 50;
                 sendData.content.offset = !!params.offset ? +params.offset : 0;
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to get Blocked Assistants list!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -14690,7 +12675,7 @@
                 sendData.content.actionType = assistantActionTypes[params.actionType.toUpperCase()];
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -14742,864 +12727,51 @@
             removeRoleFromUser(params, callback);
         };
 
-        this.startCall = function (params, callback) {
-            var startCallData = {
-                chatMessageVOType: chatMessageVOTypes.CALL_REQUEST,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            }, content = {
-                creatorClientDto: {}
-            };
+        this.startCall = callModule.startCall;
 
-            if (params) {
-                if (typeof params.type === 'string' && callTypes.hasOwnProperty(params.type.toUpperCase())) {
-                    content.type = callTypes[params.type.toUpperCase()];
-                } else {
-                    content.type = 0x0; // Defaults to AUDIO Call
-                }
+        this.startGroupCall = callModule.startGroupCall;
 
-                //TODO: Check for mute
-                content.creatorClientDto.mute = (params.mute && typeof params.mute === 'boolean') ? params.mute : false;
-                content.mute = (params.mute && typeof params.mute === 'boolean') ? params.mute : false;
+        this.callReceived = callModule.callReceived;
 
-                if (params.clientType
-                    && typeof params.clientType === 'string'
-                    && callClientTypes[params.clientType.toUpperCase()] > 0) {
-                    content.creatorClientDto.clientType = callClientTypes[params.clientType.toUpperCase()];
-                } else {
-                    content.creatorClientDto.clientType = callClientType.WEB;
-                }
+        this.terminateCall = callModule.terminateCall;
 
-                if (typeof +params.threadId === 'number' && +params.threadId > 0) {
-                    content.threadId = +params.threadId;
-                } else {
-                    if (Array.isArray(params.invitees)) {
-                        content.invitees = [];
-                        for (var i = 0; i < params.invitees.length; i++) {
-                            var tempInvitee = formatDataToMakeInvitee(params.invitees[i]);
-                            if (tempInvitee) {
-                                content.invitees.push(tempInvitee);
-                            }
-                        }
-                    } else {
-                        fireEvent('error', {
-                            code: 999,
-                            message: 'Invitees list is empty! Send an array of invitees to start a call with, Or send a Thread Id to start a call with current participants'
-                        });
-                        return;
-                    }
-                }
+        this.acceptCall = callModule.acceptCall;
 
-                startCallData.content = JSON.stringify(content);
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to start call!'
-                });
-                return;
-            }
+        this.rejectCall = this.cancelCall = callModule.rejectCall
 
-            callRequestController.callRequestReceived = true;
-            callRequestController.callEstablishedInMySide = true;
+        this.endCall = callModule.endCall;
 
-            return sendMessage(startCallData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
+        this.startRecordingCall = callModule.startRecordingCall;
 
-        this.startGroupCall = function (params, callback) {
-            var startCallData = {
-                chatMessageVOType: chatMessageVOTypes.GROUP_CALL_REQUEST,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            }, content = {
-                creatorClientDto: {}
-            };
+        this.stopRecordingCall = callModule.stopRecordingCall;
 
-            if (params) {
-                if (typeof params.type === 'string' && callTypes.hasOwnProperty(params.type.toUpperCase())) {
-                    content.type = callTypes[params.type.toUpperCase()];
-                } else {
-                    content.type = 0x0; // Defaults to AUDIO Call
-                }
+        this.startScreenShare = callModule.startScreenShare;
 
-                content.creatorClientDto.mute = (typeof params.mute === 'boolean') ? params.mute : false;
+        this.endScreenShare = callModule.endScreenShare;
 
-                if (params.clientType && typeof params.clientType === 'string' && callClientTypes[params.clientType.toUpperCase()] > 0) {
-                    content.creatorClientDto.clientType = callClientTypes[params.clientType.toUpperCase()];
-                } else {
-                    content.creatorClientDto.clientType = callClientType.WEB;
-                }
+        this.getCallsList = callModule.getCallsList;
 
-                if (typeof +params.threadId === 'number' && params.threadId > 0) {
-                    content.threadId = +params.threadId;
-                } else {
-                    if (Array.isArray(params.invitees)) {
-                        content.invitees = [];
-                        for (var i = 0; i < params.invitees.length; i++) {
-                            var tempInvitee = formatDataToMakeInvitee(params.invitees[i]);
-                            if (tempInvitee) {
-                                content.invitees.push(tempInvitee);
-                            }
-                        }
-                    } else {
-                        fireEvent('error', {
-                            code: 999,
-                            message: 'Invitees list is empty! Send an array of invitees to start a call with, Or send a Thread Id to start a call with current participants'
-                        });
-                        return;
-                    }
-                }
+        this.deleteFromCallList = callModule.deleteFromCallList;
 
-                startCallData.content = JSON.stringify(content);
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to start call!'
-                });
-                return;
-            }
+        this.getCallParticipants = callModule.getCallParticipants;
 
-            return sendMessage(startCallData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
+        this.addCallParticipants = callModule.addCallParticipants;
 
-        this.callReceived = callReceived;
+        this.removeCallParticipants = callModule.removeCallParticipants;
 
-        this.terminateCall = function (params, callback) {
-            var terminateCallData = {
-                chatMessageVOType: chatMessageVOTypes.TERMINATE_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            }, content = {};
+        this.muteCallParticipants = callModule.muteCallParticipants;
 
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    terminateCallData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid call id!'
-                    });
-                    return;
-                }
+        this.unMuteCallParticipants = callModule.unMuteCallParticipants;
 
-                terminateCallData.content = JSON.stringify(content);
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to terminate the call!'
-                });
-                return;
-            }
+        this.turnOnVideoCall = callModule.turnOnVideoCall;
 
-            return sendMessage(terminateCallData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
+        this.turnOffVideoCall = callModule.turnOffVideoCall;
 
-        this.acceptCall = function (params, callback) {
-            var acceptCallData = {
-                chatMessageVOType: chatMessageVOTypes.ACCEPT_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            }, content = {};
+        this.resizeCallVideo = callModule.resizeCallVideo;
 
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    acceptCallData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid call id!'
-                    });
-                    return;
-                }
+        this.restartMedia = callModule.restartMedia;
 
-                content.mute = (typeof params.mute === 'boolean') ? params.mute : false;
-
-                content.video = (typeof params.video === 'boolean') ? params.video : false;
-
-                content.videoCall = content.video;
-
-                if (params.clientType && typeof params.clientType === 'string' && callClientTypes[params.clientType.toUpperCase()] > 0) {
-                    content.clientType = callClientTypes[params.clientType.toUpperCase()];
-                } else {
-                    content.clientType = callClientType.WEB;
-                }
-
-                acceptCallData.content = JSON.stringify(content);
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to accept the call!'
-                });
-                return;
-            }
-
-
-            callRequestController.callEstablishedInMySide = true;
-            return sendMessage(acceptCallData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.rejectCall = this.cancelCall = function (params, callback) {
-            var rejectCallData = {
-                chatMessageVOType: chatMessageVOTypes.REJECT_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    rejectCallData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to reject the call!'
-                });
-                return;
-            }
-
-            return sendMessage(rejectCallData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.endCall = endCall;
-
-        this.startRecordingCall = function (params, callback) {
-            var recordCallData = {
-                chatMessageVOType: chatMessageVOTypes.RECORD_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    recordCallData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid Call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to Record call!'
-                });
-                return;
-            }
-
-            return sendMessage(recordCallData, {
-                onResult: function (result) {
-                    restartMedia(callTopics['sendVideoTopic']);
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.stopRecordingCall = function (params, callback) {
-            var stopRecordingCallData = {
-                chatMessageVOType: chatMessageVOTypes.END_RECORD_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    stopRecordingCallData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid Call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to Stop Recording the call!'
-                });
-                return;
-            }
-
-            return sendMessage(stopRecordingCallData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.startScreenShare = function (params, callback) {
-            var sendData = {
-                chatMessageVOType: chatMessageVOTypes.START_SCREEN_SHARE,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    sendData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid Call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to Share Screen!'
-                });
-                return;
-            }
-
-            return sendMessage(sendData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.endScreenShare = function (params, callback) {
-            var sendData = {
-                chatMessageVOType: chatMessageVOTypes.END_SCREEN_SHARE,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    sendData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid Call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to End Screen Sharing!'
-                });
-                return;
-            }
-
-            return sendMessage(sendData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.getCallsList = function (params, callback) {
-            var getCallListData = {
-                chatMessageVOType: chatMessageVOTypes.GET_CALLS,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            }, content = {};
-
-            if (params) {
-                if (typeof params.count === 'number' && params.count >= 0) {
-                    content.count = +params.count;
-                } else {
-                    content.count = 50;
-                }
-
-                if (typeof params.offset === 'number' && params.offset >= 0) {
-                    content.offset = +params.offset;
-                } else {
-                    content.offset = 0;
-                }
-
-                if (typeof params.creatorCoreUserId === 'number' && params.creatorCoreUserId > 0) {
-                    content.creatorCoreUserId = +params.creatorCoreUserId;
-                }
-
-                if (typeof params.creatorSsoId === 'number' && params.creatorSsoId > 0) {
-                    content.creatorSsoId = +params.creatorSsoId;
-                }
-
-                if (typeof params.name === 'string') {
-                    content.name = params.name;
-                }
-
-                if (typeof params.type === 'string' && callTypes.hasOwnProperty(params.type.toUpperCase())) {
-                    content.type = callTypes[params.type.toUpperCase()];
-                }
-
-                if (Array.isArray(params.callIds)) {
-                    content.callIds = params.callIds;
-                }
-
-                if (typeof params.contactType === 'string') {
-                    content.contactType = params.contactType;
-                }
-
-                if (typeof params.uniqueId === 'string') {
-                    content.uniqueId = params.uniqueId;
-                }
-
-                getCallListData.content = JSON.stringify(content);
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to End the call!'
-                });
-                return;
-            }
-
-            return sendMessage(getCallListData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.deleteFromCallList = function (params, callback) {
-            var sendData = {
-                chatMessageVOType: chatMessageVOTypes.DELETE_FROM_CALL_HISTORY,
-                typeCode: params.typeCode,
-                content: []
-            };
-
-            if (params) {
-                if (typeof params.contactType === 'string' && params.contactType.length) {
-                    sendData.content.contactType = params.contactType;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'You should enter a contactType!'
-                    });
-                    return;
-                }
-
-                if (Array.isArray(params.callIds)) {
-                    sendData.content = params.callIds;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to Delete a call from Call History!'
-                });
-                return;
-            }
-
-            return sendMessage(sendData, {
-                onResult: function (result) {
-                    var returnData = {
-                        hasError: result.hasError,
-                        cache: false,
-                        errorMessage: result.errorMessage,
-                        errorCode: result.errorCode
-                    };
-                    if (!returnData.hasError) {
-                        var messageContent = result.result;
-                        returnData.result = messageContent;
-                    }
-                    callback && callback(returnData);
-                }
-            });
-        };
-
-        this.getCallParticipants = function (params, callback) {
-            var sendMessageParams = {
-                chatMessageVOType: chatMessageVOTypes.ACTIVE_CALL_PARTICIPANTS,
-                typeCode: params.typeCode,
-                content: {}
-            };
-
-            if (params) {
-                if (isNaN(params.callId)) {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Call Id should be a valid number!'
-                    });
-                    return;
-                } else {
-                    var callId = +params.callId;
-                    sendMessageParams.subjectId = callId;
-
-                    var offset = (parseInt(params.offset) > 0)
-                        ? parseInt(params.offset)
-                        : 0,
-                        count = (parseInt(params.count) > 0)
-                            ? parseInt(params.count)
-                            : config.getHistoryCount;
-
-                    sendMessageParams.content.count = count;
-                    sendMessageParams.content.offset = offset;
-
-                    return sendMessage(sendMessageParams, {
-                        onResult: function (result) {
-                            var returnData = {
-                                hasError: result.hasError,
-                                cache: false,
-                                errorMessage: result.errorMessage,
-                                errorCode: result.errorCode
-                            };
-
-                            if (!returnData.hasError) {
-                                var messageContent = result.result,
-                                    messageLength = messageContent.length,
-                                    resultData = {
-                                        participants: reformatCallParticipants(messageContent),
-                                        contentCount: result.contentCount,
-                                        hasNext: (sendMessageParams.content.offset + sendMessageParams.content.count < result.contentCount && messageLength > 0),
-                                        nextOffset: sendMessageParams.content.offset * 1 + messageLength * 1
-                                    };
-
-                                returnData.result = resultData;
-                            }
-
-                            callback && callback(returnData);
-                            /**
-                             * Delete callback so if server pushes response before
-                             * cache, cache won't send data again
-                             */
-                            callback = undefined;
-
-                            if (!returnData.hasError) {
-                                fireEvent('callEvents', {
-                                    type: 'CALL_PARTICIPANTS_LIST_CHANGE',
-                                    threadId: callId,
-                                    result: returnData.result
-                                });
-                            }
-                        }
-                    });
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to Get Call Participants!'
-                });
-                return;
-            }
-        };
-
-        this.addCallParticipants = function (params, callback) {
-            /**
-             * + AddCallParticipantsRequest     {object}
-             *    - subjectId                   {int}
-             *    + content                     {list} List of CONTACT IDs or inviteeVO Objects
-             *    - uniqueId                    {string}
-             */
-
-            var sendMessageParams = {
-                chatMessageVOType: chatMessageVOTypes.ADD_CALL_PARTICIPANT,
-                typeCode: params.typeCode,
-                content: []
-            };
-
-            if (params) {
-                if (typeof params.callId === 'number' && params.callId > 0) {
-                    sendMessageParams.subjectId = params.callId;
-                }
-
-                if (Array.isArray(params.contactIds)) {
-                    sendMessageParams.content = params.contactIds;
-                }
-
-                if (Array.isArray(params.usernames)) {
-                    sendMessageParams.content = [];
-                    for (var i = 0; i < params.usernames.length; i++) {
-                        sendMessageParams.content.push({
-                            id: params.usernames[i],
-                            idType: inviteeVOidTypes.TO_BE_USER_USERNAME
-                        });
-                    }
-                }
-
-                if (Array.isArray(params.coreUserids)) {
-                    sendMessageParams.content = [];
-                    for (var i = 0; i < params.coreUserids.length; i++) {
-                        sendMessageParams.content.push({
-                            id: params.coreUserids[i],
-                            idType: inviteeVOidTypes.TO_BE_CORE_USER_ID
-                        });
-                    }
-                }
-            }
-
-            return sendMessage(sendMessageParams, {
-                onResult: function (result) {
-                    var returnData = {
-                        hasError: result.hasError,
-                        cache: false,
-                        errorMessage: result.errorMessage,
-                        errorCode: result.errorCode
-                    };
-                    if (!returnData.hasError) {
-                        // TODO : What is the result?!
-                        var messageContent = result.result;
-                        returnData.result = messageContent;
-                    }
-                    callback && callback(returnData);
-                }
-            });
-        };
-
-        this.removeCallParticipants = function (params, callback) {
-            /**
-             * + removeCallParticipantsRequest     {object}
-             *    - subjectId                   {int}
-             *    + content                     {list} List of Participants UserIds
-             */
-
-            var sendMessageParams = {
-                chatMessageVOType: chatMessageVOTypes.REMOVE_CALL_PARTICIPANT,
-                typeCode: params.typeCode,
-                content: []
-            };
-
-            if (params) {
-                if (typeof params.callId === 'number' && params.callId > 0) {
-                    sendMessageParams.subjectId = params.callId;
-                }
-
-                if (Array.isArray(params.userIds)) {
-                    sendMessageParams.content = params.userIds;
-                }
-            }
-
-            return sendMessage(sendMessageParams, {
-                onResult: function (result) {
-                    var returnData = {
-                        hasError: result.hasError,
-                        cache: false,
-                        errorMessage: result.errorMessage,
-                        errorCode: result.errorCode
-                    };
-                    if (!returnData.hasError) {
-                        // TODO : What is the result?!
-                        var messageContent = result.result;
-                        returnData.result = messageContent;
-                    }
-                    callback && callback(returnData);
-                }
-            });
-        };
-
-        this.muteCallParticipants = function (params, callback) {
-            /**
-             * + muteCallParticipantsRequest     {object}
-             *    - subjectId                   {int}
-             *    + content                     {list} List of Participants UserIds
-             */
-
-            var sendMessageParams = {
-                chatMessageVOType: chatMessageVOTypes.MUTE_CALL_PARTICIPANT,
-                typeCode: params.typeCode,
-                content: []
-            };
-
-            if (params) {
-                if (typeof params.callId === 'number' && params.callId > 0) {
-                    sendMessageParams.subjectId = params.callId;
-                }
-
-                if (Array.isArray(params.userIds)) {
-                    sendMessageParams.content = params.userIds;
-                }
-            }
-
-            return sendMessage(sendMessageParams, {
-                onResult: function (result) {
-                    var returnData = {
-                        hasError: result.hasError,
-                        cache: false,
-                        errorMessage: result.errorMessage,
-                        errorCode: result.errorCode
-                    };
-                    if (!returnData.hasError) {
-                        // TODO : What is the result?!
-                        var messageContent = result.result;
-                        returnData.result = messageContent;
-                    }
-                    callback && callback(returnData);
-                }
-            });
-        };
-
-        this.unMuteCallParticipants = function (params, callback) {
-            /**
-             * + unMuteCallParticipantsRequest     {object}
-             *    - subjectId                   {int}
-             *    + content                     {list} List of Participants UserIds
-             */
-
-            var sendMessageParams = {
-                chatMessageVOType: chatMessageVOTypes.UNMUTE_CALL_PARTICIPANT,
-                typeCode: params.typeCode,
-                content: []
-            };
-
-            if (params) {
-                if (typeof params.callId === 'number' && params.callId > 0) {
-                    sendMessageParams.subjectId = params.callId;
-                }
-
-                if (Array.isArray(params.userIds)) {
-                    sendMessageParams.content = params.userIds;
-                }
-            }
-
-            return sendMessage(sendMessageParams, {
-                onResult: function (result) {
-                    var returnData = {
-                        hasError: result.hasError,
-                        cache: false,
-                        errorMessage: result.errorMessage,
-                        errorCode: result.errorCode
-                    };
-                    if (!returnData.hasError) {
-                        // TODO : What is the result?!
-                        var messageContent = result.result;
-                        returnData.result = messageContent;
-                    }
-                    callback && callback(returnData);
-                }
-            });
-        };
-
-        this.turnOnVideoCall = function (params, callback) {
-            var turnOnVideoData = {
-                chatMessageVOType: chatMessageVOTypes.TURN_ON_VIDEO_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    turnOnVideoData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to turn on the video call!'
-                });
-                return;
-            }
-
-            return sendMessage(turnOnVideoData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.turnOffVideoCall = function (params, callback) {
-            var turnOffVideoData = {
-                chatMessageVOType: chatMessageVOTypes.TURN_OFF_VIDEO_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    turnOffVideoData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to turn off the video call!'
-                });
-                return;
-            }
-
-            return sendMessage(turnOffVideoData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.resizeCallVideo = function (params, callback) {
-            if (params) {
-                if (!!params.width && +params.width > 0) {
-                    callVideoMinWidth = +params.width;
-                }
-
-                if (!!params.height && +params.height > 0) {
-                    callVideoMinHeight = +params.height;
-                }
-
-                webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].applyConstraints({
-                    "width": callVideoMinWidth,
-                    "height": callVideoMinHeight
-                })
-                    .then((res) => {
-                        uiRemoteMedias[callTopics['sendVideoTopic']].style.width = callVideoMinWidth + 'px';
-                        uiRemoteMedias[callTopics['sendVideoTopic']].style.height = callVideoMinHeight + 'px';
-                        callback && callback();
-                    })
-                    .catch((e) => {
-                        fireEvent('error', {
-                            code: 999,
-                            message: e
-                        });
-                    });
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to resize the video call! Send an object like {width: 640, height: 480}'
-                });
-                return;
-            }
-        }
-
-        this.restartMedia = restartMedia;
-
-        this.callStop = callStop;
+        this.callStop = callModule.callStop;
 
         this.getMutualGroups = function (params, callback) {
             var count = +params.count ? +params.count : 50,
@@ -15625,7 +12797,7 @@
                         idType: +inviteeVOidTypes[params.user.idType]
                     };
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You should send an user object like {id: 92, idType: "TO_BE_USER_CONTACT_ID"}'
                     });
@@ -15633,14 +12805,14 @@
                 }
 
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Get Mutual Groups!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -15702,7 +12874,7 @@
                         if (typeof params.threadId === 'number' && params.threadId > 0) {
                             content.locationId = +params.threadId;
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 999,
                                 message: 'You set the location to be a thread, you have to send a valid ThreadId'
                             });
@@ -15710,7 +12882,7 @@
                         }
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Send a valid location type (CHAT / THREAD / CONTACTS)'
                     });
@@ -15719,14 +12891,14 @@
 
                 locationPingData.content = JSON.stringify(content);
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to LocationPing!'
                 });
                 return;
             }
 
-            return sendMessage(locationPingData, {
+            return chatMessaging.sendMessage(locationPingData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -15750,6 +12922,9 @@
         this.setToken = function (newToken) {
             if (typeof newToken !== 'undefined') {
                 token = newToken;
+                callModule.updateToken(token);
+                chatMessaging.updateToken(token);
+                chatEvents.updateToken(token);
             }
         };
 
@@ -15758,13 +12933,11 @@
         this.logout = function () {
             clearChatServerCaches();
 
-            // Delete all event callbacks
-            for (var i in eventCallbacks) {
-                delete eventCallbacks[i];
-            }
-            messagesCallbacks = {};
-            sendMessageCallbacks = {};
-            threadCallbacks = {};
+            chatEvents.clearEventCallbacks();
+
+            chatMessaging.messagesCallbacks = {};
+            chatMessaging.sendMessageCallbacks = {};
+            chatMessaging.threadCallbacks = {};
 
             asyncClient.logout();
         };

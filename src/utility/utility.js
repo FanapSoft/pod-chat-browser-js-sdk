@@ -23,6 +23,26 @@
         };
 
         /**
+         * is Valid Json
+         *
+         * This functions checks if a string is valid json or not?
+         *
+         * @access private
+         *
+         * @param {string}  jsonString   Json String to be checked
+         *
+         * @return {boolean}
+         */
+        this.isValidJson = function (jsonString) {
+            try {
+                JSON.parse(jsonString);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        },
+
+        /**
          * Generate UUID
          *
          * Generates Random String
