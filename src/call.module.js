@@ -599,10 +599,10 @@
                 }, function (res) {
                     if (res.done === 'TRUE') {
                         callStopQueue.callStarted = true;
-                        generateAndSendSdpOffers(params);
+                        generateAndSendSdpOffers(params, [callTopics['sendVideoTopic'], callTopics['receiveVideoTopic'], callTopics['sendAudioTopic'], callTopics['receiveAudioTopic']]);
                     } else if (res.done === 'SKIP') {
                         callStopQueue.callStarted = true;
-                        generateAndSendSdpOffers(params);
+                        generateAndSendSdpOffers(params, [callTopics['sendVideoTopic'], callTopics['receiveVideoTopic'], callTopics['sendAudioTopic'], callTopics['receiveAudioTopic']]);
                     } else {
                         consoleLogging && console.log('CREATE_SESSION faced a problem', res);
                         endCall({
@@ -612,42 +612,45 @@
                 });
             },
 
-            shouldReconnectCall = function () {
+            shouldReconnectCall = function (topic) {
                 if (currentCallParams && Object.keys(currentCallParams).length) {
-                    for (var peer in webpeers) {
-                        if (webpeers[peer]) {
-                            if (webpeers[peer].peerConnection.iceConnectionState != 'connected') {
-                                chatEvents.fireEvent('callEvents', {
-                                    type: 'CALL_STATUS',
-                                    errorCode: 7000,
-                                    errorMessage: `Call Peer (${peer}) is not in connected state, Restarting call in progress ...!`,
-                                    errorInfo: webpeers[peer]
-                                });
+                    if (webpeers[topic] && webpeers[topic].peerConnection.iceConnectionState != 'connected') {
 
-                                sendCallMessage({
-                                    id: 'STOPALL'
-                                }, function (result) {
-                                    if (result.done === 'TRUE') {
-                                        handleCallSocketOpen(currentCallParams);
-                                    } else if (result.done === 'SKIP') {
-                                        handleCallSocketOpen(currentCallParams);
-                                    } else {
-                                        consoleLogging && console.log('STOPALL faced a problem', result);
-                                        endCall({
-                                            callId: currentCallId
-                                        });
-                                        callStop();
-                                    }
-                                });
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_STATUS',
+                            errorCode: 7000,
+                            errorMessage: `Call Peer (${topic}) is not in connected state, Restarting call in progress ...!`,
+                            errorInfo: webpeers[topic]
+                        });
 
-                                break;
+                        sendCallMessage({
+                            id: 'STOP',
+                            topic: topic
+                        }, function (result) {
+                            if (result.done === 'TRUE') {
+                                //handleCallSocketOpen(currentCallParams);
+                                /*webpeers[topic].dispose();
+                                webpeers[topic] = null;*/
+                                generateAndSendSdpOffers(currentCallParams, [topic]);
+
+                            } else if (result.done === 'SKIP') {
+                                //handleCallSocketOpen(currentCallParams);
+                                /*webpeers[topic].dispose();
+                                webpeers[topic] = null;*/
+                                generateAndSendSdpOffers(currentCallParams, [topic]);
+                            } else {
+                                consoleLogging && console.log('STOP topic faced a problem', result);
+                                endCall({
+                                    callId: currentCallId
+                                });
+                                callStop();
                             }
-                        }
+                        });
                     }
                 }
             },
 
-            generateAndSendSdpOffers = function (params) {
+            generateAndSendSdpOffers = function (params, topics) {
                 var turnServers = [];
 
                 if (!!params.turnAddress && params.turnAddress.length > 0) {
@@ -674,248 +677,227 @@
 
                 // Video Topics
                 if (params.callVideo) {
-                    const sendVideoOptions = {
-                        localVideo: uiRemoteMedias[callTopics['sendVideoTopic']],
-                        mediaConstraints: {
-                            audio: false,
-                            video: {
-                                width: callVideoMinWidth,
-                                height: callVideoMinHeight,
-                                framerate: 15
-                            }
-                        },
-                        iceTransportPolicy: 'relay',
-                        onicecandidate: (candidate) => {
-                            if (webpeersMetadata[callTopics['sendVideoTopic']].interval !== null) {
-                                clearInterval(webpeersMetadata[callTopics['sendVideoTopic']].interval);
-                            }
-                            webpeersMetadata[callTopics['sendVideoTopic']].interval = setInterval(function () {
-                                if (webpeersMetadata[callTopics['sendVideoTopic']].sdpAnswerReceived === true) {
-                                    webpeersMetadata[callTopics['sendVideoTopic']].sdpAnswerReceived = false;
-                                    clearInterval(webpeersMetadata[callTopics['sendVideoTopic']].interval);
-                                    sendCallMessage({
-                                        id: 'ADD_ICE_CANDIDATE',
-                                        topic: callTopics['sendVideoTopic'],
-                                        candidateDto: candidate
-                                    })
-                                }
-                            }, 500, {candidate: candidate});
-                            /*setTimeout(function () {
-                                sendCallMessage({
-                                    id: 'ADD_ICE_CANDIDATE',
-                                    topic: callTopics['sendVideoTopic'],
-                                    candidateDto: candidate
-                                })
-                            }, 2000, {candidate: candidate});*/
-                        },
-                        configuration: {
-                            iceServers: turnServers
-                        }
-                    };
-
-                    const receiveVideoOptions = {
-                        remoteVideo: uiRemoteMedias[callTopics['receiveVideoTopic']],
-                        mediaConstraints: {audio: false, video: true},
-                        iceTransportPolicy: 'relay',
-                        onicecandidate: (candidate) => {
-                            if (webpeersMetadata[callTopics['receiveVideoTopic']].interval !== null) {
-                                clearInterval(webpeersMetadata[callTopics['receiveVideoTopic']].interval);
-                            }
-                            webpeersMetadata[callTopics['receiveVideoTopic']].interval = setInterval(function () {
-                                if (webpeersMetadata[callTopics['receiveVideoTopic']].sdpAnswerReceived === true) {
-                                    webpeersMetadata[callTopics['receiveVideoTopic']].sdpAnswerReceived = false;
+                    if(topics.indexOf(callTopics['receiveVideoTopic']) !== -1) {
+                        const receiveVideoOptions = {
+                            remoteVideo: uiRemoteMedias[callTopics['receiveVideoTopic']],
+                            mediaConstraints: {audio: false, video: true},
+                            iceTransportPolicy: 'relay',
+                            onicecandidate: (candidate) => {
+                                if (webpeersMetadata[callTopics['receiveVideoTopic']].interval !== null) {
                                     clearInterval(webpeersMetadata[callTopics['receiveVideoTopic']].interval);
-                                    sendCallMessage({
-                                        id: 'ADD_ICE_CANDIDATE',
-                                        topic: callTopics['receiveVideoTopic'],
-                                        candidateDto: candidate
-                                    })
                                 }
-                            }, 500, {candidate: candidate});
+                                webpeersMetadata[callTopics['receiveVideoTopic']].interval = setInterval(function () {
+                                    if (webpeersMetadata[callTopics['receiveVideoTopic']].sdpAnswerReceived === true) {
+                                        webpeersMetadata[callTopics['receiveVideoTopic']].sdpAnswerReceived = false;
+                                        clearInterval(webpeersMetadata[callTopics['receiveVideoTopic']].interval);
+                                        sendCallMessage({
+                                            id: 'ADD_ICE_CANDIDATE',
+                                            topic: callTopics['receiveVideoTopic'],
+                                            candidateDto: candidate
+                                        })
+                                    }
+                                }, 500, {candidate: candidate});
+                            },
+                            configuration: {
+                                iceServers: turnServers
+                            }
+                        };
 
-                            /*                            setTimeout(function () {
-                                                            sendCallMessage({
-                                                                id: 'ADD_ICE_CANDIDATE',
-                                                                topic: callTopics['receiveVideoTopic'],
-                                                                candidateDto: candidate
-                                                            })
-                                                        }, 2000, {candidate: candidate});*/
-                        },
-                        configuration: {
-                            iceServers: turnServers
-                        }
-                    };
-
-                    webpeers[callTopics['receiveVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveVideoOptions, function (err) {
-                        if (err) {
-                            console.error("[start/webRtcReceiveVideoPeer] Error: " + explainUserMediaError(err, 'video'));
-                            return;
-                        }
-
-                        watchRTCPeerConnection(callTopics['receiveVideoTopic']);
-
-                        webpeers[callTopics['receiveVideoTopic']].generateOffer((err, sdpOffer) => {
+                        webpeers[callTopics['receiveVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveVideoOptions, function (err) {
                             if (err) {
-                                console.error("[start/WebRtcVideoPeerReceiveOnly/generateOffer] " + err);
+                                console.error("[start/webRtcReceiveVideoPeer] Error: " + explainUserMediaError(err, 'video'));
                                 return;
                             }
 
-                            sendCallMessage({
-                                id: 'RECIVE_SDP_OFFER',
-                                sdpOffer: sdpOffer,
-                                useComedia: true,
-                                useSrtp: false,
-                                topic: callTopics['receiveVideoTopic'],
-                                mediaType: 2
-                            });
-                        });
-                    });
+                            watchRTCPeerConnection(callTopics['receiveVideoTopic']);
 
-                    setTimeout(function () {
-                        webpeers[callTopics['sendVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendVideoOptions, function (err) {
-                            if (err) {
-                                sendCallSocketError("[start/WebRtcVideoPeerSendOnly] Error: " + explainUserMediaError(err, 'video'));
-                                //callStop();
-                                return;
-                            }
-
-                            watchRTCPeerConnection(callTopics['sendVideoTopic']);
-                            startMedia(uiRemoteMedias[callTopics['sendVideoTopic']]);
-
-                            webpeers[callTopics['sendVideoTopic']].generateOffer((err, sdpOffer) => {
+                            webpeers[callTopics['receiveVideoTopic']].generateOffer((err, sdpOffer) => {
                                 if (err) {
-                                    sendCallSocketError("[start/WebRtcVideoPeerSendOnly/generateOffer] Error: " + err);
-                                    //callStop();
+                                    console.error("[start/WebRtcVideoPeerReceiveOnly/generateOffer] " + err);
                                     return;
                                 }
 
                                 sendCallMessage({
-                                    id: 'SEND_SDP_OFFER',
-                                    topic: callTopics['sendVideoTopic'],
+                                    id: 'RECIVE_SDP_OFFER',
                                     sdpOffer: sdpOffer,
+                                    useComedia: true,
+                                    useSrtp: false,
+                                    topic: callTopics['receiveVideoTopic'],
                                     mediaType: 2
                                 });
                             });
                         });
-                    }, 2000);
+                    }
+
+                    if(topics.indexOf(callTopics['sendVideoTopic']) !== -1) {
+                        const sendVideoOptions = {
+                            localVideo: uiRemoteMedias[callTopics['sendVideoTopic']],
+                            mediaConstraints: {
+                                audio: false,
+                                video: {
+                                    width: callVideoMinWidth,
+                                    height: callVideoMinHeight,
+                                    framerate: 15
+                                }
+                            },
+                            iceTransportPolicy: 'relay',
+                            onicecandidate: (candidate) => {
+                                if (webpeersMetadata[callTopics['sendVideoTopic']].interval !== null) {
+                                    clearInterval(webpeersMetadata[callTopics['sendVideoTopic']].interval);
+                                }
+                                webpeersMetadata[callTopics['sendVideoTopic']].interval = setInterval(function () {
+                                    if (webpeersMetadata[callTopics['sendVideoTopic']].sdpAnswerReceived === true) {
+                                        webpeersMetadata[callTopics['sendVideoTopic']].sdpAnswerReceived = false;
+                                        clearInterval(webpeersMetadata[callTopics['sendVideoTopic']].interval);
+                                        sendCallMessage({
+                                            id: 'ADD_ICE_CANDIDATE',
+                                            topic: callTopics['sendVideoTopic'],
+                                            candidateDto: candidate
+                                        })
+                                    }
+                                }, 500, {candidate: candidate});
+
+                            },
+                            configuration: {
+                                iceServers: turnServers
+                            }
+                        };
+
+                        setTimeout(function () {
+                            webpeers[callTopics['sendVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendVideoOptions, function (err) {
+                                if (err) {
+                                    sendCallSocketError("[start/WebRtcVideoPeerSendOnly] Error: " + explainUserMediaError(err, 'video'));
+                                    //callStop();
+                                    return;
+                                }
+
+                                watchRTCPeerConnection(callTopics['sendVideoTopic']);
+                                startMedia(uiRemoteMedias[callTopics['sendVideoTopic']]);
+
+                                webpeers[callTopics['sendVideoTopic']].generateOffer((err, sdpOffer) => {
+                                    if (err) {
+                                        sendCallSocketError("[start/WebRtcVideoPeerSendOnly/generateOffer] Error: " + err);
+                                        //callStop();
+                                        return;
+                                    }
+
+                                    sendCallMessage({
+                                        id: 'SEND_SDP_OFFER',
+                                        topic: callTopics['sendVideoTopic'],
+                                        sdpOffer: sdpOffer,
+                                        mediaType: 2
+                                    });
+                                });
+                            });
+                        }, 2000);
+                    }
                 }
 
                 // Audio Topics
                 if (params.callAudio) {
-                    const sendAudioOptions = {
-                        localVideo: uiRemoteMedias[callTopics['sendAudioTopic']],
-                        mediaConstraints: {audio: true, video: false},
-                        iceTransportPolicy: 'relay',
-                        onicecandidate: (candidate) => {
-                            if (webpeersMetadata[callTopics['sendAudioTopic']].interval !== null) {
-                                clearInterval(webpeersMetadata[callTopics['sendAudioTopic']].interval);
-                            }
-                            webpeersMetadata[callTopics['sendAudioTopic']].interval = setInterval(function () {
-                                if (webpeersMetadata[callTopics['sendAudioTopic']].sdpAnswerReceived === true) {
-                                    webpeersMetadata[callTopics['sendAudioTopic']].sdpAnswerReceived = false;
-                                    clearInterval(webpeersMetadata[callTopics['sendAudioTopic']].interval);
-                                    sendCallMessage({
-                                        id: 'ADD_ICE_CANDIDATE',
-                                        topic: callTopics['sendAudioTopic'],
-                                        candidateDto: candidate,
-                                    })
-                                }
-                            }, 500, {candidate: candidate});
-                            /*                            setTimeout(function () {
-                                                            sendCallMessage({
-                                                                id: 'ADD_ICE_CANDIDATE',
-                                                                topic: callTopics['sendAudioTopic'],
-                                                                candidateDto: candidate,
-                                                            })
-                                                        }, 2000, {candidate: candidate});*/
-                        },
-                        configuration: {
-                            iceServers: turnServers
-                        }
-                    };
-
-                    const receiveAudioOptions = {
-                        remoteVideo: uiRemoteMedias[callTopics['receiveAudioTopic']],
-                        mediaConstraints: {audio: true, video: false},
-                        iceTransportPolicy: 'relay',
-                        onicecandidate: (candidate) => {
-                            if (webpeersMetadata[callTopics['receiveAudioTopic']].interval !== null) {
-                                clearInterval(webpeersMetadata[callTopics['receiveAudioTopic']].interval);
-                            }
-                            webpeersMetadata[callTopics['receiveAudioTopic']].interval = setInterval(function () {
-                                if (webpeersMetadata[callTopics['receiveAudioTopic']].sdpAnswerReceived === true) {
-                                    webpeersMetadata[callTopics['receiveAudioTopic']].sdpAnswerReceived = false;
+                    if(topics.indexOf(callTopics['receiveAudioTopic']) !== -1) {
+                        const receiveAudioOptions = {
+                            remoteVideo: uiRemoteMedias[callTopics['receiveAudioTopic']],
+                            mediaConstraints: {audio: true, video: false},
+                            iceTransportPolicy: 'relay',
+                            onicecandidate: (candidate) => {
+                                if (webpeersMetadata[callTopics['receiveAudioTopic']].interval !== null) {
                                     clearInterval(webpeersMetadata[callTopics['receiveAudioTopic']].interval);
-                                    sendCallMessage({
-                                        id: 'ADD_ICE_CANDIDATE',
-                                        topic: callTopics['receiveAudioTopic'],
-                                        candidateDto: candidate,
-                                    })
                                 }
-                            }, 500, {candidate: candidate});
+                                webpeersMetadata[callTopics['receiveAudioTopic']].interval = setInterval(function () {
+                                    if (webpeersMetadata[callTopics['receiveAudioTopic']].sdpAnswerReceived === true) {
+                                        webpeersMetadata[callTopics['receiveAudioTopic']].sdpAnswerReceived = false;
+                                        clearInterval(webpeersMetadata[callTopics['receiveAudioTopic']].interval);
+                                        sendCallMessage({
+                                            id: 'ADD_ICE_CANDIDATE',
+                                            topic: callTopics['receiveAudioTopic'],
+                                            candidateDto: candidate,
+                                        })
+                                    }
+                                }, 500, {candidate: candidate});
+                            },
+                            configuration: {
+                                iceServers: turnServers
+                            }
+                        };
 
-                            /*                            setTimeout(function () {
-                                                            sendCallMessage({
-                                                                id: 'ADD_ICE_CANDIDATE',
-                                                                topic: callTopics['receiveAudioTopic'],
-                                                                candidateDto: candidate,
-                                                            })
-                                                        }, 2000, {candidate: candidate});*/
-                        },
-                        configuration: {
-                            iceServers: turnServers
-                        }
-                    };
-
-                    webpeers[callTopics['receiveAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveAudioOptions, function (err) {
-                        if (err) {
-                            console.error("[start/WebRtcAudioPeerReceiveOnly] Error: " + explainUserMediaError(err, 'audio'));
-                            return;
-                        }
-
-                        watchRTCPeerConnection(callTopics['receiveAudioTopic']);
-
-                        webpeers[callTopics['receiveAudioTopic']].generateOffer((err, sdpOffer) => {
+                        webpeers[callTopics['receiveAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveAudioOptions, function (err) {
                             if (err) {
-                                console.error("[start/WebRtcAudioPeerReceiveOnly/generateOffer] " + err);
+                                console.error("[start/WebRtcAudioPeerReceiveOnly] Error: " + explainUserMediaError(err, 'audio'));
                                 return;
                             }
-                            sendCallMessage({
-                                id: 'RECIVE_SDP_OFFER',
-                                sdpOffer: sdpOffer,
-                                useComedia: false,
-                                useSrtp: false,
-                                mediaType: 1,
-                                topic: callTopics['receiveAudioTopic']
-                            });
-                        });
-                    });
 
-                    setTimeout(function () {
-                        webpeers[callTopics['sendAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendAudioOptions, function (err) {
-                            if (err) {
-                                sendCallSocketError("[start/WebRtcAudioPeerSendOnly] Error: " + explainUserMediaError(err, 'audio'));
-                                //callStop();
-                                return;
-                            }
-                            watchRTCPeerConnection(callTopics['sendAudioTopic']);
-                            startMedia(uiRemoteMedias[callTopics['sendAudioTopic']]);
+                            watchRTCPeerConnection(callTopics['receiveAudioTopic']);
 
-                            webpeers[callTopics['sendAudioTopic']].generateOffer((err, sdpOffer) => {
+                            webpeers[callTopics['receiveAudioTopic']].generateOffer((err, sdpOffer) => {
                                 if (err) {
-                                    sendCallSocketError("[start/WebRtcAudioPeerSendOnly/generateOffer] Error: " + err);
-                                    //callStop();
+                                    console.error("[start/WebRtcAudioPeerReceiveOnly/generateOffer] " + err);
                                     return;
                                 }
                                 sendCallMessage({
-                                    id: 'SEND_SDP_OFFER',
-                                    topic: callTopics['sendAudioTopic'],
+                                    id: 'RECIVE_SDP_OFFER',
                                     sdpOffer: sdpOffer,
-                                    mediaType: 1
+                                    useComedia: false,
+                                    useSrtp: false,
+                                    mediaType: 1,
+                                    topic: callTopics['receiveAudioTopic']
                                 });
                             });
                         });
-                    }, 2000);
+                    }
+
+                    if(topics.indexOf(callTopics['sendAudioTopic']) !== -1) {
+                        const sendAudioOptions = {
+                            localVideo: uiRemoteMedias[callTopics['sendAudioTopic']],
+                            mediaConstraints: {audio: true, video: false},
+                            iceTransportPolicy: 'relay',
+                            onicecandidate: (candidate) => {
+                                if (webpeersMetadata[callTopics['sendAudioTopic']].interval !== null) {
+                                    clearInterval(webpeersMetadata[callTopics['sendAudioTopic']].interval);
+                                }
+                                webpeersMetadata[callTopics['sendAudioTopic']].interval = setInterval(function () {
+                                    if (webpeersMetadata[callTopics['sendAudioTopic']].sdpAnswerReceived === true) {
+                                        webpeersMetadata[callTopics['sendAudioTopic']].sdpAnswerReceived = false;
+                                        clearInterval(webpeersMetadata[callTopics['sendAudioTopic']].interval);
+                                        sendCallMessage({
+                                            id: 'ADD_ICE_CANDIDATE',
+                                            topic: callTopics['sendAudioTopic'],
+                                            candidateDto: candidate,
+                                        })
+                                    }
+                                }, 500, {candidate: candidate});
+                            },
+                            configuration: {
+                                iceServers: turnServers
+                            }
+                        };
+
+                        setTimeout(function () {
+                            webpeers[callTopics['sendAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendAudioOptions, function (err) {
+                                if (err) {
+                                    sendCallSocketError("[start/WebRtcAudioPeerSendOnly] Error: " + explainUserMediaError(err, 'audio'));
+                                    //callStop();
+                                    return;
+                                }
+                                watchRTCPeerConnection(callTopics['sendAudioTopic']);
+                                startMedia(uiRemoteMedias[callTopics['sendAudioTopic']]);
+
+                                webpeers[callTopics['sendAudioTopic']].generateOffer((err, sdpOffer) => {
+                                    if (err) {
+                                        sendCallSocketError("[start/WebRtcAudioPeerSendOnly/generateOffer] Error: " + err);
+                                        //callStop();
+                                        return;
+                                    }
+                                    sendCallMessage({
+                                        id: 'SEND_SDP_OFFER',
+                                        topic: callTopics['sendAudioTopic'],
+                                        sdpOffer: sdpOffer,
+                                        mediaType: 1
+                                    });
+                                });
+                            });
+                        }, 2000);
+                    }
                 }
 
                 /*setTimeout(function () {
@@ -1042,6 +1024,16 @@
                                 errorMessage: `Call Peer (${topic}) has failed!`,
                                 errorInfo: webpeers[topic]
                             });
+
+                            if(chatMessaging.chatState) {
+                                shouldReconnectCall(topic);
+                            } else {
+                                setTimeout(function () {
+                                    if(chatMessaging.chatState) {
+                                        shouldReconnectCall(topic);
+                                    }
+                                }, 5000);
+                            }
                         }
 
                         if (webpeers[topic].peerConnection.iceConnectionState === "connected") {
@@ -1409,7 +1401,11 @@
                         chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
                     }
                     break;*/
-
+                case 'STOP':
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
+                    }
+                    break;
                 case 'CLOSE':
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
