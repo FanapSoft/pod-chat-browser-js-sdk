@@ -1474,7 +1474,7 @@
             },
 
             startMedia = function (media) {
-                console.log("startMedia:: ", media);
+                consoleLogging && console.log("startMedia:: ", media);
                 media.play().catch((err) => {
                     if (err.name === 'NotAllowedError') {
                         chatEvents.fireEvent('callEvents', {
