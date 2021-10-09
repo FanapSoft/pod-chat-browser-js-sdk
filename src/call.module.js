@@ -669,6 +669,11 @@
                         }
                     });
                 },
+                /**
+                 * First we start a call
+                 *
+                 * @param params
+                 */
                 startCall: function (params) {
                     var callController = this;
                     if (params.callVideo) {
@@ -684,13 +689,25 @@
                         }, 2000)
                     }
                 },
+                /**
+                 * When call started we can add participants
+                 *
+                 * @param params
+                 * @param direction
+                 */
                 addParticipant: function (params, direction) {
                     //TODO: generate html elements
                     //TODO: add user to callUsers
                     //TODO: createTopics
                 },
+                /**
+                 * When call started we can remove a participant from the call
+                 *
+                 * @param params
+                 * @param direction
+                 */
                 removeParticipant: function (user) {
-                    if(user === chatMessaging.userInfo) {
+                    if(user === chatMessaging.userInfo.id) {
                         //TODO: only remove me
                         callStop();
                         return;
