@@ -2039,7 +2039,7 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 
 <form>
     <fieldset>
-        <legend>Upload Image</legend>
+        <legend>Upload Image - Deprecated</legend>
         <input type="file" name="image" id="imageInput" value="">
         <button type="button" name="button" id="uploadImage">Upload Image</button>
         <br>
@@ -2054,7 +2054,22 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 
 <form>
     <fieldset>
-        <legend>Upload File</legend>
+        <legend>Upload Image To Podspace</legend>
+        <input type="file" name="uploadImageToPodspaceInputName" id="uploadImageToPodspaceInputId" value="">
+        <button type="button" name="button" id="uploadImageToPodspaceBtnId">Upload Image</button>
+        <br>
+        <img id="uploadedImageToPodspace"/>
+        <div id="uploadedImageToPodspaceData"></div>
+    </fieldset>
+</form>
+
+<br>
+<hr>
+<br>
+
+<form>
+    <fieldset>
+        <legend>Upload File - Deprecated</legend>
         <input type="file" name="file" id="fileInput" value="">
         <button type="button" name="button" id="uploadFile">Upload File</button>
         <br>
@@ -2068,7 +2083,21 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 
 <form>
     <fieldset>
-        <legend>Get Image</legend>
+        <legend>Upload File To Podspace</legend>
+        <input type="file" name="file" id="uploadFileToPodspaceInputId" value="">
+        <button type="button" name="button" id="uploadFileToPodspaceBtnId">Upload File</button>
+        <br>
+        <div id="uploadedFileToPodspace"></div>
+    </fieldset>
+</form>
+
+<br>
+<hr>
+<br>
+
+<form>
+    <fieldset>
+        <legend>Get Image - Deprecated</legend>
         <label for="imageId">Image ID : </label>
         <input type="text" name="imageId" id="imageId" value="">
         <br>
@@ -2086,7 +2115,7 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 
 <form>
     <fieldset>
-        <legend>Get File</legend>
+        <legend>Get File - Deprecated</legend>
         <label for="fileId">File ID : </label>
         <input type="text" name="fileId" id="fileId" value="">
         <br>
@@ -2131,7 +2160,12 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
         <label for="imageHash">HashCode:</label>
         <input type="text" name="imageHash" id="imageHash" value=""><br>
         <label for="imageSize">Image Size:</label>
-        <input type="text" name="imageSize" id="imageSize" value="3"><br>
+        <select name="imageSize" id="imageSize" value="ACTUAL">
+            <option value="ACTUAL">ACTUAL</option>
+            <option value="SMALL">SMALL</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="LARGE">LARGE</option>
+        </select><br>
         <label for="imageQuality">Image Quality:</label>
         <input type="text" name="imageQuality" id="imageQuality" value="1"><br>
         <label for="imageCrop">Crop:</label>
@@ -2619,6 +2653,45 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
         });
 
     /**
+     * UPLOAD IMAGE TO PODSPACE
+     */
+    document.getElementById("uploadImageToPodspaceBtnId")
+        .addEventListener("click", function () {
+            var imageInput = document.getElementById("uploadImageToPodspaceInputId"),
+                image = imageInput.files[0];
+
+            var uploadResult = chatAgent.uploadImageToPodspace({
+                image: image,
+                // fileName: "Test Name",
+                xC: 100,
+                yC: 100,
+                hC: 800,
+                wC: 800
+            }, function (result) {
+                console.log("uploadImageToPodspace: ",result);
+                if (!result.hasError) {
+                    var image = result.result;
+
+                    chatAgent.getImageFromPodspace({
+                        imageId: image.id,
+                        hashCode: image.hash
+                    }, function (result) {
+                        if (!result.hasError) {
+                            document.getElementById("uploadedImageToPodspace").src = result.result;
+                            document.getElementById("uploadedImageToPodspaceData").innerHTML =
+                                "<pre><br>Uploaded Image Id: " +
+                                image.id + "<br>Uploaded Image Name : " + image.name +
+                                "<br>Uploaded Image HashCode : " +
+                                image.hash + "</pre>";
+                        }
+                    });
+                }
+            });
+
+            console.log(uploadResult);
+        });
+
+    /**
      * UPLOAD FILE
      */
     document.getElementById("uploadFile")
@@ -2637,6 +2710,32 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
                             .id +
                         "<br>Uploaded File Name : " + file.name + "<br>Uploaded File HashCode : " + file
                             .hashCode +
+                        "</pre>";
+                }
+            });
+
+            console.log(uploadResult);
+        });
+
+    /**
+     * UPLOAD FILE TO PODSPACE
+     */
+    document.getElementById("uploadFileToPodspaceBtnId")
+        .addEventListener("click", function () {
+            var fileInput = document.getElementById("uploadFileToPodspaceInputId"),
+                file = fileInput.files[0];
+
+            var uploadResult = chatAgent.uploadFileToPodspace({
+                file: file,
+                // fileName: "Test Name"
+            }, function (result) {
+                console.log(result);
+                if (!result.hasError) {
+                    var file = result.result;
+                    document.getElementById("uploadedFileToPodspace").innerHTML = "<pre><br>Uploaded File Id: " + file
+                            .id +
+                        "<br>Uploaded File Name : " + file.name + "<br>Uploaded File HashCode : " + file
+                            .hash +
                         "</pre>";
                 }
             });
