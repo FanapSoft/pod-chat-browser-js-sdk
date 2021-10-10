@@ -321,13 +321,21 @@
                 UPLOAD_FILE: '/nzh/uploadFile',
                 GET_FILE: '/nzh/file/',
                 // POD Drive Services
-                PODSPACE_UPLOAD_FILE_TO_USERGROUP: '/userGroup/uploadFile',
-                PODSPACE_UPLOAD_IMAGE_TO_USERGROUP: '/userGroup/uploadImage',
-                PODSPACE_UPLOAD_FILE: '/nzh/drive/uploadFile',
-                PODSPACE_UPLOAD_FILE_FROM_URL: '/nzh/drive/uploadFileFromUrl',
-                PODSPACE_UPLOAD_IMAGE: '/nzh/drive/uploadImage',
-                PODSPACE_DOWNLOAD_FILE: '/nzh/drive/downloadFile',
-                PODSPACE_DOWNLOAD_IMAGE: '/nzh/drive/downloadImage',
+                PODSPACE_UPLOAD_FILE_TO_USERGROUP: '/userGroup/uploadFile', //TODO: to be removed
+                PODSPACE_UPLOAD_FILE_TO_USERGROUP_NEW: '/api/usergroups/{userGroupHash}/files',
+                PODSPACE_UPLOAD_IMAGE_TO_USERGROUP: '/userGroup/uploadImage', //TODO: to be removed
+                PODSPACE_UPLOAD_IMAGE_TO_USERGROUP_NEW: '/api/usergroups/{userGroupHash}/images',
+                //PODSPACE_UPLOAD_FILE: '/nzh/drive/uploadFile',
+                //PODSPACE_UPLOAD_FILE_FROM_URL: '/nzh/drive/uploadFileFromUrl',
+                //TODO: maybe deprecated
+                PODSPACE_UPLOAD_IMAGE: '/nzh/drive/uploadImage', //TODO: to be removed
+                PODSPACE_UPLOAD_IMAGE_NEW: '/api/images',
+                PODSPACE_UPLOAD_FILE_NEW: '/api/files',
+                PODSPACE_DOWNLOAD_FILE: '/nzh/drive/downloadFile', //TODO: to be removed
+                PODSPACE_DOWNLOAD_FILE_NEW: '/api/files/{fileHash}',
+                PODSPACE_DOWNLOAD_IMAGE: '/nzh/drive/downloadImage', //TODO: to be removed
+                PODSPACE_DOWNLOAD_IMAGE_NEW: '/api/images/{fileHash}',
+
                 // Neshan Map
                 REVERSE: '/reverse',
                 SEARCH: '/search',
@@ -8621,15 +8629,15 @@
                                         }
 
                                         metadata['name'] = result.result.name;
-                                        metadata['fileHash'] = result.result.hashCode;
+                                        metadata['fileHash'] = result.result.hash;
                                         metadata['file']['name'] = result.result.name;
-                                        metadata['file']['fileHash'] = result.result.hashCode;
-                                        metadata['file']['hashCode'] = result.result.hashCode;
+                                        metadata['file']['fileHash'] = result.result.hash;
+                                        metadata['file']['hashCode'] = result.result.hash;
                                         metadata['file']['parentHash'] = result.result.parentHash;
                                         metadata['file']['size'] = result.result.size;
                                         metadata['file']['actualHeight'] = result.result.actualHeight;
                                         metadata['file']['actualWidth'] = result.result.actualWidth;
-                                        metadata['file']['link'] = `https://podspace.pod.ir/nzh/drive/downloadImage?hash=${result.result.hashCode}`;
+                                        metadata['file']['link'] = `${SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS}/api/images/${result.result.hash}?checkUserGroupAccess=true`;
                                         transferFromUploadQToSendQ(parseInt(params.threadId), fileUniqueId, JSON.stringify(metadata), function () {
                                             chatSendQueueHandler();
                                         });
