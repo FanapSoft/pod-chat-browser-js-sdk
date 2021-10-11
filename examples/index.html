@@ -2054,21 +2054,6 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 
 <form>
     <fieldset>
-        <legend>Upload Image To Podspace</legend>
-        <input type="file" name="uploadImageToPodspaceInputName" id="uploadImageToPodspaceInputId" value="">
-        <button type="button" name="button" id="uploadImageToPodspaceBtnId">Upload Image</button>
-        <br>
-        <img id="uploadedImageToPodspace"/>
-        <div id="uploadedImageToPodspaceData"></div>
-    </fieldset>
-</form>
-
-<br>
-<hr>
-<br>
-
-<form>
-    <fieldset>
         <legend>Upload File - Deprecated</legend>
         <input type="file" name="file" id="fileInput" value="">
         <button type="button" name="button" id="uploadFile">Upload File</button>
@@ -2081,19 +2066,7 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 <hr>
 <br>
 
-<form>
-    <fieldset>
-        <legend>Upload File To Podspace</legend>
-        <input type="file" name="file" id="uploadFileToPodspaceInputId" value="">
-        <button type="button" name="button" id="uploadFileToPodspaceBtnId">Upload File</button>
-        <br>
-        <div id="uploadedFileToPodspace"></div>
-    </fieldset>
-</form>
 
-<br>
-<hr>
-<br>
 
 <form>
     <fieldset>
@@ -2132,6 +2105,34 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 <hr>
 <br>
 
+<form>
+    <fieldset>
+        <legend>Upload Image To Podspace</legend>
+        <input type="file" name="uploadImageToPodspaceInputName" id="uploadImageToPodspaceInputId" value="">
+        <button type="button" name="button" id="uploadImageToPodspaceBtnId">Upload Image</button>
+        <br>
+        <img id="uploadedImageToPodspace"/>
+        <div id="uploadedImageToPodspaceData"></div>
+    </fieldset>
+</form>
+
+<br>
+<hr>
+<br>
+
+<form>
+    <fieldset>
+        <legend>Upload File To Podspace</legend>
+        <input type="file" name="file" id="uploadFileToPodspaceInputId" value="">
+        <button type="button" name="button" id="uploadFileToPodspaceBtnId">Upload File</button>
+        <br>
+        <div id="uploadedFileToPodspace"></div>
+    </fieldset>
+</form>
+
+<br>
+<hr>
+<br>
 <form>
     <fieldset>
         <legend>Get File From Podspace</legend>
@@ -2787,10 +2788,11 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
     document.getElementById("getFileFromPodspace")
         .addEventListener("click", function () {
             var hashCode = document.getElementById("fileHash").value;
+            var dataType = document.getElementById("fileResponseType").value;
 
             chatAgent.getFileFromPodspace({
                 hashCode: hashCode,
-                responseType: 'link'
+                responseType: dataType
             }, function (result) {
                 console.log(result);
                 if (!result.hasError) {

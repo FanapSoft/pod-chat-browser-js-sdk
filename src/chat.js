@@ -6840,8 +6840,7 @@
                 }
 
                 if (params.responseType === 'link') {
-                    var returnLink = SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_DOWNLOAD_FILE_NEW.replace('{fileHash}', params.hashCode);
-
+                    var returnLink = SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_DOWNLOAD_FILE_NEW.replace('{fileHash}', params.hashCode) + `?checkUserGroupAccess=true`;
                     callback({
                         hasError: false,
                         type: 'link',
@@ -6849,14 +6848,14 @@
                     });
                 } else {
                     httpRequest({
-                        url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_DOWNLOAD_FILE_NEW.replace('{fileHash}', params.hashCode),
+                        url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_DOWNLOAD_FILE_NEW.replace('{fileHash}', params.hashCode) + `?checkUserGroupAccess=true`,
                         method: 'GET',
                         responseType: 'blob',
                         uniqueId: downloadUniqueId,
                         headers: {
                             'Authorization': 'Bearer ' + token
                         },
-                        data: getFileData
+                        //data: getFileData
                     }, function (result) {
                         if (!result.hasError) {
                             callback({
@@ -7039,7 +7038,7 @@
 
                     if (params.responseType === 'link') {
                         var returnLink = SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS
-                            + SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE_NEW.replace('{fileHash}', params.hashCode) + `?size=${params.size}&quality=${params.quality}&crop=${params.crop}`;
+                            + SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE_NEW.replace('{fileHash}', params.hashCode) + `?checkUserGroupAccess=true&size=${params.size}&quality=${params.quality}&crop=${params.crop}`;
                             //+ SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE + `?hash=${params.hashCode}&_token_=${token}&_token_issuer_=1&size=${params.size}&quality=${params.quality}&crop=${params.crop}`;
 
                         callback({
@@ -7049,14 +7048,15 @@
                         });
                     } else if (params.responseType === 'base64') {
                         httpRequest({
-                            url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE_NEW.replace('{fileHash}', params.hashCode),
+                            url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS
+                                + SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE_NEW.replace('{fileHash}', params.hashCode) + `?checkUserGroupAccess=true&size=${params.size}&quality=${params.quality}&crop=${params.crop}`,
                             method: 'GET',
                             uniqueId: downloadUniqueId,
                             responseType: 'blob',
                             headers: {
                                 'Authorization': 'Bearer ' + token
                             },
-                            data: getImageData
+                            //data: getImageData
                         }, function (result) {
                             if (!result.hasError) {
                                 var fr = new FileReader();
@@ -7089,14 +7089,15 @@
                         };
                     } else {
                         httpRequest({
-                            url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE_NEW.replace('{fileHash}', params.hashCode),
+                            url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS
+                                + SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE_NEW.replace('{fileHash}', params.hashCode) + `?checkUserGroupAccess=true&size=${params.size}&quality=${params.quality}&crop=${params.crop}`,
                             method: 'GET',
                             responseType: 'blob',
                             uniqueId: downloadUniqueId,
                             headers: {
                                 'Authorization': 'Bearer ' + token
                             },
-                            data: getImageData
+                            //data: getImageData
                         }, function (result) {
                             if (!result.hasError) {
                                 callback({
@@ -8646,13 +8647,13 @@
                                     }
                                 });
                             } else {
-                                uploadFileToPodspace(fileUploadParams, function (result) {
+                                uploadFileToPodspaceUserGroupNew(fileUploadParams, function (result) {
                                     if (!result.hasError) {
-                                        metadata['fileHash'] = result.result.hashCode;
+                                        metadata['fileHash'] = result.result.hash;
                                         metadata['name'] = result.result.name;
                                         metadata['file']['name'] = result.result.name;
-                                        metadata['file']['fileHash'] = result.result.hashCode;
-                                        metadata['file']['hashCode'] = result.result.hashCode;
+                                        metadata['file']['fileHash'] = result.result.hash;
+                                        metadata['file']['hashCode'] = result.result.hash;
                                         metadata['file']['parentHash'] = result.result.parentHash;
                                         metadata['file']['size'] = result.result.size;
                                         transferFromUploadQToSendQ(parseInt(params.threadId), fileUniqueId, JSON.stringify(metadata), function () {
@@ -10996,13 +10997,17 @@
 
         this.getFile = getFile;
 
-        this.getFileFromPodspace = getFileFromPodspace;
+        this.getFileFromPodspace = getFileFromPodspaceNew;//getFileFromPodspace;
 
-        this.getImageFromPodspace = getImageFromPodspace;
+        this.getImageFromPodspace = getImageFromPodspaceNew;//getImageFromPodspace;
 
         this.uploadFile = uploadFile;
 
         this.uploadImage = uploadImage;
+
+        this.uploadFileToPodspace = uploadFileToPodspaceNew;
+
+        this.uploadImageToPodspace = uploadImageToPodspaceNew;
 
         this.cancelFileUpload = cancelFileUpload;
 
