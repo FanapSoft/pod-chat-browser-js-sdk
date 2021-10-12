@@ -619,7 +619,7 @@
                 });
 
                 asyncClient.on('stateChange', function (state) {
-                    chatEvents.fireEvent('chatMessaging.chatState', state);
+                    chatEvents.fireEvent('chatState', state);
                     chatFullStateObject = state;
 
                     switch (state.socketState) {
