@@ -6191,7 +6191,7 @@
                                             metadata['file']['size'] = result.result.size;
                                             metadata['file']['actualHeight'] = result.result.actualHeight;
                                             metadata['file']['actualWidth'] = result.result.actualWidth;
-                                            metadata['file']['link'] = `https://podspace.pod.ir/nzh/drive/downloadImage?hash=${result.result.hash}`;
+                                            metadata['file']['link'] = `${SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS}/api/images/${result.result.hash}?checkUserGroupAccess=true`;
                                             transferFromUploadQToSendQ(parseInt(params.threadId), fileUniqueId, JSON.stringify(metadata), function () {
                                                 chatSendQueueHandler();
                                             });
@@ -11295,18 +11295,18 @@
                     callbacks: callbacks
                 }, function () {
                     if (imageMimeTypes.indexOf(fileType) >= 0 || imageExtentions.indexOf(fileExtension) >= 0) {
-                        uploadImageToPodspaceUserGroup(fileUploadParams, function (result) {
+                        uploadImageToPodspaceUserGroupNew(fileUploadParams, function (result) {
                             if (!result.hasError) {
                                 metadata['name'] = result.result.name;
-                                metadata['fileHash'] = result.result.hashCode;
+                                metadata['fileHash'] = result.result.hash;
                                 metadata['file']['name'] = result.result.name;
-                                metadata['file']['fileHash'] = result.result.hashCode;
-                                metadata['file']['hashCode'] = result.result.hashCode;
+                                metadata['file']['fileHash'] = result.result.hash;
+                                metadata['file']['hashCode'] = result.result.hash;
                                 metadata['file']['actualHeight'] = result.result.actualHeight;
                                 metadata['file']['actualWidth'] = result.result.actualWidth;
                                 metadata['file']['parentHash'] = result.result.parentHash;
                                 metadata['file']['size'] = result.result.size;
-                                metadata['file']['link'] = `https://podspace.pod.ir/nzh/drive/downloadImage?hash=${result.result.hashCode}`;
+                                metadata['file']['link'] = `${SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS}/api/images/${result.result.hash}?checkUserGroupAccess=true`;
                                 transferFromUploadQToSendQ(parseInt(params.threadId), fileUniqueId, JSON.stringify(metadata), function () {
                                     chatSendQueueHandler();
                                 });
@@ -11315,13 +11315,13 @@
                             }
                         });
                     } else {
-                        uploadFileToPodspace(fileUploadParams, function (result) {
+                        uploadFileToPodspaceNew(fileUploadParams, function (result) {
                             if (!result.hasError) {
-                                metadata['fileHash'] = result.result.hashCode;
+                                metadata['fileHash'] = result.result.hash;
                                 metadata['name'] = result.result.name;
                                 metadata['file']['name'] = result.result.name;
-                                metadata['file']['fileHash'] = result.result.hashCode;
-                                metadata['file']['hashCode'] = result.result.hashCode;
+                                metadata['file']['fileHash'] = result.result.hash;
+                                metadata['file']['hashCode'] = result.result.hash;
                                 metadata['file']['parentHash'] = result.result.parentHash;
                                 metadata['file']['size'] = result.result.size;
                                 transferFromUploadQToSendQ(parseInt(params.threadId), fileUniqueId, JSON.stringify(metadata), function () {
