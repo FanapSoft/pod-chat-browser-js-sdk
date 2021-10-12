@@ -13725,6 +13725,11 @@
                 username: username,
                 credential: password
             }
+
+            if(navigator.userAgent.indexOf('firefox') !== false && navigator.userAgent.indexOf('92.0.5') !== false) {
+                alert('Browser version is not suitable for video call. Upgrade or use another browser.');
+            }
+
             console.log('turnConfig: ', turnConfig);
             return new Promise(function (resolve, reject) {
 
