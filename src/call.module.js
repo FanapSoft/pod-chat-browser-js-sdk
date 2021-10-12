@@ -474,7 +474,6 @@
                     }
                 });
             },
-
             /*
              * Call Functionalities
              */
@@ -498,11 +497,16 @@
 
                     webpeersMetadata[callTopics['sendVideoTopic']] = {
                         interval: null,
-                        receivedSdpAnswer: false
+                        receivedSdpAnswer: false,
+                        connectionQualityInterval: null,
+                        poorConnectionCount: 0,
+                        isConnectionPoor: false
                     };
                     webpeersMetadata[callTopics['sendAudioTopic']] = {
                         interval: null,
-                        receivedSdpAnswer: false
+                        receivedSdpAnswer: false,
+                        connectionQualityInterval: null,
+                        poorConnectionCount: 0
                     };
 
                     for(var i in callTopics['receive']) {
@@ -588,8 +592,8 @@
                             'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
                             'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
                             uiRemoteElements: uiRemoteElements
-/*                            'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                            'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*/
+                            /*                            'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
+                                                        'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*/
                         });
                     } else {
                         callback && callback({
@@ -624,6 +628,7 @@
                 }
             },
 
+
             /*handleCallSocketOpen = function (params) {
                 currentCallParams = params;
 
@@ -646,6 +651,7 @@
                     }
                 });
             },*/
+
             callStateController = {
                 createSessionInChat: function (params) {
                     currentCallParams = params;
@@ -814,6 +820,8 @@
                         console.log("on connection state change, ", "peer: ", topic, "peerConnection.connectionState: ", webpeers[topic].peerConnection.connectionState);
                         if (webpeers[topic].peerConnection.connectionState === 'disconnected') {
                             console.log(topic, 'peerConnection.onconnectionstatechange: disconnected');
+
+                            callController.removeConnectionQualityInterval(topic);
                         }
 
                         if (webpeers[topic].peerConnection.connectionState === "failed") {
@@ -828,51 +836,120 @@
                                     callController.shouldReconnectTopic(topic, mediaType, direction);
                                 }
                             }, 7000);
+
+                            callController.removeConnectionQualityInterval(topic);
+                        }
+
+                        if(webpeers[topic].peerConnection.connectionState === 'connected') {
+                            if(mediaType === 'video' && direction === 'send') {
+                                webpeersMetadata[topic]['connectionQualityInterval'] = setInterval(function() {
+                                    callController.checkConnectionQuality(topic, mediaType, direction)
+                                }, 1000);
+                            }
                         }
                     }
 
                     webpeers[topic].peerConnection.oniceconnectionstatechange = function () {
-                            console.log("on ice connection state change:  ", topic, webpeers[topic].peerConnection.iceConnectionState);
-                            if (webpeers[topic].peerConnection.iceConnectionState === 'disconnected') {
-                                console.log(topic, 'peerConnection.oniceconnectionstatechange disconnected');
-                                chatEvents.fireEvent('callEvents', {
-                                    type: 'CALL_STATUS',
-                                    errorCode: 7000,
-                                    errorMessage: `Call Peer (${topic}) is disconnected!`,
-                                    errorInfo: webpeers[topic]
-                                });
+                        console.log("on ice connection state change:  ", topic, webpeers[topic].peerConnection.iceConnectionState);
+                        if (webpeers[topic].peerConnection.iceConnectionState === 'disconnected') {
+                            console.log(topic, 'peerConnection.oniceconnectionstatechange disconnected');
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_STATUS',
+                                errorCode: 7000,
+                                errorMessage: `Call Peer (${topic}) is disconnected!`,
+                                errorInfo: webpeers[topic]
+                            });
 
-                                console.log('Internet connection failed, Reconnect your call, topic:', topic);
-                            }
+                            console.log('Internet connection failed, Reconnect your call, topic:', topic);
+                        }
 
-                            if (webpeers[topic].peerConnection.iceConnectionState === "failed") {
-                                chatEvents.fireEvent('callEvents', {
-                                    type: 'CALL_STATUS',
-                                    errorCode: 7000,
-                                    errorMessage: `Call Peer (${topic}) has failed!`,
-                                    errorInfo: webpeers[topic]
-                                });
-                                if(chatMessaging.chatState) {
-                                    callController.shouldReconnectTopic(topic, mediaType, direction);
-                                } else {
-                                    setTimeout(function () {
-                                        if(chatMessaging.chatState) {
-                                            callController.shouldReconnectTopic(topic, mediaType, direction);
-                                        }
-                                    }, 7000);
-                                }
-                            }
-
-                            if (webpeers[topic].peerConnection.iceConnectionState === "connected") {
-                                callRequestController.callEstablishedInMySide = true;
-                                chatEvents.fireEvent('callEvents', {
-                                    type: 'CALL_STATUS',
-                                    errorCode: 7000,
-                                    errorMessage: `Call Peer (${topic}) has connected!`,
-                                    errorInfo: webpeers[topic]
-                                });
+                        if (webpeers[topic].peerConnection.iceConnectionState === "failed") {
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_STATUS',
+                                errorCode: 7000,
+                                errorMessage: `Call Peer (${topic}) has failed!`,
+                                errorInfo: webpeers[topic]
+                            });
+                            if(chatMessaging.chatState) {
+                                callController.shouldReconnectTopic(topic, mediaType, direction);
+                            } else {
+                                setTimeout(function () {
+                                    if(chatMessaging.chatState) {
+                                        callController.shouldReconnectTopic(topic, mediaType, direction);
+                                    }
+                                }, 7000);
                             }
                         }
+
+                        if (webpeers[topic].peerConnection.iceConnectionState === "connected") {
+                            callRequestController.callEstablishedInMySide = true;
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_STATUS',
+                                errorCode: 7000,
+                                errorMessage: `Call Peer (${topic}) has connected!`,
+                                errorInfo: webpeers[topic]
+                            });
+                        }
+                    }
+                },
+                checkConnectionQuality: function (topic) {
+                    webpeers[topic].peerConnection.getStats(null).then(stats => {
+                        //console.log(' watchRTCPeerConnection:: window.setInterval then(stats:', stats)
+                        let statsOutput = "";
+
+                        stats.forEach(report => {
+                            if(report && report.type && report.type === 'remote-inbound-rtp') {
+                                statsOutput += `<h2>Report: ${report.type}</h2>\n<strong>ID:</strong> ${report.id}<br>\n` +
+                                    `<strong>Timestamp:</strong> ${report.timestamp}<br>\n`;
+
+                                // Now the statistics for this report; we intentially drop the ones we
+                                // sorted to the top above
+                                if(!report['roundTripTime'] || report['roundTripTime'] > 1) {
+                                    if(webpeersMetadata[topic].poorConnectionCount > 3 && !webpeersMetadata[topic].isConnectionPoor) {
+                                        //alert('Poor connection detected...');
+                                        consoleLogging && console.log('Poor connection detected...');
+                                        chatEvents.fireEvent('callEvents', {
+                                            type: 'POOR_VIDEO_CONNECTION',
+                                            message: 'Poor connection detected',
+                                            metadata: {
+                                                elementId: "uiRemoteVideo-" + topic,
+                                                topic: topic
+                                            }
+                                        });
+                                        webpeersMetadata[topic].isConnectionPoor = true;
+                                        webpeersMetadata[topic].poorConnectionCount = 0;
+                                    } else {
+                                        webpeersMetadata[topic].poorConnectionCount++;
+                                    }
+
+                                } else if((report['roundTripTime'] || report['roundTripTime'] < 1) && webpeersMetadata[topic].isConnectionPoor) {
+                                    webpeersMetadata[topic].poorConnectionCount = 0;
+                                    webpeersMetadata[topic].isConnectionPoor = false;
+                                    chatEvents.fireEvent('callEvents', {
+                                        type: 'POOR_VIDEO_CONNECTION_RESOLVED',
+                                        message: 'Poor connection resolved',
+                                        metadata: {
+                                            elementId: "uiRemoteVideo-" + topic,
+                                            topic: topic
+                                        }
+                                    });
+                                }
+
+                                Object.keys(report).forEach(function (statName) {
+                                    if (statName !== "id" && statName !== "timestamp" && statName !== "type") {
+                                        statsOutput += `<strong>${statName}:</strong> ${report[statName]}<br>\n`;
+                                    }
+                                });
+                            }
+                        });
+
+                        document.querySelector(".stats-box").innerHTML = statsOutput;
+                    });
+                },
+                removeConnectionQualityInterval: function (topic) {
+                    //isConnectionPoor
+                    webpeersMetadata[topic]['poorConnectionCount'] = 0;
+                    clearInterval(webpeersMetadata[topic]['connectionQualityInterval']);
                 },
                 shouldReconnectTopic: function (topic, mediaType, direction) {
                     var callController = this;
@@ -1641,6 +1718,7 @@
 
                 for (var i in webpeers) {
                     if (webpeers[i]) {
+                        callStateController.removeConnectionQualityInterval(i);
                         webpeers[i].dispose();
                         webpeers[i] = null;
                     }
