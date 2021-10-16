@@ -194,6 +194,7 @@
                 DESKTOP: 3
             },
             webpeers = {},
+            callUsers: {},
             webpeersMetadata = {},
             callRequestController = {
                 callRequestReceived: false,
@@ -485,7 +486,14 @@
                         sendingTopic = params.sendingTopic,
                         receiveTopic = params.receiveTopic;
 
-                    callTopics['sendVideoTopic'] = 'Vi-' + sendingTopic;
+                    if(params.clientsList && params.clientsList.length) {
+                        for(var i in params.clientsList) {
+                            callStateController.setupCallParticipant(params.clientsList[0]);
+                            //callStateController.callUsers.push(params.clientsList[i]);
+                        }
+                    }
+
+                    /*callTopics['sendVideoTopic'] = 'Vi-' + sendingTopic;
                     callTopics['sendAudioTopic'] = 'Vo-' + sendingTopic;
                     //callTopics['receiveVideoTopic'] = 'Vi-' + receiveTopic;
                     //callTopics['receiveAudioTopic'] = 'Vo-' + receiveTopic;
@@ -493,9 +501,9 @@
                     callTopics['receive'].push({
                         "VideoTopic": 'Vi-' + receiveTopic,
                         "AudioTopic": 'Vo-' + receiveTopic
-                    });
+                    });*/
 
-                    webpeersMetadata[callTopics['sendVideoTopic']] = {
+                    /*webpeersMetadata[callTopics['sendVideoTopic']] = {
                         interval: null,
                         receivedSdpAnswer: false,
                         connectionQualityInterval: null,
@@ -518,11 +526,11 @@
                             interval: null,
                             receivedSdpAnswer: false
                         };
-                    }
+                    }*/
 
-                    callParentDiv = document.getElementById(callDivId);
+                    //callParentDiv = document.getElementById(callDivId);
 
-                    // Local Video Tag
+                    /*// Local Video Tag
                     if (callVideo && !uiRemoteMedias[callTopics['sendVideoTopic']]) {
                         uiRemoteMedias[callTopics['sendVideoTopic']] = document.createElement('video');
                         var el = uiRemoteMedias[callTopics['sendVideoTopic']];
@@ -568,10 +576,23 @@
                             callMute && el.setAttribute('muted', '');
                             el.setAttribute('controls', '');
                         }
+                    }*/
+
+                    var uiRemoteElements = [], uiLocalElements;
+                    for(var i in callUsers) {
+                        if(callUsers[i].direction === 'send') {
+                            uiLocalElements = callUsers[i].htmlElements;
+                        } else {
+                            uiRemoteElements['userId'] = callUsers[i].htmlElements;
+                        }
                     }
 
-                    var uiRemoteElements = [];
-                    for(var i in callTopics['receive']) {
+                    callback && callback({
+                        uiLocalElements: uiLocalElements,
+                        uiRemoteElements: uiRemoteElements,
+                    });
+
+                    /*for(var i in callTopics['receive']) {
                         uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']])
                         callVideo && uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['VideoTopic']])
                     }
@@ -592,18 +613,18 @@
                             'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
                             'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
                             uiRemoteElements: uiRemoteElements
-                            /*                            'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                                                        'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*/
+                            /!*                            'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
+                                                        'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*!/
                         });
                     } else {
                         callback && callback({
                             'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
                             'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
                             uiRemoteElements: uiRemoteElements
-                            /*'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                            'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*/
+                            /!*'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
+                            'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*!/
                         });
-                    }
+                    }*/
 
                     callStateController.createSessionInChat(Object.assign(params, {
                         callVideo: callVideo,
@@ -682,18 +703,96 @@
                  */
                 startCall: function (params) {
                     var callController = this;
-                    if (params.callVideo) {
-                        this.startParticipantVideo(callTopics['receive'][0]['VideoTopic'], 'receive');
-                        setTimeout(function (){
-                            callController.startMyVideo();
-                        }, 2000);
+                    for(var i in callUsers) {
+                        if (params.callVideo) {
+                            this.startParticipantVideo(callUsers[i]);
+                            setTimeout(function (){
+                                callController.startMyVideo();
+                            }, 2000);
+                        }
+                        if(params.callAudio) {
+                            this.startParticipantAudio(callUsers[i]);
+                            setTimeout(function (){
+                                callController.startMyAudio();
+                            }, 2000)
+                        }
                     }
-                    if(params.callAudio) {
-                        this.startParticipantAudio(callTopics['receive'][0]['AudioTopic'], 'receive');
-                        setTimeout(function (){
-                            callController.startMyAudio();
-                        }, 2000)
+                },
+                setupCallParticipant: function (participant) {
+                    var user = participant;
+                    user.topicMetaData = {};
+                    user.peers = {};
+                    if(user.userId === chatMessaging.userInfo.id) {
+                        user.direction = 'send';
+                        user.videoTopicName = 'Vi-' + user.topicSend;
+                        user.audioTopicName = 'Vo-' + user.topicSend;
+
+                    } else {
+                        user.direction = 'receive';
+                        user.videoTopicName = 'Vi-' + user.topicReceive;
+                        user.audioTopicName = 'Vo-' + user.topicReceive;
                     }
+                    user.topicMetaData[user.videoTopicName] = {
+                        interval: null,
+                        receivedSdpAnswer: false,
+                        connectionQualityInterval: null,
+                        poorConnectionCount: 0,
+                        isConnectionPoor: false
+                    };
+                    user.topicMetaData[user.audioTopicName] = {
+                        interval: null,
+                        receivedSdpAnswer: false,
+                        connectionQualityInterval: null,
+                        poorConnectionCount: 0
+                    };
+                    callUsers[user.userId] = user;
+                    this.appendUserToCallDiv(user.userId, this.generateHTMLElements(user.userId));
+                },
+                appendUserToCallDiv: function (userId) {
+                    if(!callDivId) {
+                        consoleLogging && console.log('No Call DIV has been declared!');
+                        return;
+                    }
+                    var callParentDiv = document.getElementById(callDivId);
+                    if(callUsers[userId].video)
+                        callUsers[userId].htmlElements.container.appendChild(callUsers[userId].htmlElements['video'])
+                    if(!callUsers[userId].mute)
+                        callUsers[userId].htmlElements.container.appendChild(callUsers[userId].htmlElements['audio'])
+
+                    callParentDiv.appendChild(callUsers[userId].htmlElements.container);
+                },
+                generateHTMLElements: function (userId) {
+                    if(callUsers[userId].htmlElements) {
+                        callUsers[userId].htmlElements = {
+                            container: document.createElement('div')
+                        };
+                        var el =callUsers[userId].htmlElements.container;
+                        el.setAttribute('id', 'callParticpantWrapper-' + userId);
+                        el.classList.add(['participant', "wrapper", "user-" + userId]);
+                    }
+
+                    if (callUsers[userId].video && !callUsers[userId].htmlElements['video']) {
+                        callUsers[userId].htmlElements['video'] = document.createElement('video');
+                        var el = callUsers[userId].htmlElements['video'];
+                        el.setAttribute('id', 'uiRemoteVideo-' + callUsers[userId].videoTopicName);
+                        el.setAttribute('class', callVideoTagClassName);
+                        el.setAttribute('playsinline', '');
+                        el.setAttribute('muted', '');
+                        el.setAttribute('width', callVideoMinWidth + 'px');
+                        el.setAttribute('height', callVideoMinHeight + 'px');
+                    }
+
+                    if (!callUsers[userId].mute && !callUsers[userId].htmlElements['audio']) {
+                        callUsers[userId].htmlElements['audio'] = document.createElement('audio');
+                        var el = callUsers[userId].htmlElements['audio'];
+                        el.setAttribute('id', 'uiRemoteAudio-' + callUsers[userId].audioTopicName);
+                        el.setAttribute('class', callAudioTagClassName);
+                        el.setAttribute('autoplay', '');
+                        el.setAttribute('muted', '');
+                        el.setAttribute('controls', '');
+                    }
+
+                    return callUsers[userId].htmlElements;
                 },
                 /**
                  * When call started we can add participants
@@ -720,30 +819,33 @@
                     }
                 },
                 stopMyAudio: function () {
-                    this.removeTopic(callTopics['sendAudioTopic']);
+                    this.removeTopic(callUsers[chatMessaging.userInfo.id].peers[callUsers[chatMessaging.userInfo.id].audioTopicName]);
                 },
                 startMyAudio: function () {
-                    this.createTopic(callTopics['sendAudioTopic'], 'audio', 'send');
+                    this.createTopic(chatMessaging.userInfo.id, 'audio');
                 },
-                stopParticipantAudio: function (topic) {
-                    this.removeTopic(topic);
+                stopParticipantAudio: function (userId) {
+                    this.removeTopic(callUsers[userId].peers[callUsers[chatMessaging.userInfo.id].audioTopicName]);
                 },
-                startParticipantAudio: function (topic) {
-                    this.createTopic(topic, 'audio', 'receive');
+                startParticipantAudio: function (userId) {
+                    this.createTopic(userId, 'audio');
                 },
                 stopMyVideo: function () {
-                    this.removeTopic(callTopics['sendVideoTopic']);
+                    this.removeTopic(callUsers[chatMessaging.userInfo.id].peers[callUsers[chatMessaging.userInfo.id].videoTopicName]);
                 },
                 startMyVideo: function () {
-                    this.createTopic(callTopics['sendVideoTopic'], 'video','send');
+                    this.createTopic(chatMessaging.userInfo.id, 'video');
                 },
-                stopParticipantVideo: function (topic) {
-                    this.removeTopic(topic);
+                stopParticipantVideo: function (userId) {
+                    this.removeTopic(callUsers[userId].peers[callUsers[chatMessaging.userInfo.id].videoTopicName]);
                 },
-                startParticipantVideo: function (topic) {
-                    this.createTopic(topic, 'video', 'receive');
+                startParticipantVideo: function (userId) {
+                    this.createTopic(userId, 'video');
                 },
-                createTopic: function (topic, mediaType, direction) {
+                createTopic: function (userId, mediaType) {
+                    var topic = mediaType === 'audio' ? callUsers[userId]['audioTopicName'] : callUsers[userId]['videoTopicName'],
+                        direction = callUsers[userId].direction
+
                     var options = this.getSdpOfferOptions(topic, mediaType, direction);
                     this.generateTopicPeer(topic, mediaType, direction, options);
                 },
@@ -1940,6 +2042,7 @@
                  * Type 74    Start Call Request
                  */
                 case chatMessageVOTypes.START_CALL:
+                    console.log(messageContent);
                     if(!callRequestController.iCanAcceptTheCall()) {
                         chatEvents.fireEvent('callEvents', {
                             type: 'CALL_STARTED_ELSEWHERE',
@@ -1978,6 +2081,7 @@
                             receiveTopic: messageContent.clientDTO.topicReceive,
                             brokerAddress: messageContent.chatDataDto.brokerAddressWeb,
                             turnAddress: messageContent.chatDataDto.turnAddress,
+                            clientsList: messageContent.otherClientDtoList
                         }, function (callDivs) {
                             chatEvents.fireEvent('callEvents', {
                                 type: 'CALL_DIVS',
