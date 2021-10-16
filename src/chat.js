@@ -13726,7 +13726,7 @@
                 credential: password
             }
 
-            if(navigator.userAgent.indexOf('firefox') !== false && navigator.userAgent.indexOf('92.0.5') !== false) {
+            if(navigator.userAgent.indexOf('firefox') !== -1 && navigator.userAgent.indexOf('92.0.5') !== -1) {
                 alert('Browser version is not suitable for video call. Upgrade or use another browser.');
             }
 
