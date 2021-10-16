@@ -1,6 +1,6 @@
 {
   "name": "podchat-browser",
-  "version": "11.0.0-snapshot.6",
+  "version": "11.0.0-snapshot.7",
   "description": "Javascript SDK to use POD's Chat Service - Browser Only",
   "main": "./src/chat.js",
   "scripts": {
