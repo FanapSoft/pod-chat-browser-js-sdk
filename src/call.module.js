@@ -482,9 +482,9 @@
                 if (callDivId) {
                     var callParentDiv,
                         callVideo = (typeof params.video === 'boolean') ? params.video : true,
-                        callMute = (typeof params.mute === 'boolean') ? params.mute : false,
-                        sendingTopic = params.sendingTopic,
-                        receiveTopic = params.receiveTopic;
+                        callMute = (typeof params.mute === 'boolean') ? params.mute : false;
+                        //sendingTopic = params.sendingTopic,
+                        //receiveTopic = params.receiveTopic;
 
                     if(params.clientsList && params.clientsList.length) {
                         for(var i in params.clientsList) {
@@ -626,12 +626,12 @@
                         });
                     }*/
 
-                    setTimeout(function (){
-                        callStateController.createSessionInChat(Object.assign(params, {
-                            callVideo: callVideo,
-                            callAudio: !callMute,
-                        }));
-                    },200);
+
+                    callStateController.createSessionInChat(Object.assign(params, {
+                        callVideo: callVideo,
+                        callAudio: !callMute,
+                    }));
+
                     /*sendCallMessage({
                         id: 'STOPALL'
                     }, function (result) {*/
@@ -707,15 +707,9 @@
                     for(var i in callUsers) {
                         if (params.callVideo) {
                             callController.startParticipantVideo(i);
-                            setTimeout(function (){
-                                callController.startMyVideo();
-                            }, 2000);
                         }
                         if(params.callAudio) {
                             callController.startParticipantAudio(i);
-                            setTimeout(function (){
-                                callController.startMyAudio();
-                            }, 2000)
                         }
                     }
                 },
@@ -767,7 +761,7 @@
                             container: document.createElement('div')
                         };
                         var el = user.htmlElements.container;
-                        el.setAttribute('id', 'callParticpantWrapper-' + userId);
+                        el.setAttribute('id', 'callParticipantWrapper-' + userId);
                         el.classList.add('participant');
                         el.classList.add('wrapper');
                         el.classList.add('user-' + userId);
@@ -821,23 +815,11 @@
                         return;
                     }
                 },
-                stopMyAudio: function () {
-                    this.removeTopic(callUsers[chatMessaging.userInfo.id].peers[callUsers[chatMessaging.userInfo.id].audioTopicName]);
-                },
-                startMyAudio: function () {
-                    this.createTopic(chatMessaging.userInfo.id, 'audio');
-                },
                 stopParticipantAudio: function (userId) {
                     this.removeTopic(callUsers[userId].peers[callUsers[chatMessaging.userInfo.id].audioTopicName]);
                 },
                 startParticipantAudio: function (userId) {
                     this.createTopic(userId, 'audio');
-                },
-                stopMyVideo: function () {
-                    this.removeTopic(callUsers[chatMessaging.userInfo.id].peers[callUsers[chatMessaging.userInfo.id].videoTopicName]);
-                },
-                startMyVideo: function () {
-                    this.createTopic(chatMessaging.userInfo.id, 'video');
                 },
                 stopParticipantVideo: function (userId) {
                     this.removeTopic(callUsers[userId].peers[callUsers[chatMessaging.userInfo.id].videoTopicName]);
@@ -948,12 +930,11 @@
                     });
                 },
                 watchRTCPeerConnection: function (userId, topic, mediaType, direction) {
-                    console.log("set callback on webpeers: ", userId, topic, mediaType, direction);
-
+                    console.log("watchRTCPeerConnection: ", userId, topic, mediaType, direction);
                     var callController = this;
                     callUsers[userId].peers[topic].peerConnection.onconnectionstatechange = function () {
                         var connectionState = callUsers[userId].peers[topic].peerConnection.connectionState;
-                        console.log("on connection state change, ", "peer: ", topic, "peerConnection.connectionState: ", connectionState);
+                        console.log("on connection state change, ", "topic: ", topic, "peerConnection.connectionState: ", connectionState);
                         if (connectionState === 'disconnected') {
                             console.log(topic, 'peerConnection.onconnectionstatechange: disconnected');
                             callController.removeConnectionQualityInterval(userId, topic);
@@ -1031,11 +1012,6 @@
                     }
                 },
                 checkConnectionQuality: function (userId, topic) {
-                    console.log('running again')
-                    if(!callUsers[userId]){
-                        clearInterval(callUsers[userId].topicMetaData[topic]['connectionQualityInterval']);
-                        return;
-                    }
                     callUsers[userId].peers[topic].peerConnection.getStats(null).then(stats => {
                         //console.log(' watchRTCPeerConnection:: window.setInterval then(stats:', stats)
                         let statsOutput = "";
@@ -1057,7 +1033,8 @@
                                             message: 'Poor connection detected',
                                             metadata: {
                                                 elementId: "uiRemoteVideo-" + topic,
-                                                topic: topic
+                                                topic: topic,
+                                                userId: userId
                                             }
                                         });
                                         callUsers[userId].topicMetaData[topic].isConnectionPoor = true;
@@ -1091,15 +1068,12 @@
                     });
                 },
                 removeConnectionQualityInterval: function (userId, topic) {
-                    //isConnectionPoor
                     callUsers[userId].topicMetaData[topic]['poorConnectionCount'] = 0;
-                    console.log("removeConnectionQualityInterval::", userId, topic)
                     clearInterval(callUsers[userId].topicMetaData[topic]['connectionQualityInterval']);
                 },
                 shouldReconnectTopic: function (userId, topic, mediaType, direction) {
                     var callController = this;
                     if (currentCallParams && Object.keys(currentCallParams).length) {
-
                         if (callUsers[userId].peers[topic].peerConnection.iceConnectionState != 'connected') {
                             chatEvents.fireEvent('callEvents', {
                                 type: 'CALL_STATUS',
@@ -1113,18 +1087,11 @@
                                 topic: topic
                             }, function (result) {
                                 if (result.done === 'TRUE') {
-                                    //handleCallSocketOpen(currentCallParams);
-                                    /*webpeers[topic].dispose();
-                                    webpeers[topic] = null;*/
                                     callController.removeTopic(userId, topic);
-                                    callController.createTopic(userId, topic, mediaType, direction);
-                                    //generateAndSendSdpOffers(currentCallParams, [topicName]);
+                                    callController.createTopic(userId, mediaType);
                                 } else if (result.done === 'SKIP') {
-                                    //handleCallSocketOpen(currentCallParams);
-                                    /*webpeers[topic].dispose();
-                                    webpeers[topic] = null;*/
                                     callController.removeTopic(userId, topic);
-                                    callController.createTopic(userId, topic, mediaType, direction);
+                                    callController.createTopic(userId, mediaType);
                                     //generateAndSendSdpOffers(currentCallParams, [topicName]);
                                 } else {
                                     consoleLogging && console.log('STOP topic faced a problem', result);
@@ -1165,48 +1132,23 @@
                     }
                 },
                 removeAllCallParticipants: function () {
-                    this.removeAllPeerConnections(this.removeAllIntervals(this.removeAllHtmlElements()))
-                },
-                removeAllHtmlElements: function () {
-                    for (var i in callUsers) {
-                        var user = callUsers[i];
-                        if (user) {
-                            if(user.peers[user.videoTopicName]) {
-                                callStateController.removeStreamFromWebRTC(i, user.videoTopicName);
-                            }
-                            if(user.peers[user.audioTopicName]) {
-                                callStateController.removeStreamFromWebRTC(i, user.audioTopicName);
-                            }
-                        }
-                    }
-                },
-                removeAllPeerConnections: function () {
                     for (var i in callUsers) {
                         var user = callUsers[i];
                         if (user) {
                             if(user.peers[user.videoTopicName]) {
                                 callUsers[i].peers[user.videoTopicName].dispose();
-                                callUsers[i].peers[user.videoTopicName] = null;
-                            }
-                            if(user.peers[user.audioTopicName]) {
-                                callUsers[i].peers[user.audioTopicName].dispose();
-                                callUsers[i].peers[user.audioTopicName] = null;
-                            }
-                            callUsers[i].peers = {};
-                            callUsers[i] = null;
-                        }
-                    }
-                },
-                removeAllIntervals: function () {
-                    for (var i in callUsers) {
-                        var user = callUsers[i];
-                        if (user) {
-                            if(user.peers[user.videoTopicName]) {
+                                delete callUsers[i].peers[user.videoTopicName];
+                                callStateController.removeStreamFromWebRTC(i, user.videoTopicName);
                                 callStateController.removeConnectionQualityInterval(i, user.videoTopicName);
                             }
                             if(user.peers[user.audioTopicName]) {
+                                callUsers[i].peers[user.audioTopicName].dispose();
+                                delete callUsers[i].peers[user.audioTopicName];
+                                callStateController.removeStreamFromWebRTC(i, user.audioTopicName);
                                 callStateController.removeConnectionQualityInterval(i, user.audioTopicName);
                             }
+                            callUsers[i].peers = {};
+                            callUsers[i] = null;
                         }
                     }
                 },
@@ -2136,7 +2078,6 @@
                  * Type 74    Start Call Request
                  */
                 case chatMessageVOTypes.START_CALL:
-                    console.log(messageContent);
                     if(!callRequestController.iCanAcceptTheCall()) {
                         chatEvents.fireEvent('callEvents', {
                             type: 'CALL_STARTED_ELSEWHERE',
@@ -2154,7 +2095,7 @@
                         result: messageContent
                     });
 
-                    callStateController.removeAllCallParticipants();
+                    //callStateController.removeAllCallParticipants();
 
                     if (typeof messageContent === 'object'
                         && messageContent.hasOwnProperty('chatDataDto')
