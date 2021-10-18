@@ -2792,7 +2792,7 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
                 hashCode: hashCode,
                 responseType: dataType
             }, function (result) {
-                console.log(result);
+                console.log("chatAgent.getFileFromPodspace:result::", result);
                 if (!result.hasError) {
                     if (result.type == 'link') {
                         var fileOutput = document.createElement('a');

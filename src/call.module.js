@@ -947,11 +947,17 @@
                                 errorMessage: `Call Peer (${topic}) has failed!`,
                                 errorInfo: callUsers[userId].peers[topic]
                             });
-                            setTimeout(function () {
+
+                            if(chatMessaging.chatState && callRequestController.callEstablishedInMySide
+                                && callUsers[userId]
+                                && callUsers[userId].peers[topic]) {
+                                callController.shouldReconnectTopic(userId, topic, mediaType, direction);
+                            }
+                            /*setTimeout(function () {
                                 if(chatMessaging.chatState) {
                                     callController.shouldReconnectTopic(userId, userId, topic, mediaType, direction);
                                 }
-                            }, 7000);
+                            }, 7000);*/
 
                             callController.removeConnectionQualityInterval(userId, topic);
                         }
@@ -989,15 +995,18 @@
                                 errorMessage: `Call Peer (${topic}) has failed!`,
                                 errorInfo: callUsers[userId].peers[topic]
                             });
-                            if(chatMessaging.chatState) {
+                            if(chatMessaging.chatState
+                                && callRequestController.callEstablishedInMySide
+                                && callUsers[userId]
+                                && callUsers[userId].peers[topic]) {
                                 callController.shouldReconnectTopic(userId, topic, mediaType, direction);
-                            } else {
+                            } /*else {
                                 setTimeout(function () {
                                     if(chatMessaging.chatState) {
                                         callController.shouldReconnectTopic(userId, topic, mediaType, direction);
                                     }
                                 }, 7000);
-                            }
+                            }*/
                         }
 
                         if (callUsers[userId].peers[topic].peerConnection.iceConnectionState === "connected") {
@@ -1071,10 +1080,29 @@
                     callUsers[userId].topicMetaData[topic]['poorConnectionCount'] = 0;
                     clearInterval(callUsers[userId].topicMetaData[topic]['connectionQualityInterval']);
                 },
+                maybeReconnectAllTopics: function (){
+                    if(!callUsers || !Object.keys(callUsers).length || !callRequestController.callEstablishedInMySide)
+                        return;
+
+                    console.log('here')
+                    for(var i in callUsers) {
+                        var videoTopic = callUsers[i].videoTopicName, audioTopic = callUsers[i].audioTopicName;
+                        if(callUsers[i] && callUsers[i].peers[videoTopic]){
+                            console.log('here2')
+                            this.shouldReconnectTopic(i, videoTopic, 'video', callUsers[i].direction)
+                        }
+                        if(callUsers[i] && callUsers[i].peers[audioTopic]){
+                            console.log('here3')
+                            this.shouldReconnectTopic(i, videoTopic, 'audio', callUsers[i].direction)
+                        }
+                    }
+                },
                 shouldReconnectTopic: function (userId, topic, mediaType, direction) {
-                    var callController = this;
+                    var callController = this, iceConnectionState = callUsers[userId].peers[topic].peerConnection.iceConnectionState;
                     if (currentCallParams && Object.keys(currentCallParams).length) {
-                        if (callUsers[userId].peers[topic].peerConnection.iceConnectionState != 'connected') {
+                        if (callUsers[userId]
+                            && callUsers[userId].peers[topic]
+                            && iceConnectionState != 'connected') {
                             chatEvents.fireEvent('callEvents', {
                                 type: 'CALL_STATUS',
                                 errorCode: 7000,
@@ -1996,7 +2024,11 @@
         };
 
         this.asyncInitialized = function (async) {
-            asyncClient = async
+            asyncClient = async;
+
+            asyncClient.on('asyncReady', function (){
+                callStateController.maybeReconnectAllTopics();
+            })
         };
 
         this.handleChatMessages = function(type, chatMessageVOTypes, messageContent, contentCount, threadId, uniqueId) {
