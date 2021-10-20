@@ -475,6 +475,7 @@
                     }
                 });
             },
+
             /*
              * Call Functionalities
              */
@@ -514,7 +515,8 @@
                         interval: null,
                         receivedSdpAnswer: false,
                         connectionQualityInterval: null,
-                        poorConnectionCount: 0
+                        poorConnectionCount: 0,
+                        isConnectionPoor: false
                     };
 
                     for(var i in callTopics['receive']) {
