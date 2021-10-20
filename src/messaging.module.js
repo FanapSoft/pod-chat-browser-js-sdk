@@ -2,6 +2,7 @@
     /**
      * Global Variables
      */
+    var DOMPurify;
 
     /**
      * Communicates with chat server
@@ -9,7 +10,11 @@
      * @constructor
      */
     function ChatMessaging(params) {
-        //if (typeof (require) !== 'undefined' && typeof (exports) !== 'undefined') {} else {}
+        if (typeof (require) !== 'undefined' && typeof (exports) !== 'undefined') {
+            DOMPurify = require('dompurify');
+        } else {
+            DOMPurify = window.DOMPurify;
+        }
 
         var currentModuleInstance = this,
             asyncClient = params.asyncClient,
@@ -112,6 +117,9 @@
                     messageVO.content = JSON.stringify(params.content);
                 } else {
                     messageVO.content = params.content;
+                    if(DOMPurify.isSupported) {
+                        messageVO.content = DOMPurify.sanitize(messageVO.content, {ALLOWED_TAGS: []});
+                    }
                 }
             }
 
