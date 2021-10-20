@@ -4319,7 +4319,8 @@
                     systemMetadata: pushMessageVO.systemMetadata,
                     time: time,
                     timeMiliSeconds: timeMiliSeconds,
-                    timeNanos: parseInt(pushMessageVO.timeNanos)
+                    timeNanos: parseInt(pushMessageVO.timeNanos),
+                    callHistory: pushMessageVO.callHistoryVO
                 };
 
                 if (pushMessageVO.participant) {

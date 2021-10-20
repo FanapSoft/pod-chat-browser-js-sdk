@@ -1931,6 +1931,11 @@
                             type: 'RECEIVE_CALL',
                             result: messageContent
                         });
+                    } else {
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'PARTNER_RECEIVED_YOUR_CALL',
+                            result: messageContent
+                        });
                     }
 
                     currentCallId = messageContent.callId;
