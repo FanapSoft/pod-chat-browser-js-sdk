@@ -3168,6 +3168,24 @@
                 }
             });
         };
+        /**
+         * Pauses camera-send without closing its topic
+         * @param params
+         * @param callback
+         */
+        this.pauseCamera = function (params, callback) {
+            if(!webpeers || !callTopics['sendVideoTopic'] || !webpeers[callTopics['sendVideoTopic']])
+                return;
+
+            webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
+        };
+        this.resumeCamera = function (params, callback) {
+            if(!webpeers || !callTopics['sendVideoTopic'] || !webpeers[callTopics['sendVideoTopic']])
+                return;
+
+            webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = true;
+        };
+
 
         this.resizeCallVideo = function (params, callback) {
             if (params) {

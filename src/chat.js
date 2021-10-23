@@ -13533,6 +13533,10 @@
 
         this.turnOffVideoCall = callModule.turnOffVideoCall;
 
+        this.pauseCamera = callModule.pauseCamera;
+
+        this.resumeCamera = callModule.resumeCamera;
+
         this.resizeCallVideo = callModule.resizeCallVideo;
 
         this.restartMedia = callModule.restartMedia;
