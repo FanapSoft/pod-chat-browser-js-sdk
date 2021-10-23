@@ -573,8 +573,15 @@
 
                     var uiRemoteElements = [];
                     for(var i in callTopics['receive']) {
-                        uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']])
-                        callVideo && uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['VideoTopic']])
+                        /*uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']])
+                        callVideo && uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['VideoTopic']])*/
+
+                        uiRemoteElements.push(
+                            {
+                                uiRemoteVideo: uiRemoteMedias[callTopics['receive'][i]['AudioTopic']],
+                                uiRemoteAudio: callVideo && uiRemoteMedias[callTopics['receive'][i]['VideoTopic']]
+                            }
+                        )
                     }
 
                     if (callParentDiv) {
@@ -657,11 +664,13 @@
                 createSessionInChat: function (params) {
                     currentCallParams = params;
                     var callController = this;
+                    consoleLogging && console.log("createSessionInChat:inside", params);
                     sendCallMessage({
                         id: 'CREATE_SESSION',
                         brokerAddress: params.brokerAddress,
                         turnAddress: params.turnAddress.split(',')[0]
                     }, function (res) {
+                        consoleLogging && console.log("createSessionInChat:onresult", res)
                         if (res.done === 'TRUE') {
                             callStopQueue.callStarted = true;
                             callController.startCall(params);
