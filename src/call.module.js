@@ -500,6 +500,7 @@
                         receivedSdpAnswer: false,
                         connectionQualityInterval: null,
                         poorConnectionCount: 0,
+                        poorConnectionResolvedCount: 0,
                         isConnectionPoor: false
                     };
                     webpeersMetadata[callTopics['sendAudioTopic']] = {
@@ -507,6 +508,7 @@
                         receivedSdpAnswer: false,
                         connectionQualityInterval: null,
                         poorConnectionCount: 0,
+                        poorConnectionResolvedCount: 0,
                         isConnectionPoor: false
                     };
 
@@ -657,11 +659,13 @@
                 createSessionInChat: function (params) {
                     currentCallParams = params;
                     var callController = this;
+                    consoleLogging && console.log("createSessionInChat:inside", params);
                     sendCallMessage({
                         id: 'CREATE_SESSION',
                         brokerAddress: params.brokerAddress,
                         turnAddress: params.turnAddress.split(',')[0]
                     }, function (res) {
+                        consoleLogging && console.log("createSessionInChat:onresult", res)
                         if (res.done === 'TRUE') {
                             callStopQueue.callStarted = true;
                             callController.startCall(params);
@@ -919,21 +923,26 @@
                                         });
                                         webpeersMetadata[topic].isConnectionPoor = true;
                                         webpeersMetadata[topic].poorConnectionCount = 0;
+                                        webpeersMetadata[topic].poorConnectionResolvedCount = 0;
                                     } else {
                                         webpeersMetadata[topic].poorConnectionCount++;
                                     }
-
-                                } else if((report['roundTripTime'] || report['roundTripTime'] < 1) && webpeersMetadata[topic].isConnectionPoor) {
-                                    webpeersMetadata[topic].poorConnectionCount = 0;
-                                    webpeersMetadata[topic].isConnectionPoor = false;
-                                    chatEvents.fireEvent('callEvents', {
-                                        type: 'POOR_VIDEO_CONNECTION_RESOLVED',
-                                        message: 'Poor connection resolved',
-                                        metadata: {
-                                            elementId: "uiRemoteVideo-" + topic,
-                                            topic: topic
-                                        }
-                                    });
+                                } else if(report['roundTripTime'] || report['roundTripTime'] < 1) {
+                                    if(webpeersMetadata[topic].poorConnectionResolvedCount > 3 && webpeersMetadata[topic].isConnectionPoor) {
+                                        webpeersMetadata[topic].poorConnectionResolvedCount = 0;
+                                        webpeersMetadata[topic].poorConnectionCount = 0;
+                                        webpeersMetadata[topic].isConnectionPoor = false;
+                                        chatEvents.fireEvent('callEvents', {
+                                            type: 'POOR_VIDEO_CONNECTION_RESOLVED',
+                                            message: 'Poor connection resolved',
+                                            metadata: {
+                                                elementId: "uiRemoteVideo-" + topic,
+                                                topic: topic
+                                            }
+                                        });
+                                    } else {
+                                        webpeersMetadata[topic].poorConnectionResolvedCount++;
+                                    }
                                 }
 
                                 /*Object.keys(report).forEach(function (statName) {
