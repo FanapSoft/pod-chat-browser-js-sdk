@@ -578,8 +578,8 @@
 
                         uiRemoteElements.push(
                             {
-                                uiRemoteVideo: uiRemoteMedias[callTopics['receive'][i]['AudioTopic']],
-                                uiRemoteAudio: callVideo && uiRemoteMedias[callTopics['receive'][i]['VideoTopic']]
+                                uiRemoteAudio: uiRemoteMedias[callTopics['receive'][i]['AudioTopic']],
+                                uiRemoteVideo: callVideo && uiRemoteMedias[callTopics['receive'][i]['VideoTopic']]
                             }
                         )
                     }
