@@ -754,8 +754,9 @@
                     this.createTopic(topic, 'video', 'receive');
                 },
                 createTopic: function (topic, mediaType, direction) {
-                    var options = this.getSdpOfferOptions(topic, mediaType, direction);
-                    this.generateTopicPeer(topic, mediaType, direction, options);
+                    this.getSdpOfferOptions(topic, mediaType, direction).then(function (options){
+                        callStateController.generateTopicPeer(topic, mediaType, direction, options);
+                    });
                 },
                 removeTopic: function (topic) {
                     for(var i in webpeers) {
@@ -766,40 +767,76 @@
                     }
                 },
                 getSdpOfferOptions: function (topic, mediaType, direction) {
-                    var mediaConstraints = {audio: (mediaType === 'audio'), video: (mediaType === 'video')};
-                    if(direction === 'send') {
-                        mediaConstraints.video = {
-                            width: callVideoMinWidth,
-                            height: callVideoMinHeight,
-                            framerate: 15
-                        }
-                    }
-                    var options = {
-                        mediaConstraints: mediaConstraints,
-                        iceTransportPolicy: 'relay',
-                        onicecandidate: (candidate) => {
-                            if (webpeersMetadata[topic].interval !== null) {
-                                clearInterval(webpeersMetadata[topic].interval);
+                    return new Promise(function (resolve, reject) {
+                        var mediaConstraints = {audio: (mediaType === 'audio'), video: (mediaType === 'video')};
+
+                        if(direction === 'send') {
+                            mediaConstraints.video = {
+                                width: callVideoMinWidth,
+                                height: callVideoMinHeight,
+                                framerate: 15
                             }
-                            webpeersMetadata[topic].interval = setInterval(function () {
-                                if (webpeersMetadata[topic].sdpAnswerReceived === true) {
-                                    webpeersMetadata[topic].sdpAnswerReceived = false;
-                                    clearInterval(webpeersMetadata[topic].interval);
-                                    sendCallMessage({
-                                        id: 'ADD_ICE_CANDIDATE',
-                                        topic: topic,
-                                        candidateDto: candidate
-                                    })
-                                }
-                            }, 500, {candidate: candidate});
-                        },
-                        configuration: {
-                            iceServers: this.getTurnServer(currentCallParams)
                         }
-                    };
-                    options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
-                    consoleLogging && console.log("getSdpOfferOptions:", "topic: ", topic, "mediaType: ", mediaType, "direction: ", direction, "options: ", options)
-                    return options;
+
+                        if(direction === 'send' && mediaType === 'video') {
+                            navigator.mediaDevices.getDisplayMedia().then(function (result) {
+                                var options = {
+                                    mediaConstraints: mediaConstraints,
+                                    videoStream: result,
+                                    sendSource: 'screen',
+                                    iceTransportPolicy: 'relay',
+                                    onicecandidate: (candidate) => {
+                                        if (webpeersMetadata[topic].interval !== null) {
+                                            clearInterval(webpeersMetadata[topic].interval);
+                                        }
+                                        webpeersMetadata[topic].interval = setInterval(function () {
+                                            if (webpeersMetadata[topic].sdpAnswerReceived === true) {
+                                                webpeersMetadata[topic].sdpAnswerReceived = false;
+                                                clearInterval(webpeersMetadata[topic].interval);
+                                                sendCallMessage({
+                                                    id: 'ADD_ICE_CANDIDATE',
+                                                    topic: topic,
+                                                    candidateDto: candidate
+                                                })
+                                            }
+                                        }, 500, {candidate: candidate});
+                                    },
+                                    configuration: {
+                                        iceServers: callStateController.getTurnServer(currentCallParams)
+                                    }
+                                };
+                                options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
+                                resolve(options);
+                            });
+                        } else {
+                            var options = {
+                                mediaConstraints: mediaConstraints,
+                                iceTransportPolicy: 'relay',
+                                onicecandidate: (candidate) => {
+                                    if (webpeersMetadata[topic].interval !== null) {
+                                        clearInterval(webpeersMetadata[topic].interval);
+                                    }
+                                    webpeersMetadata[topic].interval = setInterval(function () {
+                                        if (webpeersMetadata[topic].sdpAnswerReceived === true) {
+                                            webpeersMetadata[topic].sdpAnswerReceived = false;
+                                            clearInterval(webpeersMetadata[topic].interval);
+                                            sendCallMessage({
+                                                id: 'ADD_ICE_CANDIDATE',
+                                                topic: topic,
+                                                candidateDto: candidate
+                                            })
+                                        }
+                                    }, 500, {candidate: candidate});
+                                },
+                                configuration: {
+                                    iceServers: callStateController.getTurnServer(currentCallParams)
+                                }
+                            };
+                            options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
+                            consoleLogging && console.log("getSdpOfferOptions:", "topic: ", topic, "mediaType: ", mediaType, "direction: ", direction, "options: ", options)
+                            resolve(options);
+                        }
+                    });
                 },
                 getTurnServer: function (params) {
                     if (!!params.turnAddress && params.turnAddress.length > 0) {
@@ -2674,6 +2711,7 @@
             });
         };
 
+        var displayMediaStream;
         this.startScreenShare = function (params, callback) {
             var sendData = {
                 chatMessageVOType: chatMessageVOTypes.START_SCREEN_SHARE,
@@ -2681,6 +2719,35 @@
                 pushMsgType: 3,
                 token: token
             };
+
+            if(!webpeers[callTopics['sendVideoTopic']]) {
+                console.log('connect to server first!');
+            } else {
+                if (!displayMediaStream) {
+                    webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
+
+                    navigator.mediaDevices.getDisplayMedia().then(function (result) {
+                        console.log("webpeers[callTopics['sendVideoTopic']]", webpeers[callTopics['sendVideoTopic']].getLocalStream());
+                        /*webpeers[callTopics['sendVideoTopic']].replaceTrack(result.getTracks()[0]).then(function (replacedPeer){
+                        });*/
+                        uiRemoteMedias[callTopics["sendVideoTopic"]].srcObject = result;
+                        var localStream = result;
+                        webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks().forEach(track => {
+                            webpeers[callTopics['sendVideoTopic']].remove
+                        });
+                        setTimeout(function() {
+                            localStream.getTracks().forEach(function (track) {
+                                webpeers[callTopics['sendVideoTopic']].peerConnection.addTrack(track, localStream);
+                            });
+                            webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = true;
+                            restartMedia(uiRemoteMedias[callTopics["sendVideoTopic"]])
+                        }, 2000);
+                        startMedia(uiRemoteMedias[callTopics["sendVideoTopic"]]);
+                    });
+                }
+            }
+
+
 
             if (params) {
                 if (typeof +params.callId === 'number' && params.callId > 0) {
