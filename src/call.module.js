@@ -753,8 +753,9 @@
                 startParticipantVideo: function (topic) {
                     this.createTopic(topic, 'video', 'receive');
                 },
-                createTopic: function (topic, mediaType, direction) {
-                    this.getSdpOfferOptions(topic, mediaType, direction).then(function (options){
+                createTopic: function (topic, mediaType, direction, shareScreen) {
+                    shareScreen = typeof shareScreen !== 'undefined' ? shareScreen : false;
+                    this.getSdpOfferOptions(topic, mediaType, direction, shareScreen).then(function (options){
                         callStateController.generateTopicPeer(topic, mediaType, direction, options);
                     });
                 },
@@ -766,7 +767,7 @@
                         }
                     }
                 },
-                getSdpOfferOptions: function (topic, mediaType, direction) {
+                getSdpOfferOptions: function (topic, mediaType, direction, shareScreen) {
                     return new Promise(function (resolve, reject) {
                         var mediaConstraints = {audio: (mediaType === 'audio'), video: (mediaType === 'video')};
 
@@ -778,7 +779,7 @@
                             }
                         }
 
-                        if(direction === 'send' && mediaType === 'video') {
+                        if(direction === 'send' && mediaType === 'video' && shareScreen) {
                             navigator.mediaDevices.getDisplayMedia().then(function (result) {
                                 var options = {
                                     mediaConstraints: mediaConstraints,
@@ -2723,13 +2724,15 @@
             if(!webpeers[callTopics['sendVideoTopic']]) {
                 console.log('connect to server first!');
             } else {
-                if (!displayMediaStream) {
+                callStateController.removeTopic(callTopics['sendVideoTopic'])
+                callStateController.createTopic(callTopics['sendVideoTopic'], "video", "send", true);
+                /*if (!displayMediaStream) {
                     webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
 
                     navigator.mediaDevices.getDisplayMedia().then(function (result) {
                         console.log("webpeers[callTopics['sendVideoTopic']]", webpeers[callTopics['sendVideoTopic']].getLocalStream());
-                        /*webpeers[callTopics['sendVideoTopic']].replaceTrack(result.getTracks()[0]).then(function (replacedPeer){
-                        });*/
+                        /!*webpeers[callTopics['sendVideoTopic']].replaceTrack(result.getTracks()[0]).then(function (replacedPeer){
+                        });*!/
                         uiRemoteMedias[callTopics["sendVideoTopic"]].srcObject = result;
                         var localStream = result;
                         webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks().forEach(track => {
@@ -2744,10 +2747,8 @@
                         }, 2000);
                         startMedia(uiRemoteMedias[callTopics["sendVideoTopic"]]);
                     });
-                }
+                }*/
             }
-
-
 
             if (params) {
                 if (typeof +params.callId === 'number' && params.callId > 0) {
