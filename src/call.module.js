@@ -763,6 +763,7 @@
                     for(var i in webpeers) {
                         if(i === topic) {
                             webpeers[i].dispose();
+                            this.removeConnectionQualityInterval(i);
                             webpeers[i] = null;
                         }
                     }
@@ -779,64 +780,46 @@
                             }
                         }
 
+                        var options = {
+                            mediaConstraints: mediaConstraints,
+                            iceTransportPolicy: 'relay',
+                            onicecandidate: (candidate) => {
+                                if (webpeersMetadata[topic].interval !== null) {
+                                    clearInterval(webpeersMetadata[topic].interval);
+                                }
+                                webpeersMetadata[topic].interval = setInterval(function () {
+                                    if (webpeersMetadata[topic].sdpAnswerReceived === true) {
+                                        webpeersMetadata[topic].sdpAnswerReceived = false;
+                                        clearInterval(webpeersMetadata[topic].interval);
+                                        sendCallMessage({
+                                            id: 'ADD_ICE_CANDIDATE',
+                                            topic: topic,
+                                            candidateDto: candidate
+                                        })
+                                    }
+                                }, 500, {candidate: candidate});
+                            },
+                            configuration: {
+                                iceServers: callStateController.getTurnServer(currentCallParams)
+                            }
+                        };
+                        options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
+
                         if(direction === 'send' && mediaType === 'video' && shareScreen) {
                             navigator.mediaDevices.getDisplayMedia().then(function (result) {
-                                var options = {
-                                    mediaConstraints: mediaConstraints,
-                                    videoStream: result,
-                                    sendSource: 'screen',
-                                    iceTransportPolicy: 'relay',
-                                    onicecandidate: (candidate) => {
-                                        if (webpeersMetadata[topic].interval !== null) {
-                                            clearInterval(webpeersMetadata[topic].interval);
-                                        }
-                                        webpeersMetadata[topic].interval = setInterval(function () {
-                                            if (webpeersMetadata[topic].sdpAnswerReceived === true) {
-                                                webpeersMetadata[topic].sdpAnswerReceived = false;
-                                                clearInterval(webpeersMetadata[topic].interval);
-                                                sendCallMessage({
-                                                    id: 'ADD_ICE_CANDIDATE',
-                                                    topic: topic,
-                                                    candidateDto: candidate
-                                                })
-                                            }
-                                        }, 500, {candidate: candidate});
-                                    },
-                                    configuration: {
-                                        iceServers: callStateController.getTurnServer(currentCallParams)
-                                    }
-                                };
-                                options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
+                                options.videoStream = result;
+                                options.sendSource = 'screen';
+                                // options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
+                                resolve(options);
+                            }).catch(function (error) {
+                                console.log(error);
+                                explainUserMediaError(error, 'video', 'screen');
                                 resolve(options);
                             });
                         } else {
-                            var options = {
-                                mediaConstraints: mediaConstraints,
-                                iceTransportPolicy: 'relay',
-                                onicecandidate: (candidate) => {
-                                    if (webpeersMetadata[topic].interval !== null) {
-                                        clearInterval(webpeersMetadata[topic].interval);
-                                    }
-                                    webpeersMetadata[topic].interval = setInterval(function () {
-                                        if (webpeersMetadata[topic].sdpAnswerReceived === true) {
-                                            webpeersMetadata[topic].sdpAnswerReceived = false;
-                                            clearInterval(webpeersMetadata[topic].interval);
-                                            sendCallMessage({
-                                                id: 'ADD_ICE_CANDIDATE',
-                                                topic: topic,
-                                                candidateDto: candidate
-                                            })
-                                        }
-                                    }, 500, {candidate: candidate});
-                                },
-                                configuration: {
-                                    iceServers: callStateController.getTurnServer(currentCallParams)
-                                }
-                            };
-                            options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
-                            consoleLogging && console.log("getSdpOfferOptions:", "topic: ", topic, "mediaType: ", mediaType, "direction: ", direction, "options: ", options)
                             resolve(options);
                         }
+                        consoleLogging && console.log("[SDK][getSdpOfferOptions] ", "topic: ", topic, "mediaType: ", mediaType, "direction: ", direction, "options: ", options);
                     });
                 },
                 getTurnServer: function (params) {
@@ -1045,7 +1028,7 @@
 
                     webpeers[topic] = new KurentoUtils.WebRtcPeer[WebRtcFunction](options, function (err) {
                         if (err) {
-                            console.error("[start/webRtc " + direction + "  " + mediaType + " Peer] Error: " + explainUserMediaError(err, mediaType));
+                            console.error("[SDK][start/webRtc " + direction + "  " + mediaType + " Peer] Error: " + explainUserMediaError(err, mediaType));
                             return;
                         }
 
@@ -1056,7 +1039,7 @@
 
                         webpeers[topic].generateOffer((err, sdpOffer) => {
                             if (err) {
-                                console.error("[start/WebRc " + direction + "  " + mediaType + " Peer/generateOffer] " + err);
+                                console.error("[SDK][start/WebRc " + direction + "  " + mediaType + " Peer/generateOffer] " + err);
                                 return;
                             }
 
@@ -1534,7 +1517,7 @@
                 });
             },
 
-            explainUserMediaError = function (err, deviceType) {
+            explainUserMediaError = function (err, deviceType, deviceSource) {
                 chatEvents.fireEvent('callEvents', {
                     type: 'CALL_ERROR',
                     code: 7000,
@@ -1571,10 +1554,10 @@
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " permission has been denied by the user"
+                        message: (deviceType === 'video' ? (deviceSource === 'screen'? 'ScreenShare' : 'Webcam') : 'Mice') + " permission has been denied by the user"
                     });
-                    alert((deviceType === 'video' ? 'Webcam' : 'Mice') + " permission has been denied by the user");
-                    return (deviceType === 'video' ? 'Webcam' : 'Mice') + " permission has been denied by the user";
+                    alert((deviceType === 'video' ? (deviceSource === 'screen'? 'ScreenShare' : 'Webcam') : 'Mice') + " permission has been denied by the user");
+                    return (deviceType === 'video' ? (deviceSource === 'screen'? 'ScreenShare' : 'Webcam') : 'Mice') + " permission has been denied by the user";
                 } else if (n === 'TypeError') {
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_ERROR',
@@ -2712,7 +2695,6 @@
             });
         };
 
-        var displayMediaStream;
         this.startScreenShare = function (params, callback) {
             var sendData = {
                 chatMessageVOType: chatMessageVOTypes.START_SCREEN_SHARE,
@@ -2722,9 +2704,9 @@
             };
 
             if(!webpeers[callTopics['sendVideoTopic']]) {
-                console.log('connect to server first!');
+                console.log('[SDK][startScreenShare] No video send connection available');
             } else {
-                callStateController.removeTopic(callTopics['sendVideoTopic'])
+                callStateController.removeTopic(callTopics['sendVideoTopic']);
                 callStateController.createTopic(callTopics['sendVideoTopic'], "video", "send", true);
                 /*if (!displayMediaStream) {
                     webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
@@ -2799,6 +2781,37 @@
                     message: 'No params have been sent to End Screen Sharing!'
                 });
                 return;
+            }
+
+            if(!webpeers[callTopics['sendVideoTopic']]) {
+                console.log('[SDK][endScreenShare] No video send connection available');
+            } else {
+                var startCamera = typeof params.startCamera !== 'undefined' ? params.startCamera : true;
+                callStateController.removeTopic(callTopics['sendVideoTopic']);
+                if(startCamera)
+                    callStateController.createTopic(callTopics['sendVideoTopic'], "video", "send");
+                /*if (!displayMediaStream) {
+                    webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
+
+                    navigator.mediaDevices.getDisplayMedia().then(function (result) {
+                        console.log("webpeers[callTopics['sendVideoTopic']]", webpeers[callTopics['sendVideoTopic']].getLocalStream());
+                        /!*webpeers[callTopics['sendVideoTopic']].replaceTrack(result.getTracks()[0]).then(function (replacedPeer){
+                        });*!/
+                        uiRemoteMedias[callTopics["sendVideoTopic"]].srcObject = result;
+                        var localStream = result;
+                        webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks().forEach(track => {
+                            webpeers[callTopics['sendVideoTopic']].remove
+                        });
+                        setTimeout(function() {
+                            localStream.getTracks().forEach(function (track) {
+                                webpeers[callTopics['sendVideoTopic']].peerConnection.addTrack(track, localStream);
+                            });
+                            webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = true;
+                            restartMedia(uiRemoteMedias[callTopics["sendVideoTopic"]])
+                        }, 2000);
+                        startMedia(uiRemoteMedias[callTopics["sendVideoTopic"]]);
+                    });
+                }*/
             }
 
             return chatMessaging.sendMessage(sendData, {
