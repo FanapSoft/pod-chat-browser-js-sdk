@@ -578,8 +578,8 @@
 
                         uiRemoteElements.push(
                             {
-                                uiRemoteVideo: uiRemoteMedias[callTopics['receive'][i]['AudioTopic']],
-                                uiRemoteAudio: callVideo && uiRemoteMedias[callTopics['receive'][i]['VideoTopic']]
+                                uiRemoteAudio: uiRemoteMedias[callTopics['receive'][i]['AudioTopic']],
+                                uiRemoteVideo: callVideo && uiRemoteMedias[callTopics['receive'][i]['VideoTopic']]
                             }
                         )
                     }
@@ -3244,6 +3244,7 @@
                 }
             });
         };
+
         /**
          * Pauses camera-send without closing its topic
          * @param params
@@ -3255,13 +3256,13 @@
 
             webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
         };
+
         this.resumeCamera = function (params, callback) {
             if(!webpeers || !callTopics['sendVideoTopic'] || !webpeers[callTopics['sendVideoTopic']])
                 return;
 
             webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = true;
         };
-
 
         this.resizeCallVideo = function (params, callback) {
             if (params) {

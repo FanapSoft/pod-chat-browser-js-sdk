@@ -545,6 +545,31 @@
                 console.log("Error happened at Utility.jsonParser function()", e);
             }
         };
+
+        /**
+         * Export given json to csv
+         *
+         * @param objArray
+         * @return {string}
+         */
+        this.convertToCSV = function(objArray) {
+            var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+            var str = '';
+
+            for (var i = 0; i < array.length; i++) {
+                var line = '';
+                for (var index in array[i]) {
+                    if (line != '') line += ','
+
+                    line += index;
+                    line += ": " + (typeof array[i][index] !== 'string' ?  JSON.stringify(array[i][index]).replaceAll(",", ".") : array[i][index]);
+                }
+
+                str += line + '\r\n';
+            }
+
+            return str;
+        }
     }
 
     if (typeof module !== 'undefined' && typeof module.exports != 'undefined') {
