@@ -929,12 +929,12 @@
                 checkConnectionQuality: function (topic) {
                     webpeers[topic].peerConnection.getStats(null).then(stats => {
                         //console.log(' watchRTCPeerConnection:: window.setInterval then(stats:', stats)
-                        let statsOutput = "";
+                        //let statsOutput = "";
 
                         stats.forEach(report => {
                             if(report && report.type && report.type === 'remote-inbound-rtp') {
-                                statsOutput += `<h2>Report: ${report.type}</h2>\n<strong>ID:</strong> ${report.id}<br>\n` +
-                                    `<strong>Timestamp:</strong> ${report.timestamp}<br>\n`;
+                                //statsOutput += `<h2>Report: ${report.type}</h2>\n<strong>ID:</strong> ${report.id}<br>\n` +
+                                    //`<strong>Timestamp:</strong> ${report.timestamp}<br>\n`;
 
                                 // Now the statistics for this report; we intentially drop the ones we
                                 // sorted to the top above
@@ -978,15 +978,15 @@
                                     }
                                 }
 
-                                Object.keys(report).forEach(function (statName) {
+                                /*Object.keys(report).forEach(function (statName) {
                                     if (statName !== "id" && statName !== "timestamp" && statName !== "type") {
                                         statsOutput += `<strong>${statName}:</strong> ${report[statName]}<br>\n`;
                                     }
-                                });
+                                });*/
                             }
                         });
 
-                        document.querySelector(".stats-box").innerHTML = statsOutput;
+                        //document.querySelector(".stats-box").innerHTML = statsOutput;
                     });
                 },
                 removeConnectionQualityInterval: function (topic) {
