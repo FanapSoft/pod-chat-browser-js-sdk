@@ -2275,6 +2275,20 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 
 <form action="">
     <fieldset>
+        <legend>Export Chat</legend>
+        <label for="exportChatThreadIdInput">Thread Id : </label>
+        <input type="text" name="exportChatThreadIdInput" id="exportChatThreadIdInput" value="">
+        <button type="button" id="exportChatBtn">Export Chat</button>
+        <p id="exportChatResult"></p>
+    </fieldset>
+</form>
+
+<br>
+<hr>
+<br>
+
+<form action="">
+    <fieldset>
         <legend>Check Turn Server Availability</legend>
         <div>
             TURN IP: <input id='checkTurnServerIp' placeholder='example.com  or  xxx.yyy.rrr.ddd' value="46.32.6.188"/>
@@ -2961,6 +2975,21 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
             res.innerHTML = 'TURN server does not work.';
         });
     };
+
+    document.getElementById("exportChatBtn").addEventListener("click", e => {
+        e.preventDefault();
+        var inp = document.getElementById("exportChatThreadIdInput").value;
+
+        chatAgent.exportChat({
+            threadId: inp,
+            autoStartDownload: true,
+            responseType: 'link',
+            wantedCount: 255,
+            stepCount: 100
+        }, result => {
+            console.log(result);
+        })
+    })
 
 </script>
 
