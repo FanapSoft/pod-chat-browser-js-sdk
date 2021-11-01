@@ -961,6 +961,7 @@
                                     }
                                 } else if(report['roundTripTime'] || report['roundTripTime'] < 1) {
                                     if(webpeersMetadata[topic].poorConnectionResolvedCount > 3 && webpeersMetadata[topic].isConnectionPoor) {
+                                        callClient.resumeCamera();
                                         webpeersMetadata[topic].poorConnectionResolvedCount = 0;
                                         webpeersMetadata[topic].poorConnectionCount = 0;
                                         webpeersMetadata[topic].isConnectionPoor = false;
