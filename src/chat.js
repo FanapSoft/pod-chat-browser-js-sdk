@@ -13696,6 +13696,10 @@
 
         this.resumeCamera = callModule.resumeCamera;
 
+        this.pauseMice = callModule.pauseMice;
+
+        this.resumeMice = callModule.resumeMice;
+
         this.resizeCallVideo = callModule.resizeCallVideo;
 
         this.restartMedia = callModule.restartMedia;

@@ -3281,6 +3281,7 @@
                 return;
 
             webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
+            callback && callback();
         };
 
         this.resumeCamera = function (params, callback) {
@@ -3288,6 +3289,28 @@
                 return;
 
             webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = true;
+            callback && callback();
+        };
+
+        /**
+         * Pauses mice-send without closing its topic
+         * @param params
+         * @param callback
+         */
+        this.pauseMice = function (params, callback) {
+            if(!webpeers || !callTopics['sendAudioTopic'] || !webpeers[callTopics['sendAudioTopic']])
+                return;
+
+            webpeers[callTopics['sendAudioTopic']].getLocalStream().getTracks()[0].enabled = false;
+            callback && callback();
+        };
+
+        this.resumeMice = function (params, callback) {
+            if(!webpeers || !callTopics['sendAudioTopic'] || !webpeers[callTopics['sendAudioTopic']])
+                return;
+
+            webpeers[callTopics['sendAudioTopic']].getLocalStream().getTracks()[0].enabled = true;
+            callback && callback();
         };
 
         this.resizeCallVideo = function (params, callback) {
