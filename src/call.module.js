@@ -188,6 +188,10 @@
             currentCallId = null,
             shouldReconnectCallTimeout = null,
             callTopics = {},
+            screenShareState = {
+                started: false,
+                imOwner: false
+            },
             callClientType = {
                 WEB: 1,
                 ANDROID: 2,
@@ -487,6 +491,7 @@
 
                     callTopics['sendVideoTopic'] = 'Vi-' + sendingTopic;
                     callTopics['sendAudioTopic'] = 'Vo-' + sendingTopic;
+                    callTopics['screenShare'] = params.screenShare;
                     //callTopics['receiveVideoTopic'] = 'Vi-' + receiveTopic;
                     //callTopics['receiveAudioTopic'] = 'Vo-' + receiveTopic;
                     callTopics['receive'] = [];
@@ -2012,6 +2017,7 @@
                             mute: messageContent.clientDTO.mute,
                             sendingTopic: messageContent.clientDTO.topicSend,
                             receiveTopic: messageContent.clientDTO.topicReceive,
+                            screenShare: messageContent.chatDataDto.screenShare,
                             brokerAddress: messageContent.chatDataDto.brokerAddressWeb,
                             turnAddress: messageContent.chatDataDto.turnAddress,
                         }, function (callDivs) {
@@ -2337,6 +2343,14 @@
                  * Type 123   Start Screen Share
                  */
                 case chatMessageVOTypes.START_SCREEN_SHARE:
+                    if(messageContent.screenOwner.id === chatMessaging.userInfo.id) {
+                        screenShareState.imOwner = true;
+                        screenShareState.started = true;
+                    } else {
+                        screenShareState.imOwner = false;
+                        screenShareState.started = true;
+                    }
+
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                     }
@@ -2352,8 +2366,13 @@
                  * Type 124   End Screen Share
                  */
                 case chatMessageVOTypes.END_SCREEN_SHARE:
+                    screenShareState.imOwner = false;
+                    screenShareState.started = false;
+
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    } else if (!screenShareState.imOwner) {
+                        console.log("[SDK][START_SCREEN_SHARE], im not owner of screen");
                     }
 
                     chatEvents.fireEvent('callEvents', {
@@ -2703,35 +2722,6 @@
                 token: token
             };
 
-            if(!webpeers[callTopics['sendVideoTopic']]) {
-                console.log('[SDK][startScreenShare] No video send connection available');
-            } else {
-                callStateController.removeTopic(callTopics['sendVideoTopic']);
-                callStateController.createTopic(callTopics['sendVideoTopic'], "video", "send", true);
-                /*if (!displayMediaStream) {
-                    webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
-
-                    navigator.mediaDevices.getDisplayMedia().then(function (result) {
-                        console.log("webpeers[callTopics['sendVideoTopic']]", webpeers[callTopics['sendVideoTopic']].getLocalStream());
-                        /!*webpeers[callTopics['sendVideoTopic']].replaceTrack(result.getTracks()[0]).then(function (replacedPeer){
-                        });*!/
-                        uiRemoteMedias[callTopics["sendVideoTopic"]].srcObject = result;
-                        var localStream = result;
-                        webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks().forEach(track => {
-                            webpeers[callTopics['sendVideoTopic']].remove
-                        });
-                        setTimeout(function() {
-                            localStream.getTracks().forEach(function (track) {
-                                webpeers[callTopics['sendVideoTopic']].peerConnection.addTrack(track, localStream);
-                            });
-                            webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = true;
-                            restartMedia(uiRemoteMedias[callTopics["sendVideoTopic"]])
-                        }, 2000);
-                        startMedia(uiRemoteMedias[callTopics["sendVideoTopic"]]);
-                    });
-                }*/
-            }
-
             if (params) {
                 if (typeof +params.callId === 'number' && params.callId > 0) {
                     sendData.subjectId = +params.callId;
@@ -2816,6 +2806,33 @@
 
             return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
+                    console.log("[sdk][startScreenShare][onResult]: ", result);
+                    if(!result.hasError) {
+                        var direction = 'send', shareScreen = true;
+                        if(screenShareState.started && !screenShareState.imOwner) {
+                            direction = 'receive';
+                            shareScreen = false;
+                        }
+                        if(!webpeers[callTopics['screenShare']]) {
+                            // Local Video Tag
+                            if (!uiRemoteMedias[callTopics['screenShare']]) {
+                                uiRemoteMedias[callTopics['screenShare']] = document.createElement('video');
+                                var el = uiRemoteMedias[callTopics['screenShare']];
+                                el.setAttribute('id', 'uiRemoteVideo-' + callTopics['screenShare']);
+                                el.setAttribute('class', callVideoTagClassName);
+                                el.setAttribute('playsinline', '');
+                                el.setAttribute('muted', '');
+                                el.setAttribute('width', callVideoMinWidth + 'px');
+                                el.setAttribute('height', callVideoMinHeight + 'px');
+                            }
+                            var callParentDiv = document.getElementById(callDivId);
+                            callParentDiv.appendChild(uiRemoteMedias[callTopics['screenShare']]);
+                            callStateController.createTopic(callTopics['screenShare'], "video", direction, shareScreen);
+                        } else {
+                            callStateController.removeTopic(callTopics['screenShare']);
+                            callStateController.createTopic(callTopics['screenShare'], "video", direction, shareScreen);
+                        }
+                    }
                     callback && callback(result);
                 }
             });
