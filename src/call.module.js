@@ -17,6 +17,7 @@
 
 
         var Utility = params.Utility,
+            callClient = this,
             Sentry = params.Sentry,
             asyncClient = params.asyncClient,
             chatEvents = params.chatEvents,
@@ -505,6 +506,7 @@
                         receivedSdpAnswer: false,
                         connectionQualityInterval: null,
                         poorConnectionCount: 0,
+                        poorConnectionResolvedCount: 0,
                         isConnectionPoor: false
                     };
                     webpeersMetadata[callTopics['sendAudioTopic']] = {
@@ -512,6 +514,7 @@
                         receivedSdpAnswer: false,
                         connectionQualityInterval: null,
                         poorConnectionCount: 0,
+                        poorConnectionResolvedCount: 0,
                         isConnectionPoor: false
                     };
 
@@ -935,17 +938,29 @@
 
                         stats.forEach(report => {
                             if(report && report.type && report.type === 'remote-inbound-rtp') {
-                                /*statsOutput += `<h2>Report: ${report.type}</h2>\n<strong>ID:</strong> ${report.id}<br>\n` +
-                                    `<strong>Timestamp:</strong> ${report.timestamp}<br>\n`;*/
+                                //statsOutput += `<h2>Report: ${report.type}</h2>\n<strong>ID:</strong> ${report.id}<br>\n` +
+                                    //`<strong>Timestamp:</strong> ${report.timestamp}<br>\n`;
 
                                 // Now the statistics for this report; we intentially drop the ones we
                                 // sorted to the top above
                                 if(!report['roundTripTime'] || report['roundTripTime'] > 1) {
+                                    if(webpeersMetadata[topic].poorConnectionCount === 10) {
+                                        chatEvents.fireEvent('callEvents', {
+                                            type: 'POOR_VIDEO_CONNECTION',
+                                            subType: 'LONG_TIME',
+                                            message: 'Poor connection for a long time',
+                                            metadata: {
+                                                elementId: "uiRemoteVideo-" + topic,
+                                                topic: topic
+                                            }
+                                        });
+                                    }
                                     if(webpeersMetadata[topic].poorConnectionCount > 3 && !webpeersMetadata[topic].isConnectionPoor) {
                                         //alert('Poor connection detected...');
                                         consoleLogging && console.log('Poor connection detected...');
                                         chatEvents.fireEvent('callEvents', {
                                             type: 'POOR_VIDEO_CONNECTION',
+                                            subType: 'SHORT_TIME',
                                             message: 'Poor connection detected',
                                             metadata: {
                                                 elementId: "uiRemoteVideo-" + topic,
@@ -954,21 +969,26 @@
                                         });
                                         webpeersMetadata[topic].isConnectionPoor = true;
                                         webpeersMetadata[topic].poorConnectionCount = 0;
+                                        webpeersMetadata[topic].poorConnectionResolvedCount = 0;
                                     } else {
                                         webpeersMetadata[topic].poorConnectionCount++;
                                     }
-
-                                } else if((report['roundTripTime'] || report['roundTripTime'] < 1) && webpeersMetadata[topic].isConnectionPoor) {
-                                    webpeersMetadata[topic].poorConnectionCount = 0;
-                                    webpeersMetadata[topic].isConnectionPoor = false;
-                                    chatEvents.fireEvent('callEvents', {
-                                        type: 'POOR_VIDEO_CONNECTION_RESOLVED',
-                                        message: 'Poor connection resolved',
-                                        metadata: {
-                                            elementId: "uiRemoteVideo-" + topic,
-                                            topic: topic
-                                        }
-                                    });
+                                } else if(report['roundTripTime'] || report['roundTripTime'] < 1) {
+                                    if(webpeersMetadata[topic].poorConnectionResolvedCount > 3 && webpeersMetadata[topic].isConnectionPoor) {
+                                        webpeersMetadata[topic].poorConnectionResolvedCount = 0;
+                                        webpeersMetadata[topic].poorConnectionCount = 0;
+                                        webpeersMetadata[topic].isConnectionPoor = false;
+                                        chatEvents.fireEvent('callEvents', {
+                                            type: 'POOR_VIDEO_CONNECTION_RESOLVED',
+                                            message: 'Poor connection resolved',
+                                            metadata: {
+                                                elementId: "uiRemoteVideo-" + topic,
+                                                topic: topic
+                                            }
+                                        });
+                                    } else {
+                                        webpeersMetadata[topic].poorConnectionResolvedCount++;
+                                    }
                                 }
 
                                 /*Object.keys(report).forEach(function (statName) {
@@ -3286,6 +3306,7 @@
                 return;
 
             webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
+            callback && callback();
         };
 
         this.resumeCamera = function (params, callback) {
@@ -3293,6 +3314,28 @@
                 return;
 
             webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = true;
+            callback && callback();
+        };
+
+        /**
+         * Pauses mice-send without closing its topic
+         * @param params
+         * @param callback
+         */
+        this.pauseMice = function (params, callback) {
+            if(!webpeers || !callTopics['sendAudioTopic'] || !webpeers[callTopics['sendAudioTopic']])
+                return;
+
+            webpeers[callTopics['sendAudioTopic']].getLocalStream().getTracks()[0].enabled = false;
+            callback && callback();
+        };
+
+        this.resumeMice = function (params, callback) {
+            if(!webpeers || !callTopics['sendAudioTopic'] || !webpeers[callTopics['sendAudioTopic']])
+                return;
+
+            webpeers[callTopics['sendAudioTopic']].getLocalStream().getTracks()[0].enabled = true;
+            callback && callback();
         };
 
         this.resizeCallVideo = function (params, callback) {
