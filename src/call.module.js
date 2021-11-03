@@ -517,6 +517,14 @@
                         poorConnectionResolvedCount: 0,
                         isConnectionPoor: false
                     };
+                    webpeersMetadata[callTopics['screenShare']] = {
+                        interval: null,
+                        receivedSdpAnswer: false,
+                        connectionQualityInterval: null,
+                        poorConnectionCount: 0,
+                        poorConnectionResolvedCount: 0,
+                        isConnectionPoor: false
+                    };
 
                     for(var i in callTopics['receive']) {
                         webpeersMetadata[callTopics['receive'][i]['VideoTopic']] = {
@@ -1078,6 +1086,36 @@
                             });
                         });
                     });
+                },
+                addScreenShareToCall: function (direction, shareScreen) {
+                    if(!webpeers[callTopics['screenShare']]) {
+                        // Local Video Tag
+                        if (!uiRemoteMedias[callTopics['screenShare']]) {
+                            uiRemoteMedias[callTopics['screenShare']] = document.createElement('video');
+                            var el = uiRemoteMedias[callTopics['screenShare']];
+                            el.setAttribute('id', 'uiRemoteVideo-' + callTopics['screenShare']);
+                            el.setAttribute('class', callVideoTagClassName);
+                            el.setAttribute('playsinline', '');
+                            el.setAttribute('muted', '');
+                            el.setAttribute('width', callVideoMinWidth + 'px');
+                            el.setAttribute('height', callVideoMinHeight + 'px');
+                        }
+                        var callParentDiv = document.getElementById(callDivId);
+                        callParentDiv.appendChild(uiRemoteMedias[callTopics['screenShare']]);
+                        callStateController.createTopic(callTopics['screenShare'], "video", direction, shareScreen);
+                    } else {
+                        callStateController.removeTopic(callTopics['screenShare']);
+                        callStateController.createTopic(callTopics['screenShare'], "video", direction, shareScreen);
+                    }
+                },
+                removeScreenShareFromCall: function () {
+                    if(webpeers[callTopics['screenShare']]) {
+                        // Local Video Tag
+                        if (uiRemoteMedias[callTopics['screenShare']]) {
+                            removeStreamFromWebRTC(uiRemoteMedias[callTopics['screenShare']])
+                        }
+                        callStateController.removeTopic(callTopics['screenShare']);
+                    }
                 }
             },
 
@@ -2373,6 +2411,8 @@
 
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    } else if(!screenShareState.imOwner) {
+                        callStateController.addScreenShareToCall("receive", false)
                     }
 
                     chatEvents.fireEvent('callEvents', {
@@ -2392,7 +2432,8 @@
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                     } else if (!screenShareState.imOwner) {
-                        console.log("[SDK][START_SCREEN_SHARE], im not owner of screen");
+                       consoleLogging && console.log("[SDK][START_SCREEN_SHARE], im not owner of screen");
+                       callStateController.removeScreenShareFromCall();
                     }
 
                     chatEvents.fireEvent('callEvents', {
@@ -2762,6 +2803,15 @@
 
             return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
+                    console.log("[sdk][startScreenShare][onResult]: ", result);
+                    if(!result.hasError) {
+                        var direction = 'send', shareScreen = true;
+                        if(screenShareState.started && !screenShareState.imOwner) {
+                            direction = 'receive';
+                            shareScreen = false;
+                        }
+                        callStateController.addScreenShareToCall(direction, shareScreen);
+                    }
                     callback && callback(result);
                 }
             });
@@ -2793,66 +2843,22 @@
                 return;
             }
 
-            if(!webpeers[callTopics['sendVideoTopic']]) {
-                console.log('[SDK][endScreenShare] No video send connection available');
-            } else {
-                var startCamera = typeof params.startCamera !== 'undefined' ? params.startCamera : true;
-                callStateController.removeTopic(callTopics['sendVideoTopic']);
-                if(startCamera)
-                    callStateController.createTopic(callTopics['sendVideoTopic'], "video", "send");
-                /*if (!displayMediaStream) {
-                    webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
+            if(!screenShareState.imOwner) {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'You can not end others screen sharing!'
+                });
+                return;
+            }
 
-                    navigator.mediaDevices.getDisplayMedia().then(function (result) {
-                        console.log("webpeers[callTopics['sendVideoTopic']]", webpeers[callTopics['sendVideoTopic']].getLocalStream());
-                        /!*webpeers[callTopics['sendVideoTopic']].replaceTrack(result.getTracks()[0]).then(function (replacedPeer){
-                        });*!/
-                        uiRemoteMedias[callTopics["sendVideoTopic"]].srcObject = result;
-                        var localStream = result;
-                        webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks().forEach(track => {
-                            webpeers[callTopics['sendVideoTopic']].remove
-                        });
-                        setTimeout(function() {
-                            localStream.getTracks().forEach(function (track) {
-                                webpeers[callTopics['sendVideoTopic']].peerConnection.addTrack(track, localStream);
-                            });
-                            webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = true;
-                            restartMedia(uiRemoteMedias[callTopics["sendVideoTopic"]])
-                        }, 2000);
-                        startMedia(uiRemoteMedias[callTopics["sendVideoTopic"]]);
-                    });
-                }*/
+            if(!webpeers[callTopics['screenShare']]) {
+                console.log('[SDK][endScreenShare] No screenShare connection available');
+            } else {
+                callStateController.removeScreenShareFromCall();
             }
 
             return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
-                    console.log("[sdk][startScreenShare][onResult]: ", result);
-                    if(!result.hasError) {
-                        var direction = 'send', shareScreen = true;
-                        if(screenShareState.started && !screenShareState.imOwner) {
-                            direction = 'receive';
-                            shareScreen = false;
-                        }
-                        if(!webpeers[callTopics['screenShare']]) {
-                            // Local Video Tag
-                            if (!uiRemoteMedias[callTopics['screenShare']]) {
-                                uiRemoteMedias[callTopics['screenShare']] = document.createElement('video');
-                                var el = uiRemoteMedias[callTopics['screenShare']];
-                                el.setAttribute('id', 'uiRemoteVideo-' + callTopics['screenShare']);
-                                el.setAttribute('class', callVideoTagClassName);
-                                el.setAttribute('playsinline', '');
-                                el.setAttribute('muted', '');
-                                el.setAttribute('width', callVideoMinWidth + 'px');
-                                el.setAttribute('height', callVideoMinHeight + 'px');
-                            }
-                            var callParentDiv = document.getElementById(callDivId);
-                            callParentDiv.appendChild(uiRemoteMedias[callTopics['screenShare']]);
-                            callStateController.createTopic(callTopics['screenShare'], "video", direction, shareScreen);
-                        } else {
-                            callStateController.removeTopic(callTopics['screenShare']);
-                            callStateController.createTopic(callTopics['screenShare'], "video", direction, shareScreen);
-                        }
-                    }
                     callback && callback(result);
                 }
             });
