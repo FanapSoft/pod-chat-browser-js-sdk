@@ -940,13 +940,22 @@
                                 // sorted to the top above
                                 if(!report['roundTripTime'] || report['roundTripTime'] > 1) {
                                     if(webpeersMetadata[topic].poorConnectionCount === 10) {
-                                        callClient.pauseCamera();
+                                        chatEvents.fireEvent('callEvents', {
+                                            type: 'POOR_VIDEO_CONNECTION',
+                                            subType: 'LONG_TIME',
+                                            message: 'Poor connection for a long time',
+                                            metadata: {
+                                                elementId: "uiRemoteVideo-" + topic,
+                                                topic: topic
+                                            }
+                                        });
                                     }
                                     if(webpeersMetadata[topic].poorConnectionCount > 3 && !webpeersMetadata[topic].isConnectionPoor) {
                                         //alert('Poor connection detected...');
                                         consoleLogging && console.log('Poor connection detected...');
                                         chatEvents.fireEvent('callEvents', {
                                             type: 'POOR_VIDEO_CONNECTION',
+                                            subType: 'SHORT_TIME',
                                             message: 'Poor connection detected',
                                             metadata: {
                                                 elementId: "uiRemoteVideo-" + topic,
@@ -961,7 +970,6 @@
                                     }
                                 } else if(report['roundTripTime'] || report['roundTripTime'] < 1) {
                                     if(webpeersMetadata[topic].poorConnectionResolvedCount > 3 && webpeersMetadata[topic].isConnectionPoor) {
-                                        callClient.resumeCamera();
                                         webpeersMetadata[topic].poorConnectionResolvedCount = 0;
                                         webpeersMetadata[topic].poorConnectionCount = 0;
                                         webpeersMetadata[topic].isConnectionPoor = false;
