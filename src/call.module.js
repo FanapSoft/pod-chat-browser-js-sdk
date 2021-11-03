@@ -2852,7 +2852,7 @@
             }
 
             if(!webpeers[callTopics['screenShare']]) {
-                console.log('[SDK][endScreenShare] No screenShare connection available');
+                consoleLogging && console.log('[SDK][endScreenShare] No screenShare connection available');
             } else {
                 callStateController.removeScreenShareFromCall();
             }
