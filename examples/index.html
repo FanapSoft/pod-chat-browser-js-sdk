@@ -2532,6 +2532,11 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
                     custom_name: "John Doe"
                 }
             }, {
+                onResult: function (result) {
+                    if(result.hasError) {
+                        console.log('[examples/html] upload of an item failed', result)
+                    }
+                },
                 onSent: function (result) {
                     console.log(result);
                     console.log(result.uniqueId + " \t has been Sent!");
