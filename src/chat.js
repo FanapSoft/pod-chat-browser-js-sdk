@@ -9143,6 +9143,8 @@
                     putInChatWaitQueue(params.message, function () {
                         callback && callback();
                     });
+                } else {
+                    callback && callback();
                 }
             },
 
@@ -9315,7 +9317,7 @@
                                         callbacks: callbacks
                                     }, function () {
                                         callback && callback();
-                                    });
+                                    }, true);
                                 });
                             break;
                         }
