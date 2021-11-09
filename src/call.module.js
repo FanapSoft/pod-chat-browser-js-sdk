@@ -1112,7 +1112,7 @@
                     if(webpeers[callTopics['screenShare']]) {
                         // Local Video Tag
                         if (uiRemoteMedias[callTopics['screenShare']]) {
-                            removeStreamFromWebRTC(uiRemoteMedias[callTopics['screenShare']])
+                            removeStreamFromWebRTC(callTopics['screenShare']);
                         }
                         callStateController.removeTopic(callTopics['screenShare']);
                     }
