@@ -7,6 +7,7 @@
         //if (typeof (require) !== 'undefined' && typeof (exports) !== 'undefined') {} else {}
 
         var Sentry = params.Sentry,
+            currentModuleInstance = this,
             Utility = params.Utility,
             consoleLogging = params.consoleLogging,
             token = params.token,

@@ -17,7 +17,7 @@
 
 
         var Utility = params.Utility,
-            callClient = this,
+            currentModuleInstance = this,
             Sentry = params.Sentry,
             asyncClient = params.asyncClient,
             chatEvents = params.chatEvents,
@@ -436,7 +436,7 @@
             },
 
             endCall = function (params, callback) {
-                consoleLogging && console.log('endCall called...');
+                consoleLogging && console.log('[SDK][endCall] called...');
 
                 var endCallData = {
                     chatMessageVOType: chatMessageVOTypes.END_CALL_REQUEST,
@@ -847,14 +847,12 @@
                     }
                 },
                 watchRTCPeerConnection: function (topic, mediaType, direction) {
-                    console.log("set callback on webpeers: ", topic, mediaType, direction);
+                    consoleLogging && console.log("[SDK][watchRTCPeerConnection] called with: ", topic, mediaType, direction);
 
                     var callController = this;
                     webpeers[topic].peerConnection.onconnectionstatechange = function () {
-                        console.log("on connection state change, ", "peer: ", topic, "peerConnection.connectionState: ", webpeers[topic].peerConnection.connectionState);
+                        consoleLogging && console.log("[SDK][peerConnection.onconnectionstatechange] ", "peer: ", topic, " peerConnection.connectionState: ", webpeers[topic].peerConnection.connectionState);
                         if (webpeers[topic].peerConnection.connectionState === 'disconnected') {
-                            console.log(topic, 'peerConnection.onconnectionstatechange: disconnected');
-
                             callController.removeConnectionQualityInterval(topic);
                         }
 
@@ -884,9 +882,8 @@
                     }
 
                     webpeers[topic].peerConnection.oniceconnectionstatechange = function () {
-                        console.log("on ice connection state change:  ", topic, webpeers[topic].peerConnection.iceConnectionState);
+                        consoleLogging && console.log("[SDK][oniceconnectionstatechange] ", "peer: ", topic, " peerConnection.connectionState: ", webpeers[topic].peerConnection.iceConnectionState);
                         if (webpeers[topic].peerConnection.iceConnectionState === 'disconnected') {
-                            console.log(topic, 'peerConnection.oniceconnectionstatechange disconnected');
                             chatEvents.fireEvent('callEvents', {
                                 type: 'CALL_STATUS',
                                 errorCode: 7000,
@@ -894,7 +891,7 @@
                                 errorInfo: webpeers[topic]
                             });
 
-                            console.log('Internet connection failed, Reconnect your call, topic:', topic);
+                            consoleLogging && console.log('[SDK][oniceconnectionstatechange]:[disconnected] Internet connection failed, Reconnect your call, topic:', topic);
                         }
 
                         if (webpeers[topic].peerConnection.iceConnectionState === "failed") {
@@ -952,7 +949,7 @@
                                     }
                                     if(webpeersMetadata[topic].poorConnectionCount > 3 && !webpeersMetadata[topic].isConnectionPoor) {
                                         //alert('Poor connection detected...');
-                                        consoleLogging && console.log('Poor connection detected...');
+                                        consoleLogging && console.log('[SDK][checkConnectionQuality] Poor connection detected...');
                                         chatEvents.fireEvent('callEvents', {
                                             type: 'POOR_VIDEO_CONNECTION',
                                             subType: 'SHORT_TIME',
@@ -1602,7 +1599,7 @@
             },
 
             startMedia = function (media) {
-                consoleLogging && console.log("startMedia:: ", media);
+                consoleLogging && console.log("[SDK][startMedia] called with: ", media);
                 media.play().catch((err) => {
                     if (err.name === 'NotAllowedError') {
                         chatEvents.fireEvent('callEvents', {
@@ -1622,7 +1619,7 @@
 
             restartMedia = function (videoTopicParam) {
                 if (currentCallParams && Object.keys(currentCallParams).length) {
-                    consoleLogging && console.log('Sending Key Frame ...');
+                    consoleLogging && console.log('[SDK]Sending Key Frame ...');
 
                     var videoTopic = !!videoTopicParam ? videoTopicParam : callTopics['sendVideoTopic'];
                     let videoElement = document.getElementById(`uiRemoteVideo-${videoTopic}`);
