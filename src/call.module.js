@@ -1662,7 +1662,7 @@
 
             restartMedia = function (videoTopicParam) {
                 if (currentCallParams && Object.keys(currentCallParams).length) {
-                    consoleLogging && console.log('[SDK]Sending Key Frame ...');
+                    consoleLogging && console.log('[SDK] Sending Key Frame ...');
 
                     var videoTopic = !!videoTopicParam ? videoTopicParam : callTopics['sendVideoTopic'];
                     let videoElement = document.getElementById(`uiRemoteVideo-${videoTopic}`);
@@ -1801,8 +1801,6 @@
             },
 
             callStop = function () {
-                consoleLogging && console.log('Call is stopping ...');
-
                 for (var media in uiRemoteMedias) {
                     removeStreamFromWebRTC(media);
                 }
@@ -1937,7 +1935,7 @@
                     break;
 
                 default:
-                    console.warn("[onmessage] Invalid message, id: " + jsonMessage.id, jsonMessage);
+                    console.warn("[SDK][onmessage] Invalid message, id: " + jsonMessage.id, jsonMessage);
                     if (jsonMessage.match(/NOT CREATE SESSION/g)) {
                         if (currentCallParams && Object.keys(currentCallParams)) {
                             //handleCallSocketOpen(currentCallParams);
@@ -2429,7 +2427,7 @@
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                     } else if (!screenShareState.imOwner) {
-                       consoleLogging && console.log("[SDK][START_SCREEN_SHARE], im not owner of screen");
+                       consoleLogging && console.log("[SDK][END_SCREEN_SHARE], im not owner of screen");
                        callStateController.removeScreenShareFromCall();
                     }
 
@@ -2800,7 +2798,7 @@
 
             return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
-                    console.log("[sdk][startScreenShare][onResult]: ", result);
+                    consoleLogging && console.log("[sdk][startScreenShare][onResult]: ", result);
                     if(!result.hasError) {
                         var direction = 'send', shareScreen = true;
                         if(screenShareState.started && !screenShareState.imOwner) {
