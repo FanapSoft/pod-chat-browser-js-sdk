@@ -190,6 +190,7 @@
                 START_SCREEN_SHARE: 123,
                 END_SCREEN_SHARE: 124,
                 DELETE_FROM_CALL_HISTORY: 125,
+                DESTINATED_RECORD_CALL: 126,
                 MUTUAL_GROUPS: 130,
                 CREATE_TAG: 140,
                 EDIT_TAG: 141,

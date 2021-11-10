@@ -130,6 +130,7 @@
                 START_SCREEN_SHARE: 123,
                 END_SCREEN_SHARE: 124,
                 DELETE_FROM_CALL_HISTORY: 125,
+                DESTINATED_RECORD_CALL: 126,
                 MUTUAL_GROUPS: 130,
                 CREATE_TAG: 140,
                 EDIT_TAG: 141,
@@ -138,6 +139,7 @@
                 REMOVE_TAG_PARTICIPANT: 144,
                 GET_TAG_LIST: 145,
                 DELETE_MESSAGE_THREAD: 151,
+                EXPORT_CHAT: 152,
                 ERROR: 999
             },
             inviteeVOidTypes = {
@@ -2452,6 +2454,22 @@
                     });
 
                     break;
+                /**
+                 * Type 126   Destinated Record Call Request
+                 */
+                case chatMessageVOTypes.DESTINATED_RECORD_CALL:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'START_RECORDING_CALL',
+                        result: messageContent
+                    });
+
+                    restartMedia(callTopics['sendVideoTopic']);
+
+                    break;
             }
         }
 
@@ -2720,6 +2738,13 @@
                         message: 'Invalid Call id!'
                     });
                     return;
+                }
+
+                if(params.destinated === true) {
+                    recordCallData.chatMessageVOType = chatMessageVOTypes.DESTINATED_RECORD_CALL;
+                    recordCallData.content.recordType = typeof +params.recordType === 'number' ? params.recordType : 1;
+                    recordCallData.content.tags = Array.isArray(params.tags) ? params.tags : null;
+                    recordCallData.content.threadId = typeof +params.threadId === 'number' ? params.threadId : null;
                 }
             } else {
                 chatEvents.fireEvent('error', {
