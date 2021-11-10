@@ -2742,8 +2742,9 @@
 
                 if(params.destinated === true) {
                     recordCallData.chatMessageVOType = chatMessageVOTypes.DESTINATED_RECORD_CALL;
-                    recordCallData.recordType = typeof +params.recordType === 'number' ? params.recordType : 1;
-                    recordCallData.tags = Array.isArray(params.tags) ? params.tags : null;
+                    recordCallData.content.recordType = typeof +params.recordType === 'number' ? params.recordType : 1;
+                    recordCallData.content.tags = Array.isArray(params.tags) ? params.tags : null;
+                    recordCallData.content.threadId = typeof +params.threadId === 'number' ? params.threadId : null;
                 }
             } else {
                 chatEvents.fireEvent('error', {
