@@ -207,8 +207,8 @@
                 callEstablishedInMySide: false,
                 iCanAcceptTheCall: function () {
                     return callRequestController.callRequestReceived && callRequestController.callEstablishedInMySide;
-
-                }
+                },
+                cameraPaused: true
             },
             uiRemoteMedias = {},
             callStopQueue = {
@@ -1066,8 +1066,12 @@
 
                         callController.watchRTCPeerConnection(topic, mediaType, direction);
 
-                        if(direction === 'send')
+                        if(direction === 'send') {
                             startMedia(uiRemoteMedias[topic]);
+                            if(callRequestController.cameraPaused) {
+                                currentModuleInstance.pauseCamera();
+                            }
+                        }
 
                         webpeers[topic].generateOffer((err, sdpOffer) => {
                             if (err) {
@@ -1650,13 +1654,13 @@
                         chatEvents.fireEvent('callEvents', {
                             type: 'CALL_ERROR',
                             code: 7000,
-                            message: "[start] Browser doesn't allow playing media: " + err
+                            message: "[startMedia] Browser doesn't allow playing media: " + err
                         });
                     } else {
                         chatEvents.fireEvent('callEvents', {
                             type: 'CALL_ERROR',
                             code: 7000,
-                            message: "[start] Error in media.play(): " + err
+                            message: "[startMedia] Error in media.play(): " + err
                         });
                     }
                 });
@@ -1822,6 +1826,7 @@
                     callStopQueue.callStarted = false;
                 }
 
+                callRequestController.cameraPaused = false;
                 callRequestController.callEstablishedInMySide = false;
                 callRequestController.callRequestReceived = false;
                 currentCallParams = {};
@@ -2663,6 +2668,8 @@
                 content.video = (typeof params.video === 'boolean') ? params.video : false;
 
                 content.videoCall = content.video;
+
+                callRequestController.cameraPaused = (typeof params.cameraPaused === 'boolean') ? params.cameraPaused : callRequestController.cameraPaused;
 
                 if (params.clientType && typeof params.clientType === 'string' && callClientTypes[params.clientType.toUpperCase()] > 0) {
                     content.clientType = callClientTypes[params.clientType.toUpperCase()];
