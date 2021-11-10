@@ -14,6 +14,7 @@
     <script type="text/javascript" src="../node_modules/dexie/dist/dexie.min.js"></script>
     <script type="text/javascript" src="./kurento-utils.min.js"></script>
     <script type="text/javascript" src="./adapter.js"></script>
+    <script type="text/javascript" src="./purify.min.js"></script>
     <script type="text/javascript" src="../src/events.module.js"></script>
     <script type="text/javascript" src="../src/messaging.module.js"></script>
     <script type="text/javascript" src="../src/call.module.js"></script>
@@ -29,7 +30,7 @@
     <script type="text/javascript">
         // Developement
         var PodChat = window.POD.Chat;
-        var env = 'sandbox'; // main | sandbox | integration
+        var env = 'main'; // main | sandbox | integration
 
         var params = {
             appId: new Date().getTime(),
@@ -2274,6 +2275,20 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 
 <form action="">
     <fieldset>
+        <legend>Export Chat</legend>
+        <label for="exportChatThreadIdInput">Thread Id : </label>
+        <input type="text" name="exportChatThreadIdInput" id="exportChatThreadIdInput" value="">
+        <button type="button" id="exportChatBtn">Export Chat</button>
+        <p id="exportChatResult"></p>
+    </fieldset>
+</form>
+
+<br>
+<hr>
+<br>
+
+<form action="">
+    <fieldset>
         <legend>Check Turn Server Availability</legend>
         <div>
             TURN IP: <input id='checkTurnServerIp' placeholder='example.com  or  xxx.yyy.rrr.ddd' value="46.32.6.188"/>
@@ -2517,6 +2532,11 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
                     custom_name: "John Doe"
                 }
             }, {
+                onResult: function (result) {
+                    if(result.hasError) {
+                        console.log('[examples/html] upload of an item failed', result)
+                    }
+                },
                 onSent: function (result) {
                     console.log(result);
                     console.log(result.uniqueId + " \t has been Sent!");
@@ -2960,6 +2980,21 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
             res.innerHTML = 'TURN server does not work.';
         });
     };
+
+    document.getElementById("exportChatBtn").addEventListener("click", e => {
+        e.preventDefault();
+        var inp = document.getElementById("exportChatThreadIdInput").value;
+
+        chatAgent.exportChat({
+            threadId: inp,
+            autoStartDownload: true,
+            responseType: 'link',
+            wantedCount: 255,
+            stepCount: 100
+        }, result => {
+            console.log(result);
+        })
+    })
 
 </script>
 

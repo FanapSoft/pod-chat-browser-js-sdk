@@ -190,6 +190,7 @@
                 START_SCREEN_SHARE: 123,
                 END_SCREEN_SHARE: 124,
                 DELETE_FROM_CALL_HISTORY: 125,
+                DESTINATED_RECORD_CALL: 126,
                 MUTUAL_GROUPS: 130,
                 CREATE_TAG: 140,
                 EDIT_TAG: 141,
@@ -198,6 +199,7 @@
                 REMOVE_TAG_PARTICIPANT: 144,
                 GET_TAG_LIST: 145,
                 DELETE_MESSAGE_THREAD: 151,
+                EXPORT_CHAT: 152,
                 ERROR: 999
             },
             inviteeVOidTypes = {
@@ -3244,6 +3246,16 @@
                             type: 'DELETE_THREAD',
                             result: messageContent
                         });
+
+                        break;
+
+                    /**
+                     * Type 152    Gives us a json to export for user
+                     */
+                    case chatMessageVOTypes.EXPORT_CHAT:
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount, uniqueId));
+                        }
 
                         break;
 
@@ -8663,9 +8675,6 @@
                 }
             },
 
-
-
-
             /**
              * Delete Cache Database
              *
@@ -9135,6 +9144,8 @@
                     putInChatWaitQueue(params.message, function () {
                         callback && callback();
                     });
+                } else {
+                    callback && callback();
                 }
             },
 
@@ -9307,7 +9318,7 @@
                                         callbacks: callbacks
                                     }, function () {
                                         callback && callback();
-                                    });
+                                    }, true);
                                 });
                             break;
                         }
@@ -13493,6 +13504,157 @@
             removeRoleFromUser(params, callback);
         };
 
+        function requestExportChat(stackArr, wantedCount, stepCount, offset, sendData) {
+            sendData.content.offset = offset;
+            sendData.content.count = stepCount;
+            return new Promise(function(resolve, reject){
+                return chatMessaging.sendMessage(sendData, {
+                    onResult: function (result) {
+                        var returnData = {
+                            hasError: result.hasError,
+                            cache: false,
+                            errorMessage: result.errorMessage,
+                            errorCode: result.errorCode
+                        };
+
+                        if (!returnData.hasError) {
+                            for(var i in result.result) {
+                                stackArr.push(result.result[i]);
+                            }
+
+                            consoleLogging && console.log("[SDK][exportChat] a step passed...");
+                            wantedCount = wantedCount > result.contentCount ? result.contentCount : wantedCount;
+                            setTimeout(function () {
+                                chatEvents.fireEvent('threadEvents', {
+                                    type: 'EXPORT_CHAT',
+                                    subType: 'IN_PROGRESS',
+                                    threadId: sendData.subjectId,
+                                    percent: Math.floor((stackArr.length / wantedCount) * 100)
+                                });
+
+                                if(stackArr.length < wantedCount) {
+                                    stepCount = wantedCount - stackArr.length < stepCount ? wantedCount - stackArr.length : stepCount;
+                                    resolve(requestExportChat(stackArr, wantedCount, stepCount, stackArr.length, sendData));
+                                } else {
+                                    resolve(stackArr);
+                                }
+                            });
+                            /*returnData.result = result;*/
+                            /*var messageContent = result.result,
+                                messageLength = messageContent.length,
+                                resultData = {
+                                    participants: formatDataToMakeAssistantHistoryList(messageContent),
+                                    contentCount: result.contentCount,
+                                    hasNext: (sendData.content.offset + sendData.content.count < result.contentCount && messageLength > 0),
+                                    nextOffset: sendData.content.offset * 1 + messageLength * 1
+                                };
+
+                            returnData.result = resultData;*/
+                        } else {
+                            consoleLogging && console.log("[SDK][exportChat] Problem in one step... . Rerunning the request.", wantedCount, stepCount, stackArr.length, sendData, result);
+                            resolve(requestExportChat(stackArr, wantedCount, stepCount, stackArr.length, sendData))
+                        }
+                    }
+                });
+            })
+        }
+
+        this.exportChat = function (params, callback) {
+            var stackArr = [], wantedCount = 10000, stepCount = 500, offset = 0;
+            var sendData = {
+                chatMessageVOType: chatMessageVOTypes.EXPORT_CHAT,
+                typeCode: params.typeCode,
+                content: {
+                    offset: +params.offset > 0 ? +params.offset : offset,
+                    count: +params.count > 0 ? +params.count : wantedCount,//config.getHistoryCount,
+                },
+                subjectId: params.threadId
+            };
+
+            if (+params.fromTime > 0 && +params.fromTime < 9999999999999) {
+                sendData.content.fromTime = +params.fromTime;
+            }
+
+            if (+params.toTime > 0 && +params.toTime < 9999999999999) {
+                sendData.content.toTime = +params.toTime;
+            }
+
+            if(+params.wantedCount > 0) {
+                wantedCount = params.wantedCount;
+            }
+
+            if(+params.stepCount > 0) {
+                stepCount = params.stepCount;
+            }
+
+            if(+params.offset > 0) {
+                offset = params.offset;
+            }
+
+            if (params.messageType && typeof params.messageType.toUpperCase() !== 'undefined' && chatMessageTypes[params.messageType.toUpperCase()] > 0) {
+                sendData.content.messageType = chatMessageTypes[params.messageType.toUpperCase()];
+            }
+
+            if(wantedCount < stepCount)
+                stepCount = wantedCount;
+
+            consoleLogging && console.log("[SDK][exportChat] Starting...");
+            requestExportChat(stackArr, wantedCount, stepCount, offset, sendData).then(function (result) {
+                consoleLogging && console.log("[SDK][exportChat] Export done..., Now converting...");
+
+                var exportedFilename = 'export-' + params.threadId + '.csv',
+                    responseType = params.responseType !== null ? params.responseType : "blob",
+                    autoStartDownload = params.autoStartDownload !== null ? params.autoStartDownload : true
+
+                var blob = new Blob([Utility.convertToCSV(result)], { type: 'text/csv;charset=utf-8;' });
+                chatEvents.fireEvent('threadEvents', {
+                    type: 'EXPORT_CHAT',
+                    subType: 'DONE',
+                    threadId: sendData.subjectId,
+                    result: blob
+                });
+
+                /*if (navigator.msSaveBlob) { // IE 10+
+                    if(params.autoStartDownload) {
+                        navigator.msSaveBlob(blob, exportedFilename);
+                    }
+                    callback && callback({
+                        hasError: false,
+                        type: 'blob',
+                        result: blob
+                    });
+                } else {*/
+                if(responseType === 'link') {
+                    var link = document.createElement("a"),
+                        url = URL.createObjectURL(blob);
+                    //if (link.download !== undefined) { // feature detection
+                        // Browsers that support HTML5 download attribute
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", exportedFilename);
+                    if(autoStartDownload) {
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                    //}
+                    callback && callback({
+                        hasError: false,
+                        type: 'link',
+                        result: link
+                    });
+                } else {
+                    callback && callback({
+                        hasError: false,
+                        type: 'blob',
+                        result: blob
+                    });
+                }
+                //}
+                callback = undefined;
+            });
+        }
+
         this.startCall = callModule.startCall;
 
         this.startGroupCall = callModule.startGroupCall;
@@ -13532,6 +13694,14 @@
         this.turnOnVideoCall = callModule.turnOnVideoCall;
 
         this.turnOffVideoCall = callModule.turnOffVideoCall;
+
+        this.pauseCamera = callModule.pauseCamera;
+
+        this.resumeCamera = callModule.resumeCamera;
+
+        this.pauseMice = callModule.pauseMice;
+
+        this.resumeMice = callModule.resumeMice;
 
         this.resizeCallVideo = callModule.resizeCallVideo;
 

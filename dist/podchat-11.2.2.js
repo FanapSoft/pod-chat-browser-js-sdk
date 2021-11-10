@@ -21179,36 +21179,49 @@ utils.intFromLE = intFromLE;
 arguments[4][15][0].apply(exports,arguments)
 },{"buffer":19,"dup":15}],99:[function(require,module,exports){
 module.exports={
-  "name": "elliptic",
-  "version": "6.5.4",
-  "description": "EC cryptography",
-  "main": "lib/elliptic.js",
-  "files": [
-    "lib"
-  ],
-  "scripts": {
-    "lint": "eslint lib test",
-    "lint:fix": "npm run lint -- --fix",
-    "unit": "istanbul test _mocha --reporter=spec test/index.js",
-    "test": "npm run lint && npm run unit",
-    "version": "grunt dist && git add dist/"
+  "_from": "elliptic@^6.5.3",
+  "_id": "elliptic@6.5.4",
+  "_inBundle": false,
+  "_integrity": "sha512-iLhC6ULemrljPZb+QutR5TQGB+pdW6KGD5RSegS+8sorOZT+rdQFbsQFJgvN3eRqNALqJer4oQ16YvJHlU8hzQ==",
+  "_location": "/browserify/elliptic",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "elliptic@^6.5.3",
+    "name": "elliptic",
+    "escapedName": "elliptic",
+    "rawSpec": "^6.5.3",
+    "saveSpec": null,
+    "fetchSpec": "^6.5.3"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:indutny/elliptic"
-  },
-  "keywords": [
-    "EC",
-    "Elliptic",
-    "curve",
-    "Cryptography"
+  "_requiredBy": [
+    "/browserify/browserify-sign",
+    "/browserify/create-ecdh"
   ],
-  "author": "Fedor Indutny <fedor@indutny.com>",
-  "license": "MIT",
+  "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.4.tgz",
+  "_shasum": "da37cebd31e79a1367e941b592ed1fbebd58abbb",
+  "_spec": "elliptic@^6.5.3",
+  "_where": "C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\browserify\\node_modules\\browserify-sign",
+  "author": {
+    "name": "Fedor Indutny",
+    "email": "fedor@indutny.com"
+  },
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
-  "homepage": "https://github.com/indutny/elliptic",
+  "bundleDependencies": false,
+  "dependencies": {
+    "bn.js": "^4.11.9",
+    "brorand": "^1.1.0",
+    "hash.js": "^1.0.0",
+    "hmac-drbg": "^1.0.1",
+    "inherits": "^2.0.4",
+    "minimalistic-assert": "^1.0.1",
+    "minimalistic-crypto-utils": "^1.0.1"
+  },
+  "deprecated": false,
+  "description": "EC cryptography",
   "devDependencies": {
     "brfs": "^2.0.2",
     "coveralls": "^3.1.0",
@@ -21224,15 +21237,31 @@ module.exports={
     "istanbul": "^0.4.5",
     "mocha": "^8.0.1"
   },
-  "dependencies": {
-    "bn.js": "^4.11.9",
-    "brorand": "^1.1.0",
-    "hash.js": "^1.0.0",
-    "hmac-drbg": "^1.0.1",
-    "inherits": "^2.0.4",
-    "minimalistic-assert": "^1.0.1",
-    "minimalistic-crypto-utils": "^1.0.1"
-  }
+  "files": [
+    "lib"
+  ],
+  "homepage": "https://github.com/indutny/elliptic",
+  "keywords": [
+    "EC",
+    "Elliptic",
+    "curve",
+    "Cryptography"
+  ],
+  "license": "MIT",
+  "main": "lib/elliptic.js",
+  "name": "elliptic",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/indutny/elliptic.git"
+  },
+  "scripts": {
+    "lint": "eslint lib test",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "npm run lint && npm run unit",
+    "unit": "istanbul test _mocha --reporter=spec test/index.js",
+    "version": "grunt dist && git add dist/"
+  },
+  "version": "6.5.4"
 }
 
 },{}],100:[function(require,module,exports){
@@ -26707,7 +26736,7 @@ function config (name) {
 },{}],188:[function(require,module,exports){
 window.PodChat = require('./src/chat.js');
 
-},{"./src/chat.js":329}],189:[function(require,module,exports){
+},{"./src/chat.js":331}],189:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var core_1 = require("@sentry/core");
@@ -26758,7 +26787,7 @@ var BrowserBackend = /** @class */ (function (_super) {
 }(core_1.BaseBackend));
 exports.BrowserBackend = BrowserBackend;
 
-},{"./eventbuilder":191,"./transports":207,"@sentry/core":213,"@sentry/types":228,"@sentry/utils":238,"tslib":312}],190:[function(require,module,exports){
+},{"./eventbuilder":191,"./transports":207,"@sentry/core":213,"@sentry/types":228,"@sentry/utils":238,"tslib":313}],190:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var core_1 = require("@sentry/core");
@@ -26835,7 +26864,7 @@ var BrowserClient = /** @class */ (function (_super) {
 }(core_1.BaseClient));
 exports.BrowserClient = BrowserClient;
 
-},{"./backend":189,"./helpers":193,"./integrations":198,"@sentry/core":213,"@sentry/utils":238,"tslib":312}],191:[function(require,module,exports){
+},{"./backend":189,"./helpers":193,"./integrations":198,"@sentry/core":213,"@sentry/utils":238,"tslib":313}],191:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var types_1 = require("@sentry/types");
@@ -26960,7 +26989,7 @@ function eventFromString(input, syntheticException, options) {
 }
 exports.eventFromString = eventFromString;
 
-},{"./parsers":202,"./tracekit":204,"@sentry/types":228,"@sentry/utils":238,"tslib":312}],192:[function(require,module,exports){
+},{"./parsers":202,"./tracekit":204,"@sentry/types":228,"@sentry/utils":238,"tslib":313}],192:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var types_1 = require("@sentry/types");
 exports.Severity = types_1.Severity;
@@ -27170,7 +27199,7 @@ function injectReportDialog(options) {
 }
 exports.injectReportDialog = injectReportDialog;
 
-},{"@sentry/core":213,"@sentry/utils":238,"tslib":312}],194:[function(require,module,exports){
+},{"@sentry/core":213,"@sentry/utils":238,"tslib":313}],194:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 tslib_1.__exportStar(require("./exports"), exports);
@@ -27188,7 +27217,7 @@ if (_window.Sentry && _window.Sentry.Integrations) {
 var INTEGRATIONS = tslib_1.__assign(tslib_1.__assign(tslib_1.__assign({}, windowIntegrations), core_1.Integrations), BrowserIntegrations);
 exports.Integrations = INTEGRATIONS;
 
-},{"./exports":192,"./integrations":198,"./transports":207,"@sentry/core":213,"@sentry/utils":238,"tslib":312}],195:[function(require,module,exports){
+},{"./exports":192,"./integrations":198,"./transports":207,"@sentry/core":213,"@sentry/utils":238,"tslib":313}],195:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -27458,7 +27487,7 @@ var Breadcrumbs = /** @class */ (function () {
 }());
 exports.Breadcrumbs = Breadcrumbs;
 
-},{"@sentry/core":213,"@sentry/types":228,"@sentry/utils":238,"tslib":312}],196:[function(require,module,exports){
+},{"@sentry/core":213,"@sentry/types":228,"@sentry/utils":238,"tslib":313}],196:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 /** Deduplication filter */
 var Dedupe = /** @class */ (function () {
@@ -27828,7 +27857,7 @@ var GlobalHandlers = /** @class */ (function () {
 }());
 exports.GlobalHandlers = GlobalHandlers;
 
-},{"../eventbuilder":191,"../helpers":193,"@sentry/core":213,"@sentry/types":228,"@sentry/utils":238,"tslib":312}],198:[function(require,module,exports){
+},{"../eventbuilder":191,"../helpers":193,"@sentry/core":213,"@sentry/types":228,"@sentry/utils":238,"tslib":313}],198:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var globalhandlers_1 = require("./globalhandlers");
 exports.GlobalHandlers = globalhandlers_1.GlobalHandlers;
@@ -27910,7 +27939,7 @@ var LinkedErrors = /** @class */ (function () {
 }());
 exports.LinkedErrors = LinkedErrors;
 
-},{"../parsers":202,"../tracekit":204,"@sentry/core":213,"@sentry/utils":238,"tslib":312}],200:[function(require,module,exports){
+},{"../parsers":202,"../tracekit":204,"@sentry/core":213,"@sentry/utils":238,"tslib":313}],200:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var utils_1 = require("@sentry/utils");
@@ -28142,7 +28171,7 @@ var TryCatch = /** @class */ (function () {
 }());
 exports.TryCatch = TryCatch;
 
-},{"../helpers":193,"@sentry/utils":238,"tslib":312}],201:[function(require,module,exports){
+},{"../helpers":193,"@sentry/utils":238,"tslib":313}],201:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var core_1 = require("@sentry/core");
@@ -28186,7 +28215,7 @@ var UserAgent = /** @class */ (function () {
 }());
 exports.UserAgent = UserAgent;
 
-},{"@sentry/core":213,"@sentry/utils":238,"tslib":312}],202:[function(require,module,exports){
+},{"@sentry/core":213,"@sentry/utils":238,"tslib":313}],202:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var utils_1 = require("@sentry/utils");
 var tracekit_1 = require("./tracekit");
@@ -28511,7 +28540,7 @@ function startSessionTracking() {
     });
 }
 
-},{"./client":190,"./helpers":193,"./integrations":198,"@sentry/core":213,"@sentry/utils":238,"tslib":312}],204:[function(require,module,exports){
+},{"./client":190,"./helpers":193,"./integrations":198,"@sentry/core":213,"@sentry/utils":238,"tslib":313}],204:[function(require,module,exports){
 /**
  * This was originally forked from https://github.com/occ/TraceKit, but has since been
  * largely modified and is now maintained as part of Sentry JS SDK.
@@ -28742,7 +28771,7 @@ function extractMessage(ex) {
     return message;
 }
 
-},{"tslib":312}],205:[function(require,module,exports){
+},{"tslib":313}],205:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var core_1 = require("@sentry/core");
@@ -28869,7 +28898,7 @@ var BaseTransport = /** @class */ (function () {
 }());
 exports.BaseTransport = BaseTransport;
 
-},{"@sentry/core":213,"@sentry/types":228,"@sentry/utils":238,"tslib":312}],206:[function(require,module,exports){
+},{"@sentry/core":213,"@sentry/types":228,"@sentry/utils":238,"tslib":313}],206:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var core_1 = require("@sentry/core");
@@ -29015,7 +29044,7 @@ var FetchTransport = /** @class */ (function (_super) {
 }(base_1.BaseTransport));
 exports.FetchTransport = FetchTransport;
 
-},{"./base":205,"@sentry/core":213,"@sentry/utils":238,"tslib":312}],207:[function(require,module,exports){
+},{"./base":205,"@sentry/core":213,"@sentry/utils":238,"tslib":313}],207:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var base_1 = require("./base");
 exports.BaseTransport = base_1.BaseTransport;
@@ -29088,7 +29117,7 @@ var XHRTransport = /** @class */ (function (_super) {
 }(base_1.BaseTransport));
 exports.XHRTransport = XHRTransport;
 
-},{"./base":205,"@sentry/core":213,"@sentry/utils":238,"tslib":312}],209:[function(require,module,exports){
+},{"./base":205,"@sentry/core":213,"@sentry/utils":238,"tslib":313}],209:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 // TODO: Remove in the next major release and rely only on @sentry/core SDK_VERSION and SdkInfo metadata
 exports.SDK_NAME = 'sentry.javascript.browser';
@@ -29791,7 +29820,7 @@ var BaseClient = /** @class */ (function () {
 }());
 exports.BaseClient = BaseClient;
 
-},{"./integration":214,"@sentry/hub":223,"@sentry/types":228,"@sentry/utils":238,"tslib":312}],213:[function(require,module,exports){
+},{"./integration":214,"@sentry/hub":223,"@sentry/types":228,"@sentry/utils":238,"tslib":313}],213:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var minimal_1 = require("@sentry/minimal");
 exports.addBreadcrumb = minimal_1.addBreadcrumb;
@@ -29903,7 +29932,7 @@ function setupIntegrations(options) {
 }
 exports.setupIntegrations = setupIntegrations;
 
-},{"@sentry/hub":223,"@sentry/utils":238,"tslib":312}],215:[function(require,module,exports){
+},{"@sentry/hub":223,"@sentry/utils":238,"tslib":313}],215:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var originalFunctionToString;
 /** Patch toString calls to return proper name for wrapped functions */
@@ -30113,7 +30142,7 @@ var InboundFilters = /** @class */ (function () {
 }());
 exports.InboundFilters = InboundFilters;
 
-},{"@sentry/hub":223,"@sentry/utils":238,"tslib":312}],217:[function(require,module,exports){
+},{"@sentry/hub":223,"@sentry/utils":238,"tslib":313}],217:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var functiontostring_1 = require("./functiontostring");
 exports.FunctionToString = functiontostring_1.FunctionToString;
@@ -30204,7 +30233,7 @@ function eventToSentryRequest(event, api) {
 }
 exports.eventToSentryRequest = eventToSentryRequest;
 
-},{"tslib":312}],219:[function(require,module,exports){
+},{"tslib":313}],219:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var hub_1 = require("@sentry/hub");
 var utils_1 = require("@sentry/utils");
@@ -30780,7 +30809,7 @@ function setHubOnCarrier(carrier, hub) {
 }
 exports.setHubOnCarrier = setHubOnCarrier;
 
-},{"./scope":224,"./session":225,"@sentry/types":228,"@sentry/utils":238,"tslib":312}],223:[function(require,module,exports){
+},{"./scope":224,"./session":225,"@sentry/types":228,"@sentry/utils":238,"tslib":313}],223:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var scope_1 = require("./scope");
 exports.addGlobalEventProcessor = scope_1.addGlobalEventProcessor;
@@ -31245,7 +31274,7 @@ function addGlobalEventProcessor(callback) {
 }
 exports.addGlobalEventProcessor = addGlobalEventProcessor;
 
-},{"@sentry/utils":238,"tslib":312}],225:[function(require,module,exports){
+},{"@sentry/utils":238,"tslib":313}],225:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var types_1 = require("@sentry/types");
 var utils_1 = require("@sentry/utils");
@@ -31678,7 +31707,7 @@ function startTransaction(context, customSamplingContext) {
 }
 exports.startTransaction = startTransaction;
 
-},{"@sentry/hub":223,"tslib":312}],228:[function(require,module,exports){
+},{"@sentry/hub":223,"tslib":313}],228:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var loglevel_1 = require("./loglevel");
 exports.LogLevel = loglevel_1.LogLevel;
@@ -32045,7 +32074,7 @@ var Dsn = /** @class */ (function () {
 }());
 exports.Dsn = Dsn;
 
-},{"./error":237,"tslib":312}],237:[function(require,module,exports){
+},{"./error":237,"tslib":313}],237:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var polyfill_1 = require("./polyfill");
@@ -32064,7 +32093,7 @@ var SentryError = /** @class */ (function (_super) {
 }(Error));
 exports.SentryError = SentryError;
 
-},{"./polyfill":247,"tslib":312}],238:[function(require,module,exports){
+},{"./polyfill":247,"tslib":313}],238:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 tslib_1.__exportStar(require("./async"), exports);
@@ -32086,7 +32115,7 @@ tslib_1.__exportStar(require("./supports"), exports);
 tslib_1.__exportStar(require("./syncpromise"), exports);
 tslib_1.__exportStar(require("./time"), exports);
 
-},{"./async":234,"./browser":235,"./dsn":236,"./error":237,"./instrument":239,"./is":240,"./logger":241,"./memo":242,"./misc":243,"./node":244,"./object":245,"./path":246,"./promisebuffer":248,"./stacktrace":249,"./string":250,"./supports":251,"./syncpromise":252,"./time":253,"tslib":312}],239:[function(require,module,exports){
+},{"./async":234,"./browser":235,"./dsn":236,"./error":237,"./instrument":239,"./is":240,"./logger":241,"./memo":242,"./misc":243,"./node":244,"./object":245,"./path":246,"./promisebuffer":248,"./stacktrace":249,"./string":250,"./supports":251,"./syncpromise":252,"./time":253,"tslib":313}],239:[function(require,module,exports){
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var is_1 = require("./is");
@@ -32631,7 +32660,7 @@ function instrumentUnhandledRejection() {
     };
 }
 
-},{"./is":240,"./logger":241,"./misc":243,"./object":245,"./stacktrace":249,"./supports":251,"tslib":312}],240:[function(require,module,exports){
+},{"./is":240,"./logger":241,"./misc":243,"./object":245,"./stacktrace":249,"./supports":251,"tslib":313}],240:[function(require,module,exports){
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -33571,7 +33600,7 @@ function dropUndefinedKeys(val) {
 exports.dropUndefinedKeys = dropUndefinedKeys;
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./browser":235,"./is":240,"./memo":242,"./stacktrace":249,"./string":250,"tslib":312}],246:[function(require,module,exports){
+},{"./browser":235,"./is":240,"./memo":242,"./stacktrace":249,"./string":250,"tslib":313}],246:[function(require,module,exports){
 // Slightly modified (no IE8 support, ES6) and transcribed to TypeScript
 // https://raw.githubusercontent.com/calvinmetcalf/rollup-plugin-node-builtins/master/src/es6/path.js
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -45678,6 +45707,1406 @@ return Dexie;
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
 },{"timers":186}],289:[function(require,module,exports){
+/*! @license DOMPurify 2.3.3 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/2.3.3/LICENSE */
+
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = global || self, global.DOMPurify = factory());
+}(this, function () { 'use strict';
+
+  function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+  var hasOwnProperty = Object.hasOwnProperty,
+      setPrototypeOf = Object.setPrototypeOf,
+      isFrozen = Object.isFrozen,
+      getPrototypeOf = Object.getPrototypeOf,
+      getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+  var freeze = Object.freeze,
+      seal = Object.seal,
+      create = Object.create; // eslint-disable-line import/no-mutable-exports
+
+  var _ref = typeof Reflect !== 'undefined' && Reflect,
+      apply = _ref.apply,
+      construct = _ref.construct;
+
+  if (!apply) {
+    apply = function apply(fun, thisValue, args) {
+      return fun.apply(thisValue, args);
+    };
+  }
+
+  if (!freeze) {
+    freeze = function freeze(x) {
+      return x;
+    };
+  }
+
+  if (!seal) {
+    seal = function seal(x) {
+      return x;
+    };
+  }
+
+  if (!construct) {
+    construct = function construct(Func, args) {
+      return new (Function.prototype.bind.apply(Func, [null].concat(_toConsumableArray(args))))();
+    };
+  }
+
+  var arrayForEach = unapply(Array.prototype.forEach);
+  var arrayPop = unapply(Array.prototype.pop);
+  var arrayPush = unapply(Array.prototype.push);
+
+  var stringToLowerCase = unapply(String.prototype.toLowerCase);
+  var stringMatch = unapply(String.prototype.match);
+  var stringReplace = unapply(String.prototype.replace);
+  var stringIndexOf = unapply(String.prototype.indexOf);
+  var stringTrim = unapply(String.prototype.trim);
+
+  var regExpTest = unapply(RegExp.prototype.test);
+
+  var typeErrorCreate = unconstruct(TypeError);
+
+  function unapply(func) {
+    return function (thisArg) {
+      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      return apply(func, thisArg, args);
+    };
+  }
+
+  function unconstruct(func) {
+    return function () {
+      for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+
+      return construct(func, args);
+    };
+  }
+
+  /* Add properties to a lookup table */
+  function addToSet(set, array) {
+    if (setPrototypeOf) {
+      // Make 'in' and truthy checks like Boolean(set.constructor)
+      // independent of any properties defined on Object.prototype.
+      // Prevent prototype setters from intercepting set as a this value.
+      setPrototypeOf(set, null);
+    }
+
+    var l = array.length;
+    while (l--) {
+      var element = array[l];
+      if (typeof element === 'string') {
+        var lcElement = stringToLowerCase(element);
+        if (lcElement !== element) {
+          // Config presets (e.g. tags.js, attrs.js) are immutable.
+          if (!isFrozen(array)) {
+            array[l] = lcElement;
+          }
+
+          element = lcElement;
+        }
+      }
+
+      set[element] = true;
+    }
+
+    return set;
+  }
+
+  /* Shallow clone an object */
+  function clone(object) {
+    var newObject = create(null);
+
+    var property = void 0;
+    for (property in object) {
+      if (apply(hasOwnProperty, object, [property])) {
+        newObject[property] = object[property];
+      }
+    }
+
+    return newObject;
+  }
+
+  /* IE10 doesn't support __lookupGetter__ so lets'
+   * simulate it. It also automatically checks
+   * if the prop is function or getter and behaves
+   * accordingly. */
+  function lookupGetter(object, prop) {
+    while (object !== null) {
+      var desc = getOwnPropertyDescriptor(object, prop);
+      if (desc) {
+        if (desc.get) {
+          return unapply(desc.get);
+        }
+
+        if (typeof desc.value === 'function') {
+          return unapply(desc.value);
+        }
+      }
+
+      object = getPrototypeOf(object);
+    }
+
+    function fallbackValue(element) {
+      console.warn('fallback value for', element);
+      return null;
+    }
+
+    return fallbackValue;
+  }
+
+  var html = freeze(['a', 'abbr', 'acronym', 'address', 'area', 'article', 'aside', 'audio', 'b', 'bdi', 'bdo', 'big', 'blink', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'content', 'data', 'datalist', 'dd', 'decorator', 'del', 'details', 'dfn', 'dialog', 'dir', 'div', 'dl', 'dt', 'element', 'em', 'fieldset', 'figcaption', 'figure', 'font', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'img', 'input', 'ins', 'kbd', 'label', 'legend', 'li', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meter', 'nav', 'nobr', 'ol', 'optgroup', 'option', 'output', 'p', 'picture', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'section', 'select', 'shadow', 'small', 'source', 'spacer', 'span', 'strike', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr']);
+
+  // SVG
+  var svg = freeze(['svg', 'a', 'altglyph', 'altglyphdef', 'altglyphitem', 'animatecolor', 'animatemotion', 'animatetransform', 'circle', 'clippath', 'defs', 'desc', 'ellipse', 'filter', 'font', 'g', 'glyph', 'glyphref', 'hkern', 'image', 'line', 'lineargradient', 'marker', 'mask', 'metadata', 'mpath', 'path', 'pattern', 'polygon', 'polyline', 'radialgradient', 'rect', 'stop', 'style', 'switch', 'symbol', 'text', 'textpath', 'title', 'tref', 'tspan', 'view', 'vkern']);
+
+  var svgFilters = freeze(['feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feDistantLight', 'feFlood', 'feFuncA', 'feFuncB', 'feFuncG', 'feFuncR', 'feGaussianBlur', 'feMerge', 'feMergeNode', 'feMorphology', 'feOffset', 'fePointLight', 'feSpecularLighting', 'feSpotLight', 'feTile', 'feTurbulence']);
+
+  // List of SVG elements that are disallowed by default.
+  // We still need to know them so that we can do namespace
+  // checks properly in case one wants to add them to
+  // allow-list.
+  var svgDisallowed = freeze(['animate', 'color-profile', 'cursor', 'discard', 'fedropshadow', 'feimage', 'font-face', 'font-face-format', 'font-face-name', 'font-face-src', 'font-face-uri', 'foreignobject', 'hatch', 'hatchpath', 'mesh', 'meshgradient', 'meshpatch', 'meshrow', 'missing-glyph', 'script', 'set', 'solidcolor', 'unknown', 'use']);
+
+  var mathMl = freeze(['math', 'menclose', 'merror', 'mfenced', 'mfrac', 'mglyph', 'mi', 'mlabeledtr', 'mmultiscripts', 'mn', 'mo', 'mover', 'mpadded', 'mphantom', 'mroot', 'mrow', 'ms', 'mspace', 'msqrt', 'mstyle', 'msub', 'msup', 'msubsup', 'mtable', 'mtd', 'mtext', 'mtr', 'munder', 'munderover']);
+
+  // Similarly to SVG, we want to know all MathML elements,
+  // even those that we disallow by default.
+  var mathMlDisallowed = freeze(['maction', 'maligngroup', 'malignmark', 'mlongdiv', 'mscarries', 'mscarry', 'msgroup', 'mstack', 'msline', 'msrow', 'semantics', 'annotation', 'annotation-xml', 'mprescripts', 'none']);
+
+  var text = freeze(['#text']);
+
+  var html$1 = freeze(['accept', 'action', 'align', 'alt', 'autocapitalize', 'autocomplete', 'autopictureinpicture', 'autoplay', 'background', 'bgcolor', 'border', 'capture', 'cellpadding', 'cellspacing', 'checked', 'cite', 'class', 'clear', 'color', 'cols', 'colspan', 'controls', 'controlslist', 'coords', 'crossorigin', 'datetime', 'decoding', 'default', 'dir', 'disabled', 'disablepictureinpicture', 'disableremoteplayback', 'download', 'draggable', 'enctype', 'enterkeyhint', 'face', 'for', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'id', 'inputmode', 'integrity', 'ismap', 'kind', 'label', 'lang', 'list', 'loading', 'loop', 'low', 'max', 'maxlength', 'media', 'method', 'min', 'minlength', 'multiple', 'muted', 'name', 'noshade', 'novalidate', 'nowrap', 'open', 'optimum', 'pattern', 'placeholder', 'playsinline', 'poster', 'preload', 'pubdate', 'radiogroup', 'readonly', 'rel', 'required', 'rev', 'reversed', 'role', 'rows', 'rowspan', 'spellcheck', 'scope', 'selected', 'shape', 'size', 'sizes', 'span', 'srclang', 'start', 'src', 'srcset', 'step', 'style', 'summary', 'tabindex', 'title', 'translate', 'type', 'usemap', 'valign', 'value', 'width', 'xmlns', 'slot']);
+
+  var svg$1 = freeze(['accent-height', 'accumulate', 'additive', 'alignment-baseline', 'ascent', 'attributename', 'attributetype', 'azimuth', 'basefrequency', 'baseline-shift', 'begin', 'bias', 'by', 'class', 'clip', 'clippathunits', 'clip-path', 'clip-rule', 'color', 'color-interpolation', 'color-interpolation-filters', 'color-profile', 'color-rendering', 'cx', 'cy', 'd', 'dx', 'dy', 'diffuseconstant', 'direction', 'display', 'divisor', 'dur', 'edgemode', 'elevation', 'end', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'filterunits', 'flood-color', 'flood-opacity', 'font-family', 'font-size', 'font-size-adjust', 'font-stretch', 'font-style', 'font-variant', 'font-weight', 'fx', 'fy', 'g1', 'g2', 'glyph-name', 'glyphref', 'gradientunits', 'gradienttransform', 'height', 'href', 'id', 'image-rendering', 'in', 'in2', 'k', 'k1', 'k2', 'k3', 'k4', 'kerning', 'keypoints', 'keysplines', 'keytimes', 'lang', 'lengthadjust', 'letter-spacing', 'kernelmatrix', 'kernelunitlength', 'lighting-color', 'local', 'marker-end', 'marker-mid', 'marker-start', 'markerheight', 'markerunits', 'markerwidth', 'maskcontentunits', 'maskunits', 'max', 'mask', 'media', 'method', 'mode', 'min', 'name', 'numoctaves', 'offset', 'operator', 'opacity', 'order', 'orient', 'orientation', 'origin', 'overflow', 'paint-order', 'path', 'pathlength', 'patterncontentunits', 'patterntransform', 'patternunits', 'points', 'preservealpha', 'preserveaspectratio', 'primitiveunits', 'r', 'rx', 'ry', 'radius', 'refx', 'refy', 'repeatcount', 'repeatdur', 'restart', 'result', 'rotate', 'scale', 'seed', 'shape-rendering', 'specularconstant', 'specularexponent', 'spreadmethod', 'startoffset', 'stddeviation', 'stitchtiles', 'stop-color', 'stop-opacity', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke', 'stroke-width', 'style', 'surfacescale', 'systemlanguage', 'tabindex', 'targetx', 'targety', 'transform', 'text-anchor', 'text-decoration', 'text-rendering', 'textlength', 'type', 'u1', 'u2', 'unicode', 'values', 'viewbox', 'visibility', 'version', 'vert-adv-y', 'vert-origin-x', 'vert-origin-y', 'width', 'word-spacing', 'wrap', 'writing-mode', 'xchannelselector', 'ychannelselector', 'x', 'x1', 'x2', 'xmlns', 'y', 'y1', 'y2', 'z', 'zoomandpan']);
+
+  var mathMl$1 = freeze(['accent', 'accentunder', 'align', 'bevelled', 'close', 'columnsalign', 'columnlines', 'columnspan', 'denomalign', 'depth', 'dir', 'display', 'displaystyle', 'encoding', 'fence', 'frame', 'height', 'href', 'id', 'largeop', 'length', 'linethickness', 'lspace', 'lquote', 'mathbackground', 'mathcolor', 'mathsize', 'mathvariant', 'maxsize', 'minsize', 'movablelimits', 'notation', 'numalign', 'open', 'rowalign', 'rowlines', 'rowspacing', 'rowspan', 'rspace', 'rquote', 'scriptlevel', 'scriptminsize', 'scriptsizemultiplier', 'selection', 'separator', 'separators', 'stretchy', 'subscriptshift', 'supscriptshift', 'symmetric', 'voffset', 'width', 'xmlns']);
+
+  var xml = freeze(['xlink:href', 'xml:id', 'xlink:title', 'xml:space', 'xmlns:xlink']);
+
+  // eslint-disable-next-line unicorn/better-regex
+  var MUSTACHE_EXPR = seal(/\{\{[\s\S]*|[\s\S]*\}\}/gm); // Specify template detection regex for SAFE_FOR_TEMPLATES mode
+  var ERB_EXPR = seal(/<%[\s\S]*|[\s\S]*%>/gm);
+  var DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]/); // eslint-disable-line no-useless-escape
+  var ARIA_ATTR = seal(/^aria-[\-\w]+$/); // eslint-disable-line no-useless-escape
+  var IS_ALLOWED_URI = seal(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i // eslint-disable-line no-useless-escape
+  );
+  var IS_SCRIPT_OR_DATA = seal(/^(?:\w+script|data):/i);
+  var ATTR_WHITESPACE = seal(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g // eslint-disable-line no-control-regex
+  );
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+  function _toConsumableArray$1(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+  var getGlobal = function getGlobal() {
+    return typeof window === 'undefined' ? null : window;
+  };
+
+  /**
+   * Creates a no-op policy for internal use only.
+   * Don't export this function outside this module!
+   * @param {?TrustedTypePolicyFactory} trustedTypes The policy factory.
+   * @param {Document} document The document object (to determine policy name suffix)
+   * @return {?TrustedTypePolicy} The policy created (or null, if Trusted Types
+   * are not supported).
+   */
+  var _createTrustedTypesPolicy = function _createTrustedTypesPolicy(trustedTypes, document) {
+    if ((typeof trustedTypes === 'undefined' ? 'undefined' : _typeof(trustedTypes)) !== 'object' || typeof trustedTypes.createPolicy !== 'function') {
+      return null;
+    }
+
+    // Allow the callers to control the unique policy name
+    // by adding a data-tt-policy-suffix to the script element with the DOMPurify.
+    // Policy creation with duplicate names throws in Trusted Types.
+    var suffix = null;
+    var ATTR_NAME = 'data-tt-policy-suffix';
+    if (document.currentScript && document.currentScript.hasAttribute(ATTR_NAME)) {
+      suffix = document.currentScript.getAttribute(ATTR_NAME);
+    }
+
+    var policyName = 'dompurify' + (suffix ? '#' + suffix : '');
+
+    try {
+      return trustedTypes.createPolicy(policyName, {
+        createHTML: function createHTML(html$$1) {
+          return html$$1;
+        }
+      });
+    } catch (_) {
+      // Policy creation failed (most likely another DOMPurify script has
+      // already run). Skip creating the policy, as this will only cause errors
+      // if TT are enforced.
+      console.warn('TrustedTypes policy ' + policyName + ' could not be created.');
+      return null;
+    }
+  };
+
+  function createDOMPurify() {
+    var window = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getGlobal();
+
+    var DOMPurify = function DOMPurify(root) {
+      return createDOMPurify(root);
+    };
+
+    /**
+     * Version label, exposed for easier checks
+     * if DOMPurify is up to date or not
+     */
+    DOMPurify.version = '2.3.3';
+
+    /**
+     * Array of elements that DOMPurify removed during sanitation.
+     * Empty if nothing was removed.
+     */
+    DOMPurify.removed = [];
+
+    if (!window || !window.document || window.document.nodeType !== 9) {
+      // Not running in a browser, provide a factory function
+      // so that you can pass your own Window
+      DOMPurify.isSupported = false;
+
+      return DOMPurify;
+    }
+
+    var originalDocument = window.document;
+
+    var document = window.document;
+    var DocumentFragment = window.DocumentFragment,
+        HTMLTemplateElement = window.HTMLTemplateElement,
+        Node = window.Node,
+        Element = window.Element,
+        NodeFilter = window.NodeFilter,
+        _window$NamedNodeMap = window.NamedNodeMap,
+        NamedNodeMap = _window$NamedNodeMap === undefined ? window.NamedNodeMap || window.MozNamedAttrMap : _window$NamedNodeMap,
+        Text = window.Text,
+        Comment = window.Comment,
+        DOMParser = window.DOMParser,
+        trustedTypes = window.trustedTypes;
+
+
+    var ElementPrototype = Element.prototype;
+
+    var cloneNode = lookupGetter(ElementPrototype, 'cloneNode');
+    var getNextSibling = lookupGetter(ElementPrototype, 'nextSibling');
+    var getChildNodes = lookupGetter(ElementPrototype, 'childNodes');
+    var getParentNode = lookupGetter(ElementPrototype, 'parentNode');
+
+    // As per issue #47, the web-components registry is inherited by a
+    // new document created via createHTMLDocument. As per the spec
+    // (http://w3c.github.io/webcomponents/spec/custom/#creating-and-passing-registries)
+    // a new empty registry is used when creating a template contents owner
+    // document, so we use that as our parent document to ensure nothing
+    // is inherited.
+    if (typeof HTMLTemplateElement === 'function') {
+      var template = document.createElement('template');
+      if (template.content && template.content.ownerDocument) {
+        document = template.content.ownerDocument;
+      }
+    }
+
+    var trustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, originalDocument);
+    var emptyHTML = trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML('') : '';
+
+    var _document = document,
+        implementation = _document.implementation,
+        createNodeIterator = _document.createNodeIterator,
+        createDocumentFragment = _document.createDocumentFragment,
+        getElementsByTagName = _document.getElementsByTagName;
+    var importNode = originalDocument.importNode;
+
+
+    var documentMode = {};
+    try {
+      documentMode = clone(document).documentMode ? document.documentMode : {};
+    } catch (_) {}
+
+    var hooks = {};
+
+    /**
+     * Expose whether this browser supports running the full DOMPurify.
+     */
+    DOMPurify.isSupported = typeof getParentNode === 'function' && implementation && typeof implementation.createHTMLDocument !== 'undefined' && documentMode !== 9;
+
+    var MUSTACHE_EXPR$$1 = MUSTACHE_EXPR,
+        ERB_EXPR$$1 = ERB_EXPR,
+        DATA_ATTR$$1 = DATA_ATTR,
+        ARIA_ATTR$$1 = ARIA_ATTR,
+        IS_SCRIPT_OR_DATA$$1 = IS_SCRIPT_OR_DATA,
+        ATTR_WHITESPACE$$1 = ATTR_WHITESPACE;
+    var IS_ALLOWED_URI$$1 = IS_ALLOWED_URI;
+
+    /**
+     * We consider the elements and attributes below to be safe. Ideally
+     * don't add any new ones but feel free to remove unwanted ones.
+     */
+
+    /* allowed element names */
+
+    var ALLOWED_TAGS = null;
+    var DEFAULT_ALLOWED_TAGS = addToSet({}, [].concat(_toConsumableArray$1(html), _toConsumableArray$1(svg), _toConsumableArray$1(svgFilters), _toConsumableArray$1(mathMl), _toConsumableArray$1(text)));
+
+    /* Allowed attribute names */
+    var ALLOWED_ATTR = null;
+    var DEFAULT_ALLOWED_ATTR = addToSet({}, [].concat(_toConsumableArray$1(html$1), _toConsumableArray$1(svg$1), _toConsumableArray$1(mathMl$1), _toConsumableArray$1(xml)));
+
+    /* Explicitly forbidden tags (overrides ALLOWED_TAGS/ADD_TAGS) */
+    var FORBID_TAGS = null;
+
+    /* Explicitly forbidden attributes (overrides ALLOWED_ATTR/ADD_ATTR) */
+    var FORBID_ATTR = null;
+
+    /* Decide if ARIA attributes are okay */
+    var ALLOW_ARIA_ATTR = true;
+
+    /* Decide if custom data attributes are okay */
+    var ALLOW_DATA_ATTR = true;
+
+    /* Decide if unknown protocols are okay */
+    var ALLOW_UNKNOWN_PROTOCOLS = false;
+
+    /* Output should be safe for common template engines.
+     * This means, DOMPurify removes data attributes, mustaches and ERB
+     */
+    var SAFE_FOR_TEMPLATES = false;
+
+    /* Decide if document with <html>... should be returned */
+    var WHOLE_DOCUMENT = false;
+
+    /* Track whether config is already set on this instance of DOMPurify. */
+    var SET_CONFIG = false;
+
+    /* Decide if all elements (e.g. style, script) must be children of
+     * document.body. By default, browsers might move them to document.head */
+    var FORCE_BODY = false;
+
+    /* Decide if a DOM `HTMLBodyElement` should be returned, instead of a html
+     * string (or a TrustedHTML object if Trusted Types are supported).
+     * If `WHOLE_DOCUMENT` is enabled a `HTMLHtmlElement` will be returned instead
+     */
+    var RETURN_DOM = false;
+
+    /* Decide if a DOM `DocumentFragment` should be returned, instead of a html
+     * string  (or a TrustedHTML object if Trusted Types are supported) */
+    var RETURN_DOM_FRAGMENT = false;
+
+    /* If `RETURN_DOM` or `RETURN_DOM_FRAGMENT` is enabled, decide if the returned DOM
+     * `Node` is imported into the current `Document`. If this flag is not enabled the
+     * `Node` will belong (its ownerDocument) to a fresh `HTMLDocument`, created by
+     * DOMPurify.
+     *
+     * This defaults to `true` starting DOMPurify 2.2.0. Note that setting it to `false`
+     * might cause XSS from attacks hidden in closed shadowroots in case the browser
+     * supports Declarative Shadow: DOM https://web.dev/declarative-shadow-dom/
+     */
+    var RETURN_DOM_IMPORT = true;
+
+    /* Try to return a Trusted Type object instead of a string, return a string in
+     * case Trusted Types are not supported  */
+    var RETURN_TRUSTED_TYPE = false;
+
+    /* Output should be free from DOM clobbering attacks? */
+    var SANITIZE_DOM = true;
+
+    /* Keep element content when removing element? */
+    var KEEP_CONTENT = true;
+
+    /* If a `Node` is passed to sanitize(), then performs sanitization in-place instead
+     * of importing it into a new Document and returning a sanitized copy */
+    var IN_PLACE = false;
+
+    /* Allow usage of profiles like html, svg and mathMl */
+    var USE_PROFILES = {};
+
+    /* Tags to ignore content of when KEEP_CONTENT is true */
+    var FORBID_CONTENTS = null;
+    var DEFAULT_FORBID_CONTENTS = addToSet({}, ['annotation-xml', 'audio', 'colgroup', 'desc', 'foreignobject', 'head', 'iframe', 'math', 'mi', 'mn', 'mo', 'ms', 'mtext', 'noembed', 'noframes', 'noscript', 'plaintext', 'script', 'style', 'svg', 'template', 'thead', 'title', 'video', 'xmp']);
+
+    /* Tags that are safe for data: URIs */
+    var DATA_URI_TAGS = null;
+    var DEFAULT_DATA_URI_TAGS = addToSet({}, ['audio', 'video', 'img', 'source', 'image', 'track']);
+
+    /* Attributes safe for values like "javascript:" */
+    var URI_SAFE_ATTRIBUTES = null;
+    var DEFAULT_URI_SAFE_ATTRIBUTES = addToSet({}, ['alt', 'class', 'for', 'id', 'label', 'name', 'pattern', 'placeholder', 'role', 'summary', 'title', 'value', 'style', 'xmlns']);
+
+    var MATHML_NAMESPACE = 'http://www.w3.org/1998/Math/MathML';
+    var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+    var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+    /* Document namespace */
+    var NAMESPACE = HTML_NAMESPACE;
+    var IS_EMPTY_INPUT = false;
+
+    /* Parsing of strict XHTML documents */
+    var PARSER_MEDIA_TYPE = void 0;
+    var SUPPORTED_PARSER_MEDIA_TYPES = ['application/xhtml+xml', 'text/html'];
+    var DEFAULT_PARSER_MEDIA_TYPE = 'text/html';
+    var transformCaseFunc = void 0;
+
+    /* Keep a reference to config to pass to hooks */
+    var CONFIG = null;
+
+    /* Ideally, do not touch anything below this line */
+    /* ______________________________________________ */
+
+    var formElement = document.createElement('form');
+
+    /**
+     * _parseConfig
+     *
+     * @param  {Object} cfg optional config literal
+     */
+    // eslint-disable-next-line complexity
+    var _parseConfig = function _parseConfig(cfg) {
+      if (CONFIG && CONFIG === cfg) {
+        return;
+      }
+
+      /* Shield configuration object from tampering */
+      if (!cfg || (typeof cfg === 'undefined' ? 'undefined' : _typeof(cfg)) !== 'object') {
+        cfg = {};
+      }
+
+      /* Shield configuration object from prototype pollution */
+      cfg = clone(cfg);
+
+      /* Set configuration parameters */
+      ALLOWED_TAGS = 'ALLOWED_TAGS' in cfg ? addToSet({}, cfg.ALLOWED_TAGS) : DEFAULT_ALLOWED_TAGS;
+      ALLOWED_ATTR = 'ALLOWED_ATTR' in cfg ? addToSet({}, cfg.ALLOWED_ATTR) : DEFAULT_ALLOWED_ATTR;
+      URI_SAFE_ATTRIBUTES = 'ADD_URI_SAFE_ATTR' in cfg ? addToSet(clone(DEFAULT_URI_SAFE_ATTRIBUTES), cfg.ADD_URI_SAFE_ATTR) : DEFAULT_URI_SAFE_ATTRIBUTES;
+      DATA_URI_TAGS = 'ADD_DATA_URI_TAGS' in cfg ? addToSet(clone(DEFAULT_DATA_URI_TAGS), cfg.ADD_DATA_URI_TAGS) : DEFAULT_DATA_URI_TAGS;
+      FORBID_CONTENTS = 'FORBID_CONTENTS' in cfg ? addToSet({}, cfg.FORBID_CONTENTS) : DEFAULT_FORBID_CONTENTS;
+      FORBID_TAGS = 'FORBID_TAGS' in cfg ? addToSet({}, cfg.FORBID_TAGS) : {};
+      FORBID_ATTR = 'FORBID_ATTR' in cfg ? addToSet({}, cfg.FORBID_ATTR) : {};
+      USE_PROFILES = 'USE_PROFILES' in cfg ? cfg.USE_PROFILES : false;
+      ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false; // Default true
+      ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false; // Default true
+      ALLOW_UNKNOWN_PROTOCOLS = cfg.ALLOW_UNKNOWN_PROTOCOLS || false; // Default false
+      SAFE_FOR_TEMPLATES = cfg.SAFE_FOR_TEMPLATES || false; // Default false
+      WHOLE_DOCUMENT = cfg.WHOLE_DOCUMENT || false; // Default false
+      RETURN_DOM = cfg.RETURN_DOM || false; // Default false
+      RETURN_DOM_FRAGMENT = cfg.RETURN_DOM_FRAGMENT || false; // Default false
+      RETURN_DOM_IMPORT = cfg.RETURN_DOM_IMPORT !== false; // Default true
+      RETURN_TRUSTED_TYPE = cfg.RETURN_TRUSTED_TYPE || false; // Default false
+      FORCE_BODY = cfg.FORCE_BODY || false; // Default false
+      SANITIZE_DOM = cfg.SANITIZE_DOM !== false; // Default true
+      KEEP_CONTENT = cfg.KEEP_CONTENT !== false; // Default true
+      IN_PLACE = cfg.IN_PLACE || false; // Default false
+      IS_ALLOWED_URI$$1 = cfg.ALLOWED_URI_REGEXP || IS_ALLOWED_URI$$1;
+      NAMESPACE = cfg.NAMESPACE || HTML_NAMESPACE;
+
+      PARSER_MEDIA_TYPE =
+      // eslint-disable-next-line unicorn/prefer-includes
+      SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? PARSER_MEDIA_TYPE = DEFAULT_PARSER_MEDIA_TYPE : PARSER_MEDIA_TYPE = cfg.PARSER_MEDIA_TYPE;
+
+      // HTML tags and attributes are not case-sensitive, converting to lowercase. Keeping XHTML as is.
+      transformCaseFunc = PARSER_MEDIA_TYPE === 'application/xhtml+xml' ? function (x) {
+        return x;
+      } : stringToLowerCase;
+
+      if (SAFE_FOR_TEMPLATES) {
+        ALLOW_DATA_ATTR = false;
+      }
+
+      if (RETURN_DOM_FRAGMENT) {
+        RETURN_DOM = true;
+      }
+
+      /* Parse profile info */
+      if (USE_PROFILES) {
+        ALLOWED_TAGS = addToSet({}, [].concat(_toConsumableArray$1(text)));
+        ALLOWED_ATTR = [];
+        if (USE_PROFILES.html === true) {
+          addToSet(ALLOWED_TAGS, html);
+          addToSet(ALLOWED_ATTR, html$1);
+        }
+
+        if (USE_PROFILES.svg === true) {
+          addToSet(ALLOWED_TAGS, svg);
+          addToSet(ALLOWED_ATTR, svg$1);
+          addToSet(ALLOWED_ATTR, xml);
+        }
+
+        if (USE_PROFILES.svgFilters === true) {
+          addToSet(ALLOWED_TAGS, svgFilters);
+          addToSet(ALLOWED_ATTR, svg$1);
+          addToSet(ALLOWED_ATTR, xml);
+        }
+
+        if (USE_PROFILES.mathMl === true) {
+          addToSet(ALLOWED_TAGS, mathMl);
+          addToSet(ALLOWED_ATTR, mathMl$1);
+          addToSet(ALLOWED_ATTR, xml);
+        }
+      }
+
+      /* Merge configuration parameters */
+      if (cfg.ADD_TAGS) {
+        if (ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) {
+          ALLOWED_TAGS = clone(ALLOWED_TAGS);
+        }
+
+        addToSet(ALLOWED_TAGS, cfg.ADD_TAGS);
+      }
+
+      if (cfg.ADD_ATTR) {
+        if (ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) {
+          ALLOWED_ATTR = clone(ALLOWED_ATTR);
+        }
+
+        addToSet(ALLOWED_ATTR, cfg.ADD_ATTR);
+      }
+
+      if (cfg.ADD_URI_SAFE_ATTR) {
+        addToSet(URI_SAFE_ATTRIBUTES, cfg.ADD_URI_SAFE_ATTR);
+      }
+
+      if (cfg.FORBID_CONTENTS) {
+        if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) {
+          FORBID_CONTENTS = clone(FORBID_CONTENTS);
+        }
+
+        addToSet(FORBID_CONTENTS, cfg.FORBID_CONTENTS);
+      }
+
+      /* Add #text in case KEEP_CONTENT is set to true */
+      if (KEEP_CONTENT) {
+        ALLOWED_TAGS['#text'] = true;
+      }
+
+      /* Add html, head and body to ALLOWED_TAGS in case WHOLE_DOCUMENT is true */
+      if (WHOLE_DOCUMENT) {
+        addToSet(ALLOWED_TAGS, ['html', 'head', 'body']);
+      }
+
+      /* Add tbody to ALLOWED_TAGS in case tables are permitted, see #286, #365 */
+      if (ALLOWED_TAGS.table) {
+        addToSet(ALLOWED_TAGS, ['tbody']);
+        delete FORBID_TAGS.tbody;
+      }
+
+      // Prevent further manipulation of configuration.
+      // Not available in IE8, Safari 5, etc.
+      if (freeze) {
+        freeze(cfg);
+      }
+
+      CONFIG = cfg;
+    };
+
+    var MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, ['mi', 'mo', 'mn', 'ms', 'mtext']);
+
+    var HTML_INTEGRATION_POINTS = addToSet({}, ['foreignobject', 'desc', 'title', 'annotation-xml']);
+
+    /* Keep track of all possible SVG and MathML tags
+     * so that we can perform the namespace checks
+     * correctly. */
+    var ALL_SVG_TAGS = addToSet({}, svg);
+    addToSet(ALL_SVG_TAGS, svgFilters);
+    addToSet(ALL_SVG_TAGS, svgDisallowed);
+
+    var ALL_MATHML_TAGS = addToSet({}, mathMl);
+    addToSet(ALL_MATHML_TAGS, mathMlDisallowed);
+
+    /**
+     *
+     *
+     * @param  {Element} element a DOM element whose namespace is being checked
+     * @returns {boolean} Return false if the element has a
+     *  namespace that a spec-compliant parser would never
+     *  return. Return true otherwise.
+     */
+    var _checkValidNamespace = function _checkValidNamespace(element) {
+      var parent = getParentNode(element);
+
+      // In JSDOM, if we're inside shadow DOM, then parentNode
+      // can be null. We just simulate parent in this case.
+      if (!parent || !parent.tagName) {
+        parent = {
+          namespaceURI: HTML_NAMESPACE,
+          tagName: 'template'
+        };
+      }
+
+      var tagName = stringToLowerCase(element.tagName);
+      var parentTagName = stringToLowerCase(parent.tagName);
+
+      if (element.namespaceURI === SVG_NAMESPACE) {
+        // The only way to switch from HTML namespace to SVG
+        // is via <svg>. If it happens via any other tag, then
+        // it should be killed.
+        if (parent.namespaceURI === HTML_NAMESPACE) {
+          return tagName === 'svg';
+        }
+
+        // The only way to switch from MathML to SVG is via
+        // svg if parent is either <annotation-xml> or MathML
+        // text integration points.
+        if (parent.namespaceURI === MATHML_NAMESPACE) {
+          return tagName === 'svg' && (parentTagName === 'annotation-xml' || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
+        }
+
+        // We only allow elements that are defined in SVG
+        // spec. All others are disallowed in SVG namespace.
+        return Boolean(ALL_SVG_TAGS[tagName]);
+      }
+
+      if (element.namespaceURI === MATHML_NAMESPACE) {
+        // The only way to switch from HTML namespace to MathML
+        // is via <math>. If it happens via any other tag, then
+        // it should be killed.
+        if (parent.namespaceURI === HTML_NAMESPACE) {
+          return tagName === 'math';
+        }
+
+        // The only way to switch from SVG to MathML is via
+        // <math> and HTML integration points
+        if (parent.namespaceURI === SVG_NAMESPACE) {
+          return tagName === 'math' && HTML_INTEGRATION_POINTS[parentTagName];
+        }
+
+        // We only allow elements that are defined in MathML
+        // spec. All others are disallowed in MathML namespace.
+        return Boolean(ALL_MATHML_TAGS[tagName]);
+      }
+
+      if (element.namespaceURI === HTML_NAMESPACE) {
+        // The only way to switch from SVG to HTML is via
+        // HTML integration points, and from MathML to HTML
+        // is via MathML text integration points
+        if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) {
+          return false;
+        }
+
+        if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) {
+          return false;
+        }
+
+        // Certain elements are allowed in both SVG and HTML
+        // namespace. We need to specify them explicitly
+        // so that they don't get erronously deleted from
+        // HTML namespace.
+        var commonSvgAndHTMLElements = addToSet({}, ['title', 'style', 'font', 'a', 'script']);
+
+        // We disallow tags that are specific for MathML
+        // or SVG and should never appear in HTML namespace
+        return !ALL_MATHML_TAGS[tagName] && (commonSvgAndHTMLElements[tagName] || !ALL_SVG_TAGS[tagName]);
+      }
+
+      // The code should never reach this place (this means
+      // that the element somehow got namespace that is not
+      // HTML, SVG or MathML). Return false just in case.
+      return false;
+    };
+
+    /**
+     * _forceRemove
+     *
+     * @param  {Node} node a DOM node
+     */
+    var _forceRemove = function _forceRemove(node) {
+      arrayPush(DOMPurify.removed, { element: node });
+      try {
+        // eslint-disable-next-line unicorn/prefer-dom-node-remove
+        node.parentNode.removeChild(node);
+      } catch (_) {
+        try {
+          node.outerHTML = emptyHTML;
+        } catch (_) {
+          node.remove();
+        }
+      }
+    };
+
+    /**
+     * _removeAttribute
+     *
+     * @param  {String} name an Attribute name
+     * @param  {Node} node a DOM node
+     */
+    var _removeAttribute = function _removeAttribute(name, node) {
+      try {
+        arrayPush(DOMPurify.removed, {
+          attribute: node.getAttributeNode(name),
+          from: node
+        });
+      } catch (_) {
+        arrayPush(DOMPurify.removed, {
+          attribute: null,
+          from: node
+        });
+      }
+
+      node.removeAttribute(name);
+
+      // We void attribute values for unremovable "is"" attributes
+      if (name === 'is' && !ALLOWED_ATTR[name]) {
+        if (RETURN_DOM || RETURN_DOM_FRAGMENT) {
+          try {
+            _forceRemove(node);
+          } catch (_) {}
+        } else {
+          try {
+            node.setAttribute(name, '');
+          } catch (_) {}
+        }
+      }
+    };
+
+    /**
+     * _initDocument
+     *
+     * @param  {String} dirty a string of dirty markup
+     * @return {Document} a DOM, filled with the dirty markup
+     */
+    var _initDocument = function _initDocument(dirty) {
+      /* Create a HTML document */
+      var doc = void 0;
+      var leadingWhitespace = void 0;
+
+      if (FORCE_BODY) {
+        dirty = '<remove></remove>' + dirty;
+      } else {
+        /* If FORCE_BODY isn't used, leading whitespace needs to be preserved manually */
+        var matches = stringMatch(dirty, /^[\r\n\t ]+/);
+        leadingWhitespace = matches && matches[0];
+      }
+
+      if (PARSER_MEDIA_TYPE === 'application/xhtml+xml') {
+        // Root of XHTML doc must contain xmlns declaration (see https://www.w3.org/TR/xhtml1/normative.html#strict)
+        dirty = '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>' + dirty + '</body></html>';
+      }
+
+      var dirtyPayload = trustedTypesPolicy ? trustedTypesPolicy.createHTML(dirty) : dirty;
+      /*
+       * Use the DOMParser API by default, fallback later if needs be
+       * DOMParser not work for svg when has multiple root element.
+       */
+      if (NAMESPACE === HTML_NAMESPACE) {
+        try {
+          doc = new DOMParser().parseFromString(dirtyPayload, PARSER_MEDIA_TYPE);
+        } catch (_) {}
+      }
+
+      /* Use createHTMLDocument in case DOMParser is not available */
+      if (!doc || !doc.documentElement) {
+        doc = implementation.createDocument(NAMESPACE, 'template', null);
+        try {
+          doc.documentElement.innerHTML = IS_EMPTY_INPUT ? '' : dirtyPayload;
+        } catch (_) {
+          // Syntax error if dirtyPayload is invalid xml
+        }
+      }
+
+      var body = doc.body || doc.documentElement;
+
+      if (dirty && leadingWhitespace) {
+        body.insertBefore(document.createTextNode(leadingWhitespace), body.childNodes[0] || null);
+      }
+
+      /* Work on whole document or just its body */
+      if (NAMESPACE === HTML_NAMESPACE) {
+        return getElementsByTagName.call(doc, WHOLE_DOCUMENT ? 'html' : 'body')[0];
+      }
+
+      return WHOLE_DOCUMENT ? doc.documentElement : body;
+    };
+
+    /**
+     * _createIterator
+     *
+     * @param  {Document} root document/fragment to create iterator for
+     * @return {Iterator} iterator instance
+     */
+    var _createIterator = function _createIterator(root) {
+      return createNodeIterator.call(root.ownerDocument || root, root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT, null, false);
+    };
+
+    /**
+     * _isClobbered
+     *
+     * @param  {Node} elm element to check for clobbering attacks
+     * @return {Boolean} true if clobbered, false if safe
+     */
+    var _isClobbered = function _isClobbered(elm) {
+      if (elm instanceof Text || elm instanceof Comment) {
+        return false;
+      }
+
+      if (typeof elm.nodeName !== 'string' || typeof elm.textContent !== 'string' || typeof elm.removeChild !== 'function' || !(elm.attributes instanceof NamedNodeMap) || typeof elm.removeAttribute !== 'function' || typeof elm.setAttribute !== 'function' || typeof elm.namespaceURI !== 'string' || typeof elm.insertBefore !== 'function') {
+        return true;
+      }
+
+      return false;
+    };
+
+    /**
+     * _isNode
+     *
+     * @param  {Node} obj object to check whether it's a DOM node
+     * @return {Boolean} true is object is a DOM node
+     */
+    var _isNode = function _isNode(object) {
+      return (typeof Node === 'undefined' ? 'undefined' : _typeof(Node)) === 'object' ? object instanceof Node : object && (typeof object === 'undefined' ? 'undefined' : _typeof(object)) === 'object' && typeof object.nodeType === 'number' && typeof object.nodeName === 'string';
+    };
+
+    /**
+     * _executeHook
+     * Execute user configurable hooks
+     *
+     * @param  {String} entryPoint  Name of the hook's entry point
+     * @param  {Node} currentNode node to work on with the hook
+     * @param  {Object} data additional hook parameters
+     */
+    var _executeHook = function _executeHook(entryPoint, currentNode, data) {
+      if (!hooks[entryPoint]) {
+        return;
+      }
+
+      arrayForEach(hooks[entryPoint], function (hook) {
+        hook.call(DOMPurify, currentNode, data, CONFIG);
+      });
+    };
+
+    /**
+     * _sanitizeElements
+     *
+     * @protect nodeName
+     * @protect textContent
+     * @protect removeChild
+     *
+     * @param   {Node} currentNode to check for permission to exist
+     * @return  {Boolean} true if node was killed, false if left alive
+     */
+    var _sanitizeElements = function _sanitizeElements(currentNode) {
+      var content = void 0;
+
+      /* Execute a hook if present */
+      _executeHook('beforeSanitizeElements', currentNode, null);
+
+      /* Check if element is clobbered or can clobber */
+      if (_isClobbered(currentNode)) {
+        _forceRemove(currentNode);
+        return true;
+      }
+
+      /* Check if tagname contains Unicode */
+      if (stringMatch(currentNode.nodeName, /[\u0080-\uFFFF]/)) {
+        _forceRemove(currentNode);
+        return true;
+      }
+
+      /* Now let's check the element's type and name */
+      var tagName = transformCaseFunc(currentNode.nodeName);
+
+      /* Execute a hook if present */
+      _executeHook('uponSanitizeElement', currentNode, {
+        tagName: tagName,
+        allowedTags: ALLOWED_TAGS
+      });
+
+      /* Detect mXSS attempts abusing namespace confusion */
+      if (!_isNode(currentNode.firstElementChild) && (!_isNode(currentNode.content) || !_isNode(currentNode.content.firstElementChild)) && regExpTest(/<[/\w]/g, currentNode.innerHTML) && regExpTest(/<[/\w]/g, currentNode.textContent)) {
+        _forceRemove(currentNode);
+        return true;
+      }
+
+      /* Mitigate a problem with templates inside select */
+      if (tagName === 'select' && regExpTest(/<template/i, currentNode.innerHTML)) {
+        _forceRemove(currentNode);
+        return true;
+      }
+
+      /* Remove element if anything forbids its presence */
+      if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
+        /* Keep content except for bad-listed elements */
+        if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
+          var parentNode = getParentNode(currentNode) || currentNode.parentNode;
+          var childNodes = getChildNodes(currentNode) || currentNode.childNodes;
+
+          if (childNodes && parentNode) {
+            var childCount = childNodes.length;
+
+            for (var i = childCount - 1; i >= 0; --i) {
+              parentNode.insertBefore(cloneNode(childNodes[i], true), getNextSibling(currentNode));
+            }
+          }
+        }
+
+        _forceRemove(currentNode);
+        return true;
+      }
+
+      /* Check whether element has a valid namespace */
+      if (currentNode instanceof Element && !_checkValidNamespace(currentNode)) {
+        _forceRemove(currentNode);
+        return true;
+      }
+
+      if ((tagName === 'noscript' || tagName === 'noembed') && regExpTest(/<\/no(script|embed)/i, currentNode.innerHTML)) {
+        _forceRemove(currentNode);
+        return true;
+      }
+
+      /* Sanitize element content to be template-safe */
+      if (SAFE_FOR_TEMPLATES && currentNode.nodeType === 3) {
+        /* Get the element's text content */
+        content = currentNode.textContent;
+        content = stringReplace(content, MUSTACHE_EXPR$$1, ' ');
+        content = stringReplace(content, ERB_EXPR$$1, ' ');
+        if (currentNode.textContent !== content) {
+          arrayPush(DOMPurify.removed, { element: currentNode.cloneNode() });
+          currentNode.textContent = content;
+        }
+      }
+
+      /* Execute a hook if present */
+      _executeHook('afterSanitizeElements', currentNode, null);
+
+      return false;
+    };
+
+    /**
+     * _isValidAttribute
+     *
+     * @param  {string} lcTag Lowercase tag name of containing element.
+     * @param  {string} lcName Lowercase attribute name.
+     * @param  {string} value Attribute value.
+     * @return {Boolean} Returns true if `value` is valid, otherwise false.
+     */
+    // eslint-disable-next-line complexity
+    var _isValidAttribute = function _isValidAttribute(lcTag, lcName, value) {
+      /* Make sure attribute cannot clobber */
+      if (SANITIZE_DOM && (lcName === 'id' || lcName === 'name') && (value in document || value in formElement)) {
+        return false;
+      }
+
+      /* Allow valid data-* attributes: At least one character after "-"
+          (https://html.spec.whatwg.org/multipage/dom.html#embedding-custom-non-visible-data-with-the-data-*-attributes)
+          XML-compatible (https://html.spec.whatwg.org/multipage/infrastructure.html#xml-compatible and http://www.w3.org/TR/xml/#d0e804)
+          We don't need to check the value; it's always URI safe. */
+      if (ALLOW_DATA_ATTR && !FORBID_ATTR[lcName] && regExpTest(DATA_ATTR$$1, lcName)) ; else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$$1, lcName)) ; else if (!ALLOWED_ATTR[lcName] || FORBID_ATTR[lcName]) {
+        return false;
+
+        /* Check value is safe. First, is attr inert? If so, is safe */
+      } else if (URI_SAFE_ATTRIBUTES[lcName]) ; else if (regExpTest(IS_ALLOWED_URI$$1, stringReplace(value, ATTR_WHITESPACE$$1, ''))) ; else if ((lcName === 'src' || lcName === 'xlink:href' || lcName === 'href') && lcTag !== 'script' && stringIndexOf(value, 'data:') === 0 && DATA_URI_TAGS[lcTag]) ; else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$$1, stringReplace(value, ATTR_WHITESPACE$$1, ''))) ; else if (!value) ; else {
+        return false;
+      }
+
+      return true;
+    };
+
+    /**
+     * _sanitizeAttributes
+     *
+     * @protect attributes
+     * @protect nodeName
+     * @protect removeAttribute
+     * @protect setAttribute
+     *
+     * @param  {Node} currentNode to sanitize
+     */
+    var _sanitizeAttributes = function _sanitizeAttributes(currentNode) {
+      var attr = void 0;
+      var value = void 0;
+      var lcName = void 0;
+      var l = void 0;
+      /* Execute a hook if present */
+      _executeHook('beforeSanitizeAttributes', currentNode, null);
+
+      var attributes = currentNode.attributes;
+
+      /* Check if we have attributes; if not we might have a text node */
+
+      if (!attributes) {
+        return;
+      }
+
+      var hookEvent = {
+        attrName: '',
+        attrValue: '',
+        keepAttr: true,
+        allowedAttributes: ALLOWED_ATTR
+      };
+      l = attributes.length;
+
+      /* Go backwards over all attributes; safely remove bad ones */
+      while (l--) {
+        attr = attributes[l];
+        var _attr = attr,
+            name = _attr.name,
+            namespaceURI = _attr.namespaceURI;
+
+        value = stringTrim(attr.value);
+        lcName = transformCaseFunc(name);
+
+        /* Execute a hook if present */
+        hookEvent.attrName = lcName;
+        hookEvent.attrValue = value;
+        hookEvent.keepAttr = true;
+        hookEvent.forceKeepAttr = undefined; // Allows developers to see this is a property they can set
+        _executeHook('uponSanitizeAttribute', currentNode, hookEvent);
+        value = hookEvent.attrValue;
+        /* Did the hooks approve of the attribute? */
+        if (hookEvent.forceKeepAttr) {
+          continue;
+        }
+
+        /* Remove attribute */
+        _removeAttribute(name, currentNode);
+
+        /* Did the hooks approve of the attribute? */
+        if (!hookEvent.keepAttr) {
+          continue;
+        }
+
+        /* Work around a security issue in jQuery 3.0 */
+        if (regExpTest(/\/>/i, value)) {
+          _removeAttribute(name, currentNode);
+          continue;
+        }
+
+        /* Sanitize attribute content to be template-safe */
+        if (SAFE_FOR_TEMPLATES) {
+          value = stringReplace(value, MUSTACHE_EXPR$$1, ' ');
+          value = stringReplace(value, ERB_EXPR$$1, ' ');
+        }
+
+        /* Is `value` valid for this attribute? */
+        var lcTag = transformCaseFunc(currentNode.nodeName);
+        if (!_isValidAttribute(lcTag, lcName, value)) {
+          continue;
+        }
+
+        /* Handle invalid data-* attribute set by try-catching it */
+        try {
+          if (namespaceURI) {
+            currentNode.setAttributeNS(namespaceURI, name, value);
+          } else {
+            /* Fallback to setAttribute() for browser-unrecognized namespaces e.g. "x-schema". */
+            currentNode.setAttribute(name, value);
+          }
+
+          arrayPop(DOMPurify.removed);
+        } catch (_) {}
+      }
+
+      /* Execute a hook if present */
+      _executeHook('afterSanitizeAttributes', currentNode, null);
+    };
+
+    /**
+     * _sanitizeShadowDOM
+     *
+     * @param  {DocumentFragment} fragment to iterate over recursively
+     */
+    var _sanitizeShadowDOM = function _sanitizeShadowDOM(fragment) {
+      var shadowNode = void 0;
+      var shadowIterator = _createIterator(fragment);
+
+      /* Execute a hook if present */
+      _executeHook('beforeSanitizeShadowDOM', fragment, null);
+
+      while (shadowNode = shadowIterator.nextNode()) {
+        /* Execute a hook if present */
+        _executeHook('uponSanitizeShadowNode', shadowNode, null);
+
+        /* Sanitize tags and elements */
+        if (_sanitizeElements(shadowNode)) {
+          continue;
+        }
+
+        /* Deep shadow DOM detected */
+        if (shadowNode.content instanceof DocumentFragment) {
+          _sanitizeShadowDOM(shadowNode.content);
+        }
+
+        /* Check attributes, sanitize if necessary */
+        _sanitizeAttributes(shadowNode);
+      }
+
+      /* Execute a hook if present */
+      _executeHook('afterSanitizeShadowDOM', fragment, null);
+    };
+
+    /**
+     * Sanitize
+     * Public method providing core sanitation functionality
+     *
+     * @param {String|Node} dirty string or DOM node
+     * @param {Object} configuration object
+     */
+    // eslint-disable-next-line complexity
+    DOMPurify.sanitize = function (dirty, cfg) {
+      var body = void 0;
+      var importedNode = void 0;
+      var currentNode = void 0;
+      var oldNode = void 0;
+      var returnNode = void 0;
+      /* Make sure we have a string to sanitize.
+        DO NOT return early, as this will return the wrong type if
+        the user has requested a DOM object rather than a string */
+      IS_EMPTY_INPUT = !dirty;
+      if (IS_EMPTY_INPUT) {
+        dirty = '<!-->';
+      }
+
+      /* Stringify, in case dirty is an object */
+      if (typeof dirty !== 'string' && !_isNode(dirty)) {
+        // eslint-disable-next-line no-negated-condition
+        if (typeof dirty.toString !== 'function') {
+          throw typeErrorCreate('toString is not a function');
+        } else {
+          dirty = dirty.toString();
+          if (typeof dirty !== 'string') {
+            throw typeErrorCreate('dirty is not a string, aborting');
+          }
+        }
+      }
+
+      /* Check we can run. Otherwise fall back or ignore */
+      if (!DOMPurify.isSupported) {
+        if (_typeof(window.toStaticHTML) === 'object' || typeof window.toStaticHTML === 'function') {
+          if (typeof dirty === 'string') {
+            return window.toStaticHTML(dirty);
+          }
+
+          if (_isNode(dirty)) {
+            return window.toStaticHTML(dirty.outerHTML);
+          }
+        }
+
+        return dirty;
+      }
+
+      /* Assign config vars */
+      if (!SET_CONFIG) {
+        _parseConfig(cfg);
+      }
+
+      /* Clean up removed elements */
+      DOMPurify.removed = [];
+
+      /* Check if dirty is correctly typed for IN_PLACE */
+      if (typeof dirty === 'string') {
+        IN_PLACE = false;
+      }
+
+      if (IN_PLACE) ; else if (dirty instanceof Node) {
+        /* If dirty is a DOM element, append to an empty document to avoid
+           elements being stripped by the parser */
+        body = _initDocument('<!---->');
+        importedNode = body.ownerDocument.importNode(dirty, true);
+        if (importedNode.nodeType === 1 && importedNode.nodeName === 'BODY') {
+          /* Node is already a body, use as is */
+          body = importedNode;
+        } else if (importedNode.nodeName === 'HTML') {
+          body = importedNode;
+        } else {
+          // eslint-disable-next-line unicorn/prefer-dom-node-append
+          body.appendChild(importedNode);
+        }
+      } else {
+        /* Exit directly if we have nothing to do */
+        if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT &&
+        // eslint-disable-next-line unicorn/prefer-includes
+        dirty.indexOf('<') === -1) {
+          return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(dirty) : dirty;
+        }
+
+        /* Initialize the document to work on */
+        body = _initDocument(dirty);
+
+        /* Check we have a DOM node from the data */
+        if (!body) {
+          return RETURN_DOM ? null : emptyHTML;
+        }
+      }
+
+      /* Remove first element node (ours) if FORCE_BODY is set */
+      if (body && FORCE_BODY) {
+        _forceRemove(body.firstChild);
+      }
+
+      /* Get node iterator */
+      var nodeIterator = _createIterator(IN_PLACE ? dirty : body);
+
+      /* Now start iterating over the created document */
+      while (currentNode = nodeIterator.nextNode()) {
+        /* Fix IE's strange behavior with manipulated textNodes #89 */
+        if (currentNode.nodeType === 3 && currentNode === oldNode) {
+          continue;
+        }
+
+        /* Sanitize tags and elements */
+        if (_sanitizeElements(currentNode)) {
+          continue;
+        }
+
+        /* Shadow DOM detected, sanitize it */
+        if (currentNode.content instanceof DocumentFragment) {
+          _sanitizeShadowDOM(currentNode.content);
+        }
+
+        /* Check attributes, sanitize if necessary */
+        _sanitizeAttributes(currentNode);
+
+        oldNode = currentNode;
+      }
+
+      oldNode = null;
+
+      /* If we sanitized `dirty` in-place, return it. */
+      if (IN_PLACE) {
+        return dirty;
+      }
+
+      /* Return sanitized string or DOM */
+      if (RETURN_DOM) {
+        if (RETURN_DOM_FRAGMENT) {
+          returnNode = createDocumentFragment.call(body.ownerDocument);
+
+          while (body.firstChild) {
+            // eslint-disable-next-line unicorn/prefer-dom-node-append
+            returnNode.appendChild(body.firstChild);
+          }
+        } else {
+          returnNode = body;
+        }
+
+        if (RETURN_DOM_IMPORT) {
+          /*
+            AdoptNode() is not used because internal state is not reset
+            (e.g. the past names map of a HTMLFormElement), this is safe
+            in theory but we would rather not risk another attack vector.
+            The state that is cloned by importNode() is explicitly defined
+            by the specs.
+          */
+          returnNode = importNode.call(originalDocument, returnNode, true);
+        }
+
+        return returnNode;
+      }
+
+      var serializedHTML = WHOLE_DOCUMENT ? body.outerHTML : body.innerHTML;
+
+      /* Sanitize final string template-safe */
+      if (SAFE_FOR_TEMPLATES) {
+        serializedHTML = stringReplace(serializedHTML, MUSTACHE_EXPR$$1, ' ');
+        serializedHTML = stringReplace(serializedHTML, ERB_EXPR$$1, ' ');
+      }
+
+      return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(serializedHTML) : serializedHTML;
+    };
+
+    /**
+     * Public method to set the configuration once
+     * setConfig
+     *
+     * @param {Object} cfg configuration object
+     */
+    DOMPurify.setConfig = function (cfg) {
+      _parseConfig(cfg);
+      SET_CONFIG = true;
+    };
+
+    /**
+     * Public method to remove the configuration
+     * clearConfig
+     *
+     */
+    DOMPurify.clearConfig = function () {
+      CONFIG = null;
+      SET_CONFIG = false;
+    };
+
+    /**
+     * Public method to check if an attribute value is valid.
+     * Uses last set config, if any. Otherwise, uses config defaults.
+     * isValidAttribute
+     *
+     * @param  {string} tag Tag name of containing element.
+     * @param  {string} attr Attribute name.
+     * @param  {string} value Attribute value.
+     * @return {Boolean} Returns true if `value` is valid. Otherwise, returns false.
+     */
+    DOMPurify.isValidAttribute = function (tag, attr, value) {
+      /* Initialize shared config vars if necessary. */
+      if (!CONFIG) {
+        _parseConfig({});
+      }
+
+      var lcTag = transformCaseFunc(tag);
+      var lcName = transformCaseFunc(attr);
+      return _isValidAttribute(lcTag, lcName, value);
+    };
+
+    /**
+     * AddHook
+     * Public method to add DOMPurify hooks
+     *
+     * @param {String} entryPoint entry point for the hook to add
+     * @param {Function} hookFunction function to execute
+     */
+    DOMPurify.addHook = function (entryPoint, hookFunction) {
+      if (typeof hookFunction !== 'function') {
+        return;
+      }
+
+      hooks[entryPoint] = hooks[entryPoint] || [];
+      arrayPush(hooks[entryPoint], hookFunction);
+    };
+
+    /**
+     * RemoveHook
+     * Public method to remove a DOMPurify hook at a given entryPoint
+     * (pops it from the stack of hooks if more are present)
+     *
+     * @param {String} entryPoint entry point for the hook to remove
+     */
+    DOMPurify.removeHook = function (entryPoint) {
+      if (hooks[entryPoint]) {
+        arrayPop(hooks[entryPoint]);
+      }
+    };
+
+    /**
+     * RemoveHooks
+     * Public method to remove all DOMPurify hooks at a given entryPoint
+     *
+     * @param  {String} entryPoint entry point for the hooks to remove
+     */
+    DOMPurify.removeHooks = function (entryPoint) {
+      if (hooks[entryPoint]) {
+        hooks[entryPoint] = [];
+      }
+    };
+
+    /**
+     * RemoveAllHooks
+     * Public method to remove all DOMPurify hooks
+     *
+     */
+    DOMPurify.removeAllHooks = function () {
+      hooks = {};
+    };
+
+    return DOMPurify;
+  }
+
+  var purify = createDOMPurify();
+
+  return purify;
+
+}));
+
+
+},{}],290:[function(require,module,exports){
 /* jshint node: true */
 'use strict';
 
@@ -45785,7 +47214,7 @@ var freeice = function(opts) {
 };
 
 module.exports = freeice;
-},{"./stun.json":290,"./turn.json":291,"normalice":299}],290:[function(require,module,exports){
+},{"./stun.json":291,"./turn.json":292,"normalice":300}],291:[function(require,module,exports){
 module.exports=[
   "stun.l.google.com:19302",
   "stun1.l.google.com:19302",
@@ -45802,10 +47231,10 @@ module.exports=[
   "stun.voxgratia.org"
 ]
 
-},{}],291:[function(require,module,exports){
+},{}],292:[function(require,module,exports){
 module.exports=[]
 
-},{}],292:[function(require,module,exports){
+},{}],293:[function(require,module,exports){
 var WildEmitter = require('wildemitter');
 
 function getMaxVolume (analyser, fftBins) {
@@ -45950,9 +47379,9 @@ module.exports = function(stream, options) {
   return harker;
 }
 
-},{"wildemitter":328}],293:[function(require,module,exports){
+},{"wildemitter":329}],294:[function(require,module,exports){
 arguments[4][132][0].apply(exports,arguments)
-},{"dup":132}],294:[function(require,module,exports){
+},{"dup":132}],295:[function(require,module,exports){
 (function (global){(function (){
 // https://github.com/maxogden/websocket-stream/blob/48dc3ddf943e5ada668c31ccd94e9186f02fafbd/ws-fallback.js
 
@@ -45973,10 +47402,10 @@ if (typeof WebSocket !== 'undefined') {
 module.exports = ws
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],295:[function(require,module,exports){
+},{}],296:[function(require,module,exports){
 // Does nothing at all.
 
-},{}],296:[function(require,module,exports){
+},{}],297:[function(require,module,exports){
 /*
  * (C) Copyright 2014-2015 Kurento (http://kurento.org/)
  *
@@ -46897,7 +48326,7 @@ exports.WebRtcPeerSendonly = WebRtcPeerSendonly
 exports.WebRtcPeerSendrecv = WebRtcPeerSendrecv
 exports.hark = harkUtils
 
-},{"events":100,"freeice":289,"hark":292,"inherits":293,"kurento-browser-extensions":295,"merge":298,"sdp-translator":308,"ua-parser-js":313,"uuid/v4":316}],297:[function(require,module,exports){
+},{"events":100,"freeice":290,"hark":293,"inherits":294,"kurento-browser-extensions":296,"merge":299,"sdp-translator":309,"ua-parser-js":314,"uuid/v4":317}],298:[function(require,module,exports){
 /*
  * (C) Copyright 2014 Kurento (http://kurento.org/)
  *
@@ -46929,7 +48358,7 @@ var WebRtcPeer = require('./WebRtcPeer');
 
 exports.WebRtcPeer = WebRtcPeer;
 
-},{"./WebRtcPeer":296}],298:[function(require,module,exports){
+},{"./WebRtcPeer":297}],299:[function(require,module,exports){
 /*!
  * @name JavaScript/NodeJS Merge v1.2.1
  * @author yeikos
@@ -47107,7 +48536,7 @@ exports.WebRtcPeer = WebRtcPeer;
 	}
 
 })(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-},{}],299:[function(require,module,exports){
+},{}],300:[function(require,module,exports){
 /**
   # normalice
 
@@ -47169,7 +48598,7 @@ module.exports = function(input) {
   return output;
 };
 
-},{}],300:[function(require,module,exports){
+},{}],301:[function(require,module,exports){
 (function () {
     /*
      * Async module to handle async messaging
@@ -47882,7 +49311,7 @@ module.exports = function(input) {
     }
 })();
 
-},{"../utility/utility.js":302,"./socket.js":301}],301:[function(require,module,exports){
+},{"../utility/utility.js":303,"./socket.js":302}],302:[function(require,module,exports){
 (function() {
   /*
    * Socket Module to connect and handle Socket functionalities
@@ -48103,7 +49532,7 @@ module.exports = function(input) {
 
 })();
 
-},{"isomorphic-ws":294}],302:[function(require,module,exports){
+},{"isomorphic-ws":295}],303:[function(require,module,exports){
 (function (global){(function (){
 (function() {
   /**
@@ -48331,7 +49760,7 @@ module.exports = function(input) {
 })();
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],303:[function(require,module,exports){
+},{}],304:[function(require,module,exports){
 var grammar = module.exports = {
   v: [{
       name: 'version',
@@ -48590,7 +50019,7 @@ Object.keys(grammar).forEach(function (key) {
   });
 });
 
-},{}],304:[function(require,module,exports){
+},{}],305:[function(require,module,exports){
 var parser = require('./parser');
 var writer = require('./writer');
 
@@ -48600,7 +50029,7 @@ exports.parseFmtpConfig = parser.parseFmtpConfig;
 exports.parsePayloads = parser.parsePayloads;
 exports.parseRemoteCandidates = parser.parseRemoteCandidates;
 
-},{"./parser":305,"./writer":306}],305:[function(require,module,exports){
+},{"./parser":306,"./writer":307}],306:[function(require,module,exports){
 var toIntIfInt = function (v) {
   return String(Number(v)) === v ? Number(v) : v;
 };
@@ -48695,7 +50124,7 @@ exports.parseRemoteCandidates = function (str) {
   return candidates;
 };
 
-},{"./grammar":303}],306:[function(require,module,exports){
+},{"./grammar":304}],307:[function(require,module,exports){
 var grammar = require('./grammar');
 
 // customized util.format - discards excess arguments and can void middle ones
@@ -48811,7 +50240,7 @@ module.exports = function (session, opts) {
   return sdp.join('\r\n') + '\r\n';
 };
 
-},{"./grammar":303}],307:[function(require,module,exports){
+},{"./grammar":304}],308:[function(require,module,exports){
 /* Copyright @ 2015 Atlassian Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -48852,7 +50281,7 @@ module.exports = function arrayEquals(array) {
 };
 
 
-},{}],308:[function(require,module,exports){
+},{}],309:[function(require,module,exports){
 /* Copyright @ 2015 Atlassian Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -48870,7 +50299,7 @@ module.exports = function arrayEquals(array) {
 
 exports.Interop = require('./interop');
 
-},{"./interop":309}],309:[function(require,module,exports){
+},{"./interop":310}],310:[function(require,module,exports){
 /* Copyright @ 2015 Atlassian Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49755,7 +51184,7 @@ Interop.prototype.toUnifiedPlan = function(desc) {
     //#endregion
 };
 
-},{"./array-equals":307,"./transform":310}],310:[function(require,module,exports){
+},{"./array-equals":308,"./transform":311}],311:[function(require,module,exports){
 /* Copyright @ 2015 Atlassian Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49869,7 +51298,7 @@ exports.parse = function(sdp) {
 };
 
 
-},{"sdp-transform":304}],311:[function(require,module,exports){
+},{"sdp-transform":305}],312:[function(require,module,exports){
 /* eslint-env node */
 'use strict';
 
@@ -50630,7 +52059,7 @@ SDPUtils.isValidSDP = function (blob) {
 if ((typeof module === 'undefined' ? 'undefined' : _typeof(module)) === 'object') {
   module.exports = SDPUtils;
 }
-},{}],312:[function(require,module,exports){
+},{}],313:[function(require,module,exports){
 (function (global){(function (){
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -50918,7 +52347,7 @@ var __createBinding;
 });
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],313:[function(require,module,exports){
+},{}],314:[function(require,module,exports){
 /*!
  * UAParser.js v0.7.24
  * Lightweight JavaScript-based User-Agent string parser
@@ -51857,7 +53286,7 @@ var __createBinding;
 
 })(typeof window === 'object' ? window : this);
 
-},{}],314:[function(require,module,exports){
+},{}],315:[function(require,module,exports){
 /**
  * Convert array of 16 byte values to UUID string format of the form:
  * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
@@ -51885,7 +53314,7 @@ function bytesToUuid(buf, offset) {
 
 module.exports = bytesToUuid;
 
-},{}],315:[function(require,module,exports){
+},{}],316:[function(require,module,exports){
 // Unique ID creation requires a high quality random # generator.  In the
 // browser this is a little complicated due to unknown quality of Math.random()
 // and inconsistent support for the `crypto` API.  We do the best we can via
@@ -51921,7 +53350,7 @@ if (getRandomValues) {
   };
 }
 
-},{}],316:[function(require,module,exports){
+},{}],317:[function(require,module,exports){
 var rng = require('./lib/rng');
 var bytesToUuid = require('./lib/bytesToUuid');
 
@@ -51952,7 +53381,7 @@ function v4(options, buf, offset) {
 
 module.exports = v4;
 
-},{"./lib/bytesToUuid":314,"./lib/rng":315}],317:[function(require,module,exports){
+},{"./lib/bytesToUuid":315,"./lib/rng":316}],318:[function(require,module,exports){
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
@@ -51973,7 +53402,7 @@ var _adapter_factory = require('./adapter_factory.js');
 var adapter = (0, _adapter_factory.adapterFactory)({ window: typeof window === 'undefined' ? undefined : window });
 exports.default = adapter;
 
-},{"./adapter_factory.js":318}],318:[function(require,module,exports){
+},{"./adapter_factory.js":319}],319:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -52138,7 +53567,7 @@ function adapterFactory() {
 
 // Browser shims.
 
-},{"./chrome/chrome_shim":319,"./common_shim":322,"./firefox/firefox_shim":323,"./safari/safari_shim":326,"./utils":327,"sdp":311}],319:[function(require,module,exports){
+},{"./chrome/chrome_shim":320,"./common_shim":323,"./firefox/firefox_shim":324,"./safari/safari_shim":327,"./utils":328,"sdp":312}],320:[function(require,module,exports){
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
@@ -52887,7 +54316,7 @@ function fixNegotiationNeeded(window, browserDetails) {
   });
 }
 
-},{"../utils.js":327,"./getdisplaymedia":320,"./getusermedia":321}],320:[function(require,module,exports){
+},{"../utils.js":328,"./getdisplaymedia":321,"./getusermedia":322}],321:[function(require,module,exports){
 /*
  *  Copyright (c) 2018 The adapter.js project authors. All Rights Reserved.
  *
@@ -52938,7 +54367,7 @@ function shimGetDisplayMedia(window, getSourceId) {
   };
 }
 
-},{}],321:[function(require,module,exports){
+},{}],322:[function(require,module,exports){
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
@@ -53143,7 +54572,7 @@ function shimGetUserMedia(window, browserDetails) {
   }
 }
 
-},{"../utils.js":327}],322:[function(require,module,exports){
+},{"../utils.js":328}],323:[function(require,module,exports){
 /*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
@@ -53531,7 +54960,7 @@ function shimAddIceCandidateNullOrEmpty(window, browserDetails) {
   };
 }
 
-},{"./utils":327,"sdp":311}],323:[function(require,module,exports){
+},{"./utils":328,"sdp":312}],324:[function(require,module,exports){
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
@@ -53866,7 +55295,7 @@ function shimCreateAnswer(window) {
   };
 }
 
-},{"../utils":327,"./getdisplaymedia":324,"./getusermedia":325}],324:[function(require,module,exports){
+},{"../utils":328,"./getdisplaymedia":325,"./getusermedia":326}],325:[function(require,module,exports){
 /*
  *  Copyright (c) 2018 The adapter.js project authors. All Rights Reserved.
  *
@@ -53905,7 +55334,7 @@ function shimGetDisplayMedia(window, preferredMediaSource) {
   };
 }
 
-},{}],325:[function(require,module,exports){
+},{}],326:[function(require,module,exports){
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
@@ -53982,7 +55411,7 @@ function shimGetUserMedia(window, browserDetails) {
   }
 }
 
-},{"../utils":327}],326:[function(require,module,exports){
+},{"../utils":328}],327:[function(require,module,exports){
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
@@ -54351,7 +55780,7 @@ function shimAudioContext(window) {
   window.AudioContext = window.webkitAudioContext;
 }
 
-},{"../utils":327}],327:[function(require,module,exports){
+},{"../utils":328}],328:[function(require,module,exports){
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
@@ -54622,7 +56051,7 @@ function filterStats(result, track, outbound) {
   return filteredResult;
 }
 
-},{}],328:[function(require,module,exports){
+},{}],329:[function(require,module,exports){
 /*
 WildEmitter.js is a slim little event emitter by @henrikjoreteg largely based
 on @visionmedia's Emitter from UI Kit.
@@ -54779,7 +56208,3372 @@ WildEmitter.mixin = function (constructor) {
 
 WildEmitter.mixin(WildEmitter);
 
-},{}],329:[function(require,module,exports){
+},{}],330:[function(require,module,exports){
+(function () {
+    /**
+     * Global Variables
+     */
+    var KurentoUtils,
+        WebrtcAdapter;
+
+    function ChatCall(params) {
+        if (typeof (require) !== 'undefined' && typeof (exports) !== 'undefined') {
+            KurentoUtils = require('kurento-utils');
+            WebrtcAdapter = require('webrtc-adapter');
+        } else {
+            KurentoUtils = window.kurentoUtils;
+            WebrtcAdapter = window.adapter;
+        }
+
+
+
+        var Utility = params.Utility,
+            callClient = this,
+            Sentry = params.Sentry,
+            asyncClient = params.asyncClient,
+            chatEvents = params.chatEvents,
+            chatMessaging = params.chatMessaging,
+            token = params.token,
+            messagesCallbacks = {},
+            asyncRequestTimeouts = {},
+            chatMessageVOTypes = {
+                CREATE_THREAD: 1,
+                MESSAGE: 2,
+                SENT: 3,
+                DELIVERY: 4,
+                SEEN: 5,
+                PING: 6,
+                BLOCK: 7,
+                UNBLOCK: 8,
+                LEAVE_THREAD: 9,
+                ADD_PARTICIPANT: 11,
+                GET_STATUS: 12,
+                GET_CONTACTS: 13,
+                GET_THREADS: 14,
+                GET_HISTORY: 15,
+                CHANGE_TYPE: 16,
+                REMOVED_FROM_THREAD: 17,
+                REMOVE_PARTICIPANT: 18,
+                MUTE_THREAD: 19,
+                UNMUTE_THREAD: 20,
+                UPDATE_THREAD_INFO: 21,
+                FORWARD_MESSAGE: 22,
+                USER_INFO: 23,
+                USER_STATUS: 24,
+                GET_BLOCKED: 25,
+                RELATION_INFO: 26,
+                THREAD_PARTICIPANTS: 27,
+                EDIT_MESSAGE: 28,
+                DELETE_MESSAGE: 29,
+                THREAD_INFO_UPDATED: 30,
+                LAST_SEEN_UPDATED: 31,
+                GET_MESSAGE_DELIVERY_PARTICIPANTS: 32,
+                GET_MESSAGE_SEEN_PARTICIPANTS: 33,
+                IS_NAME_AVAILABLE: 34,
+                JOIN_THREAD: 39,
+                BOT_MESSAGE: 40,
+                SPAM_PV_THREAD: 41,
+                SET_ROLE_TO_USER: 42,
+                REMOVE_ROLE_FROM_USER: 43,
+                CLEAR_HISTORY: 44,
+                SYSTEM_MESSAGE: 46,
+                GET_NOT_SEEN_DURATION: 47,
+                PIN_THREAD: 48,
+                UNPIN_THREAD: 49,
+                PIN_MESSAGE: 50,
+                UNPIN_MESSAGE: 51,
+                UPDATE_CHAT_PROFILE: 52,
+                CHANGE_THREAD_PRIVACY: 53,
+                GET_PARTICIPANT_ROLES: 54,
+                GET_REPORT_REASONS: 56,
+                REPORT_THREAD: 57,
+                REPORT_USER: 58,
+                REPORT_MESSAGE: 59,
+                GET_CONTACT_NOT_SEEN_DURATION: 60,
+                ALL_UNREAD_MESSAGE_COUNT: 61,
+                CREATE_BOT: 62,
+                DEFINE_BOT_COMMAND: 63,
+                START_BOT: 64,
+                STOP_BOT: 65,
+                LAST_MESSAGE_DELETED: 66,
+                LAST_MESSAGE_EDITED: 67,
+                BOT_COMMANDS: 68,
+                THREAD_ALL_BOTS: 69,
+                CALL_REQUEST: 70,
+                ACCEPT_CALL: 71,
+                REJECT_CALL: 72,
+                RECEIVE_CALL_REQUEST: 73,
+                START_CALL: 74,
+                END_CALL_REQUEST: 75,
+                END_CALL: 76,
+                GET_CALLS: 77,
+                RECONNECT: 78,
+                CONNECT: 79,
+                CONTACT_SYNCED: 90,
+                GROUP_CALL_REQUEST: 91,
+                LEAVE_CALL: 92,
+                ADD_CALL_PARTICIPANT: 93,
+                CALL_PARTICIPANT_JOINED: 94,
+                REMOVE_CALL_PARTICIPANT: 95,
+                TERMINATE_CALL: 96,
+                MUTE_CALL_PARTICIPANT: 97,
+                UNMUTE_CALL_PARTICIPANT: 98,
+                LOGOUT: 100,
+                LOCATION_PING: 101,
+                CLOSE_THREAD: 102,
+                REMOVE_BOT_COMMANDS: 104,
+                SEARCH: 105,
+                CONTINUE_SEARCH: 106,
+                REGISTER_ASSISTANT: 107,
+                DEACTIVATE_ASSISTANT: 108,
+                GET_ASSISTANTS: 109,
+                ACTIVE_CALL_PARTICIPANTS: 110,
+                CALL_SESSION_CREATED: 111,
+                IS_BOT_NAME_AVAILABLE: 112,
+                TURN_ON_VIDEO_CALL: 113,
+                TURN_OFF_VIDEO_CALL: 114,
+                ASSISTANT_HISTORY: 115,
+                BLOCK_ASSISTANT: 116,
+                UNBLOCK_ASSISTANT: 117,
+                BLOCKED_ASSISTANTS: 118,
+                RECORD_CALL: 121,
+                END_RECORD_CALL: 122,
+                START_SCREEN_SHARE: 123,
+                END_SCREEN_SHARE: 124,
+                DELETE_FROM_CALL_HISTORY: 125,
+                MUTUAL_GROUPS: 130,
+                CREATE_TAG: 140,
+                EDIT_TAG: 141,
+                DELETE_TAG: 142,
+                ADD_TAG_PARTICIPANT: 143,
+                REMOVE_TAG_PARTICIPANT: 144,
+                GET_TAG_LIST: 145,
+                DELETE_MESSAGE_THREAD: 151,
+                ERROR: 999
+            },
+            inviteeVOidTypes = {
+                TO_BE_USER_SSO_ID: 1,
+                TO_BE_USER_CONTACT_ID: 2,
+                TO_BE_USER_CELLPHONE_NUMBER: 3,
+                TO_BE_USER_USERNAME: 4,
+                TO_BE_USER_ID: 5,
+                TO_BE_CORE_USER_ID: 6
+            },
+            callTypes = {
+                'VOICE': 0x0,
+                'VIDEO': 0x1
+            },
+            callOptions = params.callOptions,
+            callTurnIp = (params.callOptions
+                && params.callOptions.hasOwnProperty('callTurnIp')
+                && typeof params.callOptions.callTurnIp === 'string')
+                ? params.callOptions.callTurnIp
+                : '46.32.6.188',
+            callDivId = (params.callOptions
+                && params.callOptions.hasOwnProperty('callDivId')
+                && typeof params.callOptions.callDivId === 'string')
+                ? params.callOptions.callDivId
+                : 'call-div',
+            callAudioTagClassName = (params.callOptions
+                && params.callOptions.hasOwnProperty('callAudioTagClassName')
+                && typeof params.callOptions.callAudioTagClassName === 'string')
+                ? params.callOptions.callAudioTagClassName
+                : '',
+            callVideoTagClassName = (params.callOptions
+                && params.callOptions.hasOwnProperty('callVideoTagClassName')
+                && typeof params.callOptions.callVideoTagClassName === 'string')
+                ? params.callOptions.callVideoTagClassName
+                : '',
+            callVideoMinWidth = (params.callOptions
+                && params.callOptions.hasOwnProperty('callVideo')
+                && typeof params.callOptions.callVideo === 'object'
+                && params.callOptions.callVideo.hasOwnProperty('minWidth'))
+                ? params.callOptions.callVideo.minWidth
+                : 320,
+            callVideoMinHeight = (params.callOptions
+                && params.callOptions.hasOwnProperty('callVideo')
+                && typeof params.callOptions.callVideo === 'object'
+                && params.callOptions.callVideo.hasOwnProperty('minHeight'))
+                ? params.callOptions.callVideo.minHeight
+                : 180,
+            currentCallParams = {},
+            currentCallId = null,
+            shouldReconnectCallTimeout = null,
+            callTopics = {},
+            callClientType = {
+                WEB: 1,
+                ANDROID: 2,
+                DESKTOP: 3
+            },
+            webpeers = {},
+            webpeersMetadata = {},
+            callRequestController = {
+                callRequestReceived: false,
+                callEstablishedInMySide: false,
+                iCanAcceptTheCall: function () {
+                    return callRequestController.callRequestReceived && callRequestController.callEstablishedInMySide;
+
+                }
+            },
+            uiRemoteMedias = {},
+            callStopQueue = {
+                callStarted: false,
+            },
+            callServerName,
+            messageTtl = params.messageTtl || 10000,
+            config = {
+                getHistoryCount: 50
+            },
+            callRequestTimeout = (typeof params.callRequestTimeout === 'number' && params.callRequestTimeout >= 0) ? params.callRequestTimeout : 10000,
+            consoleLogging = (params.asyncLogging.consoleLogging && typeof params.asyncLogging.consoleLogging === 'boolean')
+                ? params.asyncLogging.consoleLogging
+                : false;
+
+        var init = function () {
+
+            },
+            sendCallMessage = function (message, callback) {
+                message.token = token;
+
+                var uniqueId;
+
+                if (typeof params.uniqueId != 'undefined') {
+                    uniqueId = params.uniqueId;
+                } else {
+                    uniqueId = Utility.generateUUID();
+                }
+
+                message.uniqueId = uniqueId;
+
+                var data = {
+                    type: 3,
+                    content: {
+                        peerName: callServerName,
+                        priority: 1,
+                        content: JSON.stringify(message),
+                        ttl: messageTtl
+                    }
+                };
+
+                if (typeof callback == 'function') {
+                    chatMessaging.messagesCallbacks[uniqueId] = callback;
+                }
+
+                asyncClient.send(data, function (res) {
+                    if (!res.hasError && callback) {
+                        if (typeof callback == 'function') {
+                            callback(res);
+                        }
+
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            delete chatMessaging.messagesCallbacks[uniqueId];
+                        }
+                    }
+                });
+
+                if (callRequestTimeout > 0) {
+                    asyncRequestTimeouts[uniqueId] && clearTimeout(asyncRequestTimeouts[uniqueId]);
+                    asyncRequestTimeouts[uniqueId] = setTimeout(function () {
+                        if (typeof callback == 'function') {
+                            callback({
+                                done: 'SKIP'
+                            });
+                        }
+
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            delete chatMessaging.messagesCallbacks[uniqueId];
+                        }
+                    }, callRequestTimeout);
+                }
+            },
+
+            /**
+             * Format Data To Make Call Participant
+             *
+             * This functions reformats given JSON to proper Object
+             *
+             * @access private
+             *
+             * @param {object}  messageContent    Json object of thread taken from chat server
+             *
+             * @param threadId
+             * @return {object} participant Object
+             */
+            formatDataToMakeCallParticipant = function (messageContent) {
+                /**
+                 * + CallParticipantVO                   {object}
+                 *    - id                           {int}
+                 *    - joinTime                     {int}
+                 *    - leaveTime                    {int}
+                 *    - threadParticipant            {object}
+                 *    - sendTopic                    {string}
+                 *    - receiveTopic                 {string}
+                 *    - brokerAddress                {string}
+                 *    - active                       {boolean}
+                 *    - callSession                  {object}
+                 *    - callStatus                   {int}
+                 *    - createTime                   {int}
+                 *    - sendKey                      {string}
+                 *    - mute                         {boolean}
+                 */
+
+                var participant = {
+                    id: messageContent.id,
+                    joinTime: messageContent.joinTime,
+                    leaveTime: messageContent.leaveTime,
+                    sendTopic: messageContent.sendTopic,
+                    receiveTopic: messageContent.receiveTopic,
+                    brokerAddress: messageContent.brokerAddress,
+                    active: messageContent.active,
+                    callSession: messageContent.callSession,
+                    callStatus: messageContent.callStatus,
+                    createTime: messageContent.createTime,
+                    sendKey: messageContent.sendKey,
+                    mute: messageContent.mute
+                };
+
+                // Add Chat Participant if exist
+                if (messageContent.participantVO) {
+                    participant.participantVO = messageContent.participantVO;
+                }
+
+                // Add Call Session if exist
+                if (messageContent.callSession) {
+                    participant.callSession = messageContent.callSession;
+                }
+
+                // return participant;
+                return JSON.parse(JSON.stringify(participant));
+            },
+
+            /**
+             * Format Data To Make Call Message
+             *
+             * This functions reformats given JSON to proper Object
+             *
+             * @access private
+             *
+             * @param {object}  messageContent    Json object of thread taken from chat server
+             *
+             * @return {object} Call message Object
+             */
+            formatDataToMakeCallMessage = function (threadId, pushMessageVO) {
+                /**
+                 * + CallVO                   {object}
+                 *    - id                    {int}
+                 *    - creatorId             {int}
+                 *    - type                  {int}
+                 *    - createTime            {string}
+                 *    - startTime             {string}
+                 *    - endTime               {string}
+                 *    - status                {int}
+                 *    - isGroup               {boolean}
+                 *    - callParticipants      {object}
+                 *    - partnerParticipantVO  {object}
+                 *    - conversationVO        {object}
+                 */
+                var callMessage = {
+                    id: pushMessageVO.id,
+                    creatorId: pushMessageVO.creatorId,
+                    type: pushMessageVO.type,
+                    createTime: pushMessageVO.createTime,
+                    startTime: pushMessageVO.startTime,
+                    endTime: pushMessageVO.endTime,
+                    status: pushMessageVO.status,
+                    isGroup: pushMessageVO.isGroup,
+                    callParticipants: pushMessageVO.callParticipants,
+                    partnerParticipantVO: pushMessageVO.partnerParticipantVO,
+                    conversationVO: pushMessageVO.conversationVO
+                };
+
+                // return pinMessage;
+                return JSON.parse(JSON.stringify(callMessage));
+            },
+
+            /**
+             * Reformat Call Participants
+             *
+             * This functions reformats given Array of call Participants
+             * into proper call participant
+             *
+             * @access private
+             *
+             * @param {object}  participantsContent   Array of Call Participant Objects
+             * @param {int}    threadId              Id of call
+             *
+             * @return {object} Formatted Call Participant Array
+             */
+            reformatCallParticipants = function (participantsContent) {
+                var returnData = [];
+
+                for (var i = 0; i < participantsContent.length; i++) {
+                    returnData.push(formatDataToMakeCallParticipant(participantsContent[i]));
+                }
+
+                return returnData;
+            },
+
+            callReceived = function (params, callback) {
+                var receiveCallData = {
+                    chatMessageVOType: chatMessageVOTypes.RECEIVE_CALL_REQUEST,
+                    typeCode: params.typeCode,
+                    pushMsgType: 3,
+                    token: token
+                };
+
+                if (params) {
+                    if (typeof +params.callId === 'number' && params.callId > 0) {
+                        receiveCallData.subjectId = +params.callId;
+                    } else {
+                        chatEvents.fireEvent('error', {
+                            code: 999,
+                            message: 'Invalid call id!'
+                        });
+                        return;
+                    }
+                } else {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'No params have been sent to ReceiveCall()'
+                    });
+                    return;
+                }
+
+                return chatMessaging.sendMessage(receiveCallData, {
+                    onResult: function (result) {
+                        callback && callback(result);
+                    }
+                });
+            },
+
+            endCall = function (params, callback) {
+                consoleLogging && console.log('endCall called...');
+
+                var endCallData = {
+                    chatMessageVOType: chatMessageVOTypes.END_CALL_REQUEST,
+                    typeCode: params.typeCode,
+                    pushMsgType: 3,
+                    token: token
+                };
+
+                if (!callRequestController.callEstablishedInMySide) {
+                    return;
+                }
+
+                if (params) {
+                    if (typeof +params.callId === 'number' && params.callId > 0) {
+                        endCallData.subjectId = +params.callId;
+                    } else {
+                        chatEvents.fireEvent('error', {
+                            code: 999,
+                            message: 'Invalid call id!'
+                        });
+                        return;
+                    }
+                } else {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'No params have been sent to End the call!'
+                    });
+                    return;
+                }
+
+                callStop();
+
+                return chatMessaging.sendMessage(endCallData, {
+                    onResult: function (result) {
+                        callback && callback(result);
+                    }
+                });
+            },
+            /*
+             * Call Functionalities
+             */
+            startCallWebRTCFunctions = function (params, callback) {
+                if (callDivId) {
+                    var callParentDiv,
+                        callVideo = (typeof params.video === 'boolean') ? params.video : true,
+                        callMute = (typeof params.mute === 'boolean') ? params.mute : false,
+                        sendingTopic = params.sendingTopic,
+                        receiveTopic = params.receiveTopic;
+
+                    callTopics['sendVideoTopic'] = 'Vi-' + sendingTopic;
+                    callTopics['sendAudioTopic'] = 'Vo-' + sendingTopic;
+                    //callTopics['receiveVideoTopic'] = 'Vi-' + receiveTopic;
+                    //callTopics['receiveAudioTopic'] = 'Vo-' + receiveTopic;
+                    callTopics['receive'] = [];
+                    callTopics['receive'].push({
+                        "VideoTopic": 'Vi-' + receiveTopic,
+                        "AudioTopic": 'Vo-' + receiveTopic
+                    });
+
+                    webpeersMetadata[callTopics['sendVideoTopic']] = {
+                        interval: null,
+                        receivedSdpAnswer: false,
+                        connectionQualityInterval: null,
+                        poorConnectionCount: 0,
+                        poorConnectionResolvedCount: 0,
+                        isConnectionPoor: false
+                    };
+                    webpeersMetadata[callTopics['sendAudioTopic']] = {
+                        interval: null,
+                        receivedSdpAnswer: false,
+                        connectionQualityInterval: null,
+                        poorConnectionCount: 0,
+                        poorConnectionResolvedCount: 0,
+                        isConnectionPoor: false
+                    };
+
+                    for(var i in callTopics['receive']) {
+                        webpeersMetadata[callTopics['receive'][i]['VideoTopic']] = {
+                            interval: null,
+                            receivedSdpAnswer: false
+                        };
+                        webpeersMetadata[callTopics['receive'][i]['AudioTopic']] = {
+                            interval: null,
+                            receivedSdpAnswer: false
+                        };
+                    }
+
+                    callParentDiv = document.getElementById(callDivId);
+
+                    // Local Video Tag
+                    if (callVideo && !uiRemoteMedias[callTopics['sendVideoTopic']]) {
+                        uiRemoteMedias[callTopics['sendVideoTopic']] = document.createElement('video');
+                        var el = uiRemoteMedias[callTopics['sendVideoTopic']];
+                        el.setAttribute('id', 'uiRemoteVideo-' + callTopics['sendVideoTopic']);
+                        el.setAttribute('class', callVideoTagClassName);
+                        el.setAttribute('playsinline', '');
+                        el.setAttribute('muted', '');
+                        el.setAttribute('width', callVideoMinWidth + 'px');
+                        el.setAttribute('height', callVideoMinHeight + 'px');
+                    }
+
+                    // Local Audio Tag
+                    if (!uiRemoteMedias[callTopics['sendAudioTopic']]) {
+                        uiRemoteMedias[callTopics['sendAudioTopic']] = document.createElement('audio');
+                        var el = uiRemoteMedias[callTopics['sendAudioTopic']];
+                        el.setAttribute('id', 'uiRemoteAudio-' + callTopics['sendAudioTopic']);
+                        el.setAttribute('class', callAudioTagClassName);
+                        el.setAttribute('autoplay', '');
+                        el.setAttribute('muted', '');
+                        el.setAttribute('controls', '');
+                    }
+
+                    for(var i in callTopics['receive']){
+                        // Remote Video Tag
+                        if (callVideo && !uiRemoteMedias[callTopics['receive'][i]['VideoTopic']]) {
+                            uiRemoteMedias[callTopics['receive'][i]['VideoTopic']] = document.createElement('video');
+                            var el = uiRemoteMedias[callTopics['receive'][i]['VideoTopic']];
+                            el.setAttribute('id', 'uiRemoteVideo-' + callTopics['receive'][i]['VideoTopic']);
+                            el.setAttribute('class', callVideoTagClassName);
+                            el.setAttribute('playsinline', '');
+                            el.setAttribute('muted', '');
+                            el.setAttribute('width', callVideoMinWidth + 'px');
+                            el.setAttribute('height', callVideoMinHeight + 'px');
+                        }
+
+                        // Remote Audio Tag
+                        if (!uiRemoteMedias[callTopics['receive'][i]['AudioTopic']]) {
+                            uiRemoteMedias[callTopics['receive'][i]['AudioTopic']] = document.createElement('audio');
+                            var el = uiRemoteMedias[callTopics['receive'][i]['AudioTopic']];
+                            el.setAttribute('id', 'uiRemoteAudio-' + callTopics['receive'][i]['AudioTopic']);
+                            el.setAttribute('class', callAudioTagClassName);
+                            el.setAttribute('autoplay', '');
+                            callMute && el.setAttribute('muted', '');
+                            el.setAttribute('controls', '');
+                        }
+                    }
+
+                    var uiRemoteElements = [];
+                    for(var i in callTopics['receive']) {
+                        /*uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']])
+                        callVideo && uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['VideoTopic']])*/
+
+                        uiRemoteElements.push(
+                            {
+                                uiRemoteAudio: uiRemoteMedias[callTopics['receive'][i]['AudioTopic']],
+                                uiRemoteVideo: callVideo && uiRemoteMedias[callTopics['receive'][i]['VideoTopic']]
+                            }
+                        )
+                    }
+
+                    if (callParentDiv) {
+                        callVideo && callParentDiv.appendChild(uiRemoteMedias[callTopics['sendVideoTopic']]);
+                        callParentDiv.appendChild(uiRemoteMedias[callTopics['sendAudioTopic']]);
+                        if(callVideo) {
+                            for(var i in callTopics['receive']) {
+                                callParentDiv.appendChild(uiRemoteMedias[callTopics['receive'][i]['VideoTopic']])
+                            }
+                        }
+                        for(var i in callTopics['receive']) {
+                            callParentDiv.appendChild(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']]);
+                        }
+
+                        callback && callback({
+                            'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
+                            'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
+                            uiRemoteElements: uiRemoteElements
+                            /*                            'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
+                                                        'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*/
+                        });
+                    } else {
+                        callback && callback({
+                            'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
+                            'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
+                            uiRemoteElements: uiRemoteElements
+                            /*'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
+                            'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*/
+                        });
+                    }
+
+                    callStateController.createSessionInChat(Object.assign(params, {
+                        callVideo: callVideo,
+                        callAudio: !callMute,
+                    }));
+
+                    /*sendCallMessage({
+                        id: 'STOPALL'
+                    }, function (result) {*/
+
+                    /*handleCallSocketOpen({
+                        brokerAddress: params.brokerAddress,
+                        turnAddress: params.turnAddress,
+                        callVideo: callVideo,
+                        callAudio: !callMute,
+                    });*/
+
+                    /* });*/
+                } else {
+                    consoleLogging && console.log('No Call DIV has been declared!');
+                    return;
+                }
+            },
+
+
+            /*handleCallSocketOpen = function (params) {
+                currentCallParams = params;
+
+                sendCallMessage({
+                    id: 'CREATE_SESSION',
+                    brokerAddress: params.brokerAddress,
+                    turnAddress: params.turnAddress.split(',')[0]
+                }, function (res) {
+                    if (res.done === 'TRUE') {
+                        callStopQueue.callStarted = true;
+                        generateAndSendSdpOffers(params, [callTopics['sendVideoTopic'], callTopics['receiveVideoTopic'], callTopics['sendAudioTopic'], callTopics['receiveAudioTopic']]);
+                    } else if (res.done === 'SKIP') {
+                        callStopQueue.callStarted = true;
+                        generateAndSendSdpOffers(params, [callTopics['sendVideoTopic'], callTopics['receiveVideoTopic'], callTopics['sendAudioTopic'], callTopics['receiveAudioTopic']]);
+                    } else {
+                        consoleLogging && console.log('CREATE_SESSION faced a problem', res);
+                        endCall({
+                            callId: currentCallId
+                        });
+                    }
+                });
+            },*/
+
+            callStateController = {
+                createSessionInChat: function (params) {
+                    currentCallParams = params;
+                    var callController = this;
+                    consoleLogging && console.log("createSessionInChat:inside", params);
+                    sendCallMessage({
+                        id: 'CREATE_SESSION',
+                        brokerAddress: params.brokerAddress,
+                        turnAddress: params.turnAddress.split(',')[0]
+                    }, function (res) {
+                        consoleLogging && console.log("createSessionInChat:onresult", res)
+                        if (res.done === 'TRUE') {
+                            callStopQueue.callStarted = true;
+                            callController.startCall(params);
+                        } else if (res.done === 'SKIP') {
+                            callStopQueue.callStarted = true;
+                            callController.startCall(params);
+                        } else {
+                            consoleLogging && console.log('CREATE_SESSION faced a problem', res);
+                            endCall({
+                                callId: currentCallId
+                            });
+                        }
+                    });
+                },
+                /**
+                 * First we start a call
+                 *
+                 * @param params
+                 */
+                startCall: function (params) {
+                    var callController = this;
+                    if (params.callVideo) {
+                        this.startParticipantVideo(callTopics['receive'][0]['VideoTopic'], 'receive');
+                        setTimeout(function (){
+                            callController.startMyVideo();
+                        }, 2000);
+                    }
+                    if(params.callAudio) {
+                        this.startParticipantAudio(callTopics['receive'][0]['AudioTopic'], 'receive');
+                        setTimeout(function (){
+                            callController.startMyAudio();
+                        }, 2000)
+                    }
+                },
+                /**
+                 * When call started we can add participants
+                 *
+                 * @param params
+                 * @param direction
+                 */
+                addParticipant: function (params, direction) {
+                    //TODO: generate html elements
+                    //TODO: add user to callUsers
+                    //TODO: createTopics
+                },
+                /**
+                 * When call started we can remove a participant from the call
+                 *
+                 * @param params
+                 * @param direction
+                 */
+                removeParticipant: function (user) {
+                    if(user === chatMessaging.userInfo.id) {
+                        //TODO: only remove me
+                        callStop();
+                        return;
+                    }
+                },
+                stopMyAudio: function () {
+                    this.removeTopic(callTopics['sendAudioTopic']);
+                },
+                startMyAudio: function () {
+                    this.createTopic(callTopics['sendAudioTopic'], 'audio', 'send');
+                },
+                stopParticipantAudio: function (topic) {
+                    this.removeTopic(topic);
+                },
+                startParticipantAudio: function (topic) {
+                    this.createTopic(topic, 'audio', 'receive');
+                },
+                stopMyVideo: function () {
+                    this.removeTopic(callTopics['sendVideoTopic']);
+                },
+                startMyVideo: function () {
+                    this.createTopic(callTopics['sendVideoTopic'], 'video','send');
+                },
+                stopParticipantVideo: function (topic) {
+                    this.removeTopic(topic);
+                },
+                startParticipantVideo: function (topic) {
+                    this.createTopic(topic, 'video', 'receive');
+                },
+                createTopic: function (topic, mediaType, direction, shareScreen) {
+                    shareScreen = typeof shareScreen !== 'undefined' ? shareScreen : false;
+                    this.getSdpOfferOptions(topic, mediaType, direction, shareScreen).then(function (options){
+                        callStateController.generateTopicPeer(topic, mediaType, direction, options);
+                    });
+                },
+                removeTopic: function (topic) {
+                    for(var i in webpeers) {
+                        if(i === topic) {
+                            webpeers[i].dispose();
+                            this.removeConnectionQualityInterval(i);
+                            webpeers[i] = null;
+                        }
+                    }
+                },
+                getSdpOfferOptions: function (topic, mediaType, direction, shareScreen) {
+                    return new Promise(function (resolve, reject) {
+                        var mediaConstraints = {audio: (mediaType === 'audio'), video: (mediaType === 'video')};
+
+                        if(direction === 'send') {
+                            mediaConstraints.video = {
+                                width: callVideoMinWidth,
+                                height: callVideoMinHeight,
+                                framerate: 15
+                            }
+                        }
+
+                        var options = {
+                            mediaConstraints: mediaConstraints,
+                            iceTransportPolicy: 'relay',
+                            onicecandidate: (candidate) => {
+                                if (webpeersMetadata[topic].interval !== null) {
+                                    clearInterval(webpeersMetadata[topic].interval);
+                                }
+                                webpeersMetadata[topic].interval = setInterval(function () {
+                                    if (webpeersMetadata[topic].sdpAnswerReceived === true) {
+                                        webpeersMetadata[topic].sdpAnswerReceived = false;
+                                        clearInterval(webpeersMetadata[topic].interval);
+                                        sendCallMessage({
+                                            id: 'ADD_ICE_CANDIDATE',
+                                            topic: topic,
+                                            candidateDto: candidate
+                                        })
+                                    }
+                                }, 500, {candidate: candidate});
+                            },
+                            configuration: {
+                                iceServers: callStateController.getTurnServer(currentCallParams)
+                            }
+                        };
+                        options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
+
+                        if(direction === 'send' && mediaType === 'video' && shareScreen) {
+                            navigator.mediaDevices.getDisplayMedia().then(function (result) {
+                                options.videoStream = result;
+                                options.sendSource = 'screen';
+                                // options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
+                                resolve(options);
+                            }).catch(function (error) {
+                                console.log(error);
+                                explainUserMediaError(error, 'video', 'screen');
+                                resolve(options);
+                            });
+                        } else {
+                            resolve(options);
+                        }
+                        consoleLogging && console.log("[SDK][getSdpOfferOptions] ", "topic: ", topic, "mediaType: ", mediaType, "direction: ", direction, "options: ", options);
+                    });
+                },
+                getTurnServer: function (params) {
+                    if (!!params.turnAddress && params.turnAddress.length > 0) {
+                        var serversTemp = params.turnAddress.split(',');
+
+                        return [
+                            {
+                                "urls": "turn:" + serversTemp[0],
+                                "username": "mkhorrami",
+                                "credential": "mkh_123456"
+                            }
+                        ];
+                    } else {
+                        return [
+                            {
+                                "urls": "turn:" + callTurnIp + ":3478",
+                                "username": "mkhorrami",
+                                "credential": "mkh_123456"
+                            }
+                        ];
+                    }
+                },
+                watchRTCPeerConnection: function (topic, mediaType, direction) {
+                    console.log("set callback on webpeers: ", topic, mediaType, direction);
+
+                    var callController = this;
+                    webpeers[topic].peerConnection.onconnectionstatechange = function () {
+                        console.log("on connection state change, ", "peer: ", topic, "peerConnection.connectionState: ", webpeers[topic].peerConnection.connectionState);
+                        if (webpeers[topic].peerConnection.connectionState === 'disconnected') {
+                            console.log(topic, 'peerConnection.onconnectionstatechange: disconnected');
+
+                            callController.removeConnectionQualityInterval(topic);
+                        }
+
+                        if (webpeers[topic].peerConnection.connectionState === "failed") {
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_STATUS',
+                                errorCode: 7000,
+                                errorMessage: `Call Peer (${topic}) has failed!`,
+                                errorInfo: webpeers[topic]
+                            });
+                            setTimeout(function () {
+                                if(chatMessaging.chatState) {
+                                    callController.shouldReconnectTopic(topic, mediaType, direction);
+                                }
+                            }, 7000);
+
+                            callController.removeConnectionQualityInterval(topic);
+                        }
+
+                        if(webpeers[topic].peerConnection.connectionState === 'connected') {
+                            if(mediaType === 'video' && direction === 'send') {
+                                webpeersMetadata[topic]['connectionQualityInterval'] = setInterval(function() {
+                                    callController.checkConnectionQuality(topic, mediaType, direction)
+                                }, 1000);
+                            }
+                        }
+                    }
+
+                    webpeers[topic].peerConnection.oniceconnectionstatechange = function () {
+                        console.log("on ice connection state change:  ", topic, webpeers[topic].peerConnection.iceConnectionState);
+                        if (webpeers[topic].peerConnection.iceConnectionState === 'disconnected') {
+                            console.log(topic, 'peerConnection.oniceconnectionstatechange disconnected');
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_STATUS',
+                                errorCode: 7000,
+                                errorMessage: `Call Peer (${topic}) is disconnected!`,
+                                errorInfo: webpeers[topic]
+                            });
+
+                            console.log('Internet connection failed, Reconnect your call, topic:', topic);
+                        }
+
+                        if (webpeers[topic].peerConnection.iceConnectionState === "failed") {
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_STATUS',
+                                errorCode: 7000,
+                                errorMessage: `Call Peer (${topic}) has failed!`,
+                                errorInfo: webpeers[topic]
+                            });
+                            if(chatMessaging.chatState) {
+                                callController.shouldReconnectTopic(topic, mediaType, direction);
+                            } else {
+                                setTimeout(function () {
+                                    if(chatMessaging.chatState) {
+                                        callController.shouldReconnectTopic(topic, mediaType, direction);
+                                    }
+                                }, 7000);
+                            }
+                        }
+
+                        if (webpeers[topic].peerConnection.iceConnectionState === "connected") {
+                            callRequestController.callEstablishedInMySide = true;
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_STATUS',
+                                errorCode: 7000,
+                                errorMessage: `Call Peer (${topic}) has connected!`,
+                                errorInfo: webpeers[topic]
+                            });
+                        }
+                    }
+                },
+                checkConnectionQuality: function (topic) {
+                    webpeers[topic].peerConnection.getStats(null).then(stats => {
+                        //console.log(' watchRTCPeerConnection:: window.setInterval then(stats:', stats)
+                        //let statsOutput = "";
+
+                        stats.forEach(report => {
+                            if(report && report.type && report.type === 'remote-inbound-rtp') {
+                                //statsOutput += `<h2>Report: ${report.type}</h2>\n<strong>ID:</strong> ${report.id}<br>\n` +
+                                    //`<strong>Timestamp:</strong> ${report.timestamp}<br>\n`;
+
+                                // Now the statistics for this report; we intentially drop the ones we
+                                // sorted to the top above
+                                if(!report['roundTripTime'] || report['roundTripTime'] > 1) {
+                                    if(webpeersMetadata[topic].poorConnectionCount === 10) {
+                                        callClient.pauseCamera();
+                                    }
+                                    if(webpeersMetadata[topic].poorConnectionCount > 3 && !webpeersMetadata[topic].isConnectionPoor) {
+                                        //alert('Poor connection detected...');
+                                        consoleLogging && console.log('Poor connection detected...');
+                                        chatEvents.fireEvent('callEvents', {
+                                            type: 'POOR_VIDEO_CONNECTION',
+                                            message: 'Poor connection detected',
+                                            metadata: {
+                                                elementId: "uiRemoteVideo-" + topic,
+                                                topic: topic
+                                            }
+                                        });
+                                        webpeersMetadata[topic].isConnectionPoor = true;
+                                        webpeersMetadata[topic].poorConnectionCount = 0;
+                                        webpeersMetadata[topic].poorConnectionResolvedCount = 0;
+                                    } else {
+                                        webpeersMetadata[topic].poorConnectionCount++;
+                                    }
+                                } else if(report['roundTripTime'] || report['roundTripTime'] < 1) {
+                                    if(webpeersMetadata[topic].poorConnectionResolvedCount > 3 && webpeersMetadata[topic].isConnectionPoor) {
+                                        callClient.resumeCamera();
+                                        webpeersMetadata[topic].poorConnectionResolvedCount = 0;
+                                        webpeersMetadata[topic].poorConnectionCount = 0;
+                                        webpeersMetadata[topic].isConnectionPoor = false;
+                                        chatEvents.fireEvent('callEvents', {
+                                            type: 'POOR_VIDEO_CONNECTION_RESOLVED',
+                                            message: 'Poor connection resolved',
+                                            metadata: {
+                                                elementId: "uiRemoteVideo-" + topic,
+                                                topic: topic
+                                            }
+                                        });
+                                    } else {
+                                        webpeersMetadata[topic].poorConnectionResolvedCount++;
+                                    }
+                                }
+
+                                /*Object.keys(report).forEach(function (statName) {
+                                    if (statName !== "id" && statName !== "timestamp" && statName !== "type") {
+                                        statsOutput += `<strong>${statName}:</strong> ${report[statName]}<br>\n`;
+                                    }
+                                });*/
+                            }
+                        });
+
+                        //document.querySelector(".stats-box").innerHTML = statsOutput;
+                    });
+                },
+                removeConnectionQualityInterval: function (topic) {
+                    //isConnectionPoor
+                    webpeersMetadata[topic]['poorConnectionCount'] = 0;
+                    clearInterval(webpeersMetadata[topic]['connectionQualityInterval']);
+                },
+                shouldReconnectTopic: function (topic, mediaType, direction) {
+                    var callController = this;
+                    if (currentCallParams && Object.keys(currentCallParams).length) {
+                        if (webpeers[topic].peerConnection.iceConnectionState != 'connected') {
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_STATUS',
+                                errorCode: 7000,
+                                errorMessage: `Call Peer (${topic}) is not in connected state, Restarting call in progress ...!`,
+                                errorInfo: webpeers[topic]
+                            });
+
+                            sendCallMessage({
+                                id: 'STOP',
+                                topic: topic
+                            }, function (result) {
+                                if (result.done === 'TRUE') {
+                                    //handleCallSocketOpen(currentCallParams);
+                                    /*webpeers[topic].dispose();
+                                    webpeers[topic] = null;*/
+                                    callController.removeTopic(topic);
+                                    callController.createTopic(topic, mediaType, direction);
+                                    //generateAndSendSdpOffers(currentCallParams, [topicName]);
+                                } else if (result.done === 'SKIP') {
+                                    //handleCallSocketOpen(currentCallParams);
+                                    /*webpeers[topic].dispose();
+                                    webpeers[topic] = null;*/
+                                    callController.removeTopic(topic);
+                                    callController.createTopic(topic, mediaType, direction);
+                                    //generateAndSendSdpOffers(currentCallParams, [topicName]);
+                                } else {
+                                    consoleLogging && console.log('STOP topic faced a problem', result);
+                                    endCall({
+                                        callId: currentCallId
+                                    });
+                                    callStop();
+                                }
+                            });
+                        }
+                    }
+                },
+                generateTopicPeer: function (topic, mediaType, direction, options) {
+                    var WebRtcFunction = direction === 'send' ? 'WebRtcPeerSendonly' : 'WebRtcPeerRecvonly',
+                    callController = this;
+
+                    webpeers[topic] = new KurentoUtils.WebRtcPeer[WebRtcFunction](options, function (err) {
+                        if (err) {
+                            console.error("[SDK][start/webRtc " + direction + "  " + mediaType + " Peer] Error: " + explainUserMediaError(err, mediaType));
+                            return;
+                        }
+
+                        callController.watchRTCPeerConnection(topic, mediaType, direction);
+
+                        if(direction === 'send')
+                            startMedia(uiRemoteMedias[topic]);
+
+                        webpeers[topic].generateOffer((err, sdpOffer) => {
+                            if (err) {
+                                console.error("[SDK][start/WebRc " + direction + "  " + mediaType + " Peer/generateOffer] " + err);
+                                return;
+                            }
+
+                            sendCallMessage({
+                                id: (direction === 'send' ? 'SEND_SDP_OFFER' : 'RECIVE_SDP_OFFER'),
+                                sdpOffer: sdpOffer,
+                                useComedia: true,
+                                useSrtp: false,
+                                topic: topic,
+                                mediaType: (mediaType === 'video' ? 2 : 1)
+                            });
+                        });
+                    });
+                }
+            },
+
+/*
+            shouldReconnectCall = function (topic) {
+                if (currentCallParams && Object.keys(currentCallParams).length) {
+                    if (webpeers[topic] && webpeers[topic].peerConnection.iceConnectionState != 'connected') {
+
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_STATUS',
+                            errorCode: 7000,
+                            errorMessage: `Call Peer (${topic}) is not in connected state, Restarting call in progress ...!`,
+                            errorInfo: webpeers[topic]
+                        });
+
+                        sendCallMessage({
+                            id: 'STOP',
+                            topic: topic
+                        }, function (result) {
+                            if (result.done === 'TRUE') {
+                                //handleCallSocketOpen(currentCallParams);
+                                /!*webpeers[topic].dispose();
+                                webpeers[topic] = null;*!/
+                                generateAndSendSdpOffers(currentCallParams, [topic]);
+
+                            } else if (result.done === 'SKIP') {
+                                //handleCallSocketOpen(currentCallParams);
+                                /!*webpeers[topic].dispose();
+                                webpeers[topic] = null;*!/
+                                generateAndSendSdpOffers(currentCallParams, [topic]);
+                            } else {
+                                consoleLogging && console.log('STOP topic faced a problem', result);
+                                endCall({
+                                    callId: currentCallId
+                                });
+                                callStop();
+                            }
+                        });
+                    }
+                }
+            },
+
+            generateAndSendSdpOffers = function (params, topics) {
+                var turnServers = [];
+
+                if (!!params.turnAddress && params.turnAddress.length > 0) {
+                    var serversTemp = params.turnAddress.split(',');
+
+                    turnServers = [
+                        //{"urls": "stun:" + serversTemp[0]},
+                        {
+                            "urls": "turn:" + serversTemp[0],
+                            "username": "mkhorrami",
+                            "credential": "mkh_123456"
+                        }
+                    ];
+                } else {
+                    turnServers = [
+                        //{"urls": "stun:" + callTurnIp + ":3478"},
+                        {
+                            "urls": "turn:" + callTurnIp + ":3478",
+                            "username": "mkhorrami",
+                            "credential": "mkh_123456"
+                        }
+                    ];
+                }
+
+                // Video Topics
+                if (params.callVideo) {
+                    if(topics.indexOf(callTopics['receiveVideoTopic']) !== -1) {
+                        const receiveVideoOptions = {
+                            remoteVideo: uiRemoteMedias[callTopics['receiveVideoTopic']],
+                            mediaConstraints: {audio: false, video: true},
+                            iceTransportPolicy: 'relay',
+                            onicecandidate: (candidate) => {
+                                if (webpeersMetadata[callTopics['receiveVideoTopic']].interval !== null) {
+                                    clearInterval(webpeersMetadata[callTopics['receiveVideoTopic']].interval);
+                                }
+                                webpeersMetadata[callTopics['receiveVideoTopic']].interval = setInterval(function () {
+                                    if (webpeersMetadata[callTopics['receiveVideoTopic']].sdpAnswerReceived === true) {
+                                        webpeersMetadata[callTopics['receiveVideoTopic']].sdpAnswerReceived = false;
+                                        clearInterval(webpeersMetadata[callTopics['receiveVideoTopic']].interval);
+                                        sendCallMessage({
+                                            id: 'ADD_ICE_CANDIDATE',
+                                            topic: callTopics['receiveVideoTopic'],
+                                            candidateDto: candidate
+                                        })
+                                    }
+                                }, 500, {candidate: candidate});
+                            },
+                            configuration: {
+                                iceServers: turnServers
+                            }
+                        };
+
+                        webpeers[callTopics['receiveVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveVideoOptions, function (err) {
+                            if (err) {
+                                console.error("[start/webRtcReceiveVideoPeer] Error: " + explainUserMediaError(err, 'video'));
+                                return;
+                            }
+
+                            watchRTCPeerConnection(callTopics['receiveVideoTopic']);
+
+                            webpeers[callTopics['receiveVideoTopic']].generateOffer((err, sdpOffer) => {
+                                if (err) {
+                                    console.error("[start/WebRtcVideoPeerReceiveOnly/generateOffer] " + err);
+                                    return;
+                                }
+
+                                sendCallMessage({
+                                    id: 'RECIVE_SDP_OFFER',
+                                    sdpOffer: sdpOffer,
+                                    useComedia: true,
+                                    useSrtp: false,
+                                    topic: callTopics['receiveVideoTopic'],
+                                    mediaType: 2
+                                });
+                            });
+                        });
+                    }
+
+                    if(topics.indexOf(callTopics['sendVideoTopic']) !== -1) {
+                        const sendVideoOptions = {
+                            localVideo: uiRemoteMedias[callTopics['sendVideoTopic']],
+                            mediaConstraints: {
+                                audio: false,
+                                video: {
+                                    width: callVideoMinWidth,
+                                    height: callVideoMinHeight,
+                                    framerate: 15
+                                }
+                            },
+                            iceTransportPolicy: 'relay',
+                            onicecandidate: (candidate) => {
+                                if (webpeersMetadata[callTopics['sendVideoTopic']].interval !== null) {
+                                    clearInterval(webpeersMetadata[callTopics['sendVideoTopic']].interval);
+                                }
+                                webpeersMetadata[callTopics['sendVideoTopic']].interval = setInterval(function () {
+                                    if (webpeersMetadata[callTopics['sendVideoTopic']].sdpAnswerReceived === true) {
+                                        webpeersMetadata[callTopics['sendVideoTopic']].sdpAnswerReceived = false;
+                                        clearInterval(webpeersMetadata[callTopics['sendVideoTopic']].interval);
+                                        sendCallMessage({
+                                            id: 'ADD_ICE_CANDIDATE',
+                                            topic: callTopics['sendVideoTopic'],
+                                            candidateDto: candidate
+                                        })
+                                    }
+                                }, 500, {candidate: candidate});
+
+                            },
+                            configuration: {
+                                iceServers: turnServers
+                            }
+                        };
+
+                        setTimeout(function () {
+                            webpeers[callTopics['sendVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendVideoOptions, function (err) {
+                                if (err) {
+                                    sendCallSocketError("[start/WebRtcVideoPeerSendOnly] Error: " + explainUserMediaError(err, 'video'));
+                                    //callStop();
+                                    return;
+                                }
+
+                                watchRTCPeerConnection(callTopics['sendVideoTopic']);
+                                startMedia(uiRemoteMedias[callTopics['sendVideoTopic']]);
+
+                                webpeers[callTopics['sendVideoTopic']].generateOffer((err, sdpOffer) => {
+                                    if (err) {
+                                        sendCallSocketError("[start/WebRtcVideoPeerSendOnly/generateOffer] Error: " + err);
+                                        //callStop();
+                                        return;
+                                    }
+
+                                    sendCallMessage({
+                                        id: 'SEND_SDP_OFFER',
+                                        topic: callTopics['sendVideoTopic'],
+                                        sdpOffer: sdpOffer,
+                                        mediaType: 2
+                                    });
+                                });
+                            });
+                        }, 2000);
+                    }
+                }
+
+                // Audio Topics
+                if (params.callAudio) {
+                    if(topics.indexOf(callTopics['receiveAudioTopic']) !== -1) {
+                        const receiveAudioOptions = {
+                            remoteVideo: uiRemoteMedias[callTopics['receiveAudioTopic']],
+                            mediaConstraints: {audio: true, video: false},
+                            iceTransportPolicy: 'relay',
+                            onicecandidate: (candidate) => {
+                                if (webpeersMetadata[callTopics['receiveAudioTopic']].interval !== null) {
+                                    clearInterval(webpeersMetadata[callTopics['receiveAudioTopic']].interval);
+                                }
+                                webpeersMetadata[callTopics['receiveAudioTopic']].interval = setInterval(function () {
+                                    if (webpeersMetadata[callTopics['receiveAudioTopic']].sdpAnswerReceived === true) {
+                                        webpeersMetadata[callTopics['receiveAudioTopic']].sdpAnswerReceived = false;
+                                        clearInterval(webpeersMetadata[callTopics['receiveAudioTopic']].interval);
+                                        sendCallMessage({
+                                            id: 'ADD_ICE_CANDIDATE',
+                                            topic: callTopics['receiveAudioTopic'],
+                                            candidateDto: candidate,
+                                        })
+                                    }
+                                }, 500, {candidate: candidate});
+                            },
+                            configuration: {
+                                iceServers: turnServers
+                            }
+                        };
+
+                        webpeers[callTopics['receiveAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveAudioOptions, function (err) {
+                            if (err) {
+                                console.error("[start/WebRtcAudioPeerReceiveOnly] Error: " + explainUserMediaError(err, 'audio'));
+                                return;
+                            }
+
+                            watchRTCPeerConnection(callTopics['receiveAudioTopic']);
+
+                            webpeers[callTopics['receiveAudioTopic']].generateOffer((err, sdpOffer) => {
+                                if (err) {
+                                    console.error("[start/WebRtcAudioPeerReceiveOnly/generateOffer] " + err);
+                                    return;
+                                }
+                                sendCallMessage({
+                                    id: 'RECIVE_SDP_OFFER',
+                                    sdpOffer: sdpOffer,
+                                    useComedia: false,
+                                    useSrtp: false,
+                                    mediaType: 1,
+                                    topic: callTopics['receiveAudioTopic']
+                                });
+                            });
+                        });
+                    }
+
+                    if(topics.indexOf(callTopics['sendAudioTopic']) !== -1) {
+                        const sendAudioOptions = {
+                            localVideo: uiRemoteMedias[callTopics['sendAudioTopic']],
+                            mediaConstraints: {audio: true, video: false},
+                            iceTransportPolicy: 'relay',
+                            onicecandidate: (candidate) => {
+                                if (webpeersMetadata[callTopics['sendAudioTopic']].interval !== null) {
+                                    clearInterval(webpeersMetadata[callTopics['sendAudioTopic']].interval);
+                                }
+                                webpeersMetadata[callTopics['sendAudioTopic']].interval = setInterval(function () {
+                                    if (webpeersMetadata[callTopics['sendAudioTopic']].sdpAnswerReceived === true) {
+                                        webpeersMetadata[callTopics['sendAudioTopic']].sdpAnswerReceived = false;
+                                        clearInterval(webpeersMetadata[callTopics['sendAudioTopic']].interval);
+                                        sendCallMessage({
+                                            id: 'ADD_ICE_CANDIDATE',
+                                            topic: callTopics['sendAudioTopic'],
+                                            candidateDto: candidate,
+                                        })
+                                    }
+                                }, 500, {candidate: candidate});
+                            },
+                            configuration: {
+                                iceServers: turnServers
+                            }
+                        };
+
+                        setTimeout(function () {
+                            webpeers[callTopics['sendAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendAudioOptions, function (err) {
+                                if (err) {
+                                    sendCallSocketError("[start/WebRtcAudioPeerSendOnly] Error: " + explainUserMediaError(err, 'audio'));
+                                    //callStop();
+                                    return;
+                                }
+                                watchRTCPeerConnection(callTopics['sendAudioTopic']);
+                                startMedia(uiRemoteMedias[callTopics['sendAudioTopic']]);
+
+                                webpeers[callTopics['sendAudioTopic']].generateOffer((err, sdpOffer) => {
+                                    if (err) {
+                                        sendCallSocketError("[start/WebRtcAudioPeerSendOnly/generateOffer] Error: " + err);
+                                        //callStop();
+                                        return;
+                                    }
+                                    sendCallMessage({
+                                        id: 'SEND_SDP_OFFER',
+                                        topic: callTopics['sendAudioTopic'],
+                                        sdpOffer: sdpOffer,
+                                        mediaType: 1
+                                    });
+                                });
+                            });
+                        }, 2000);
+                    }
+                }
+
+                /!*setTimeout(function () {
+                    for (var peer in webpeers) {
+                        console.log("set callback on webpeers: ",  peer);
+                        if (webpeers[peer]) {
+                            webpeers[peer].peerConnection.onconnectionstatechange = function () {
+                                console.log("on connection state change, ", "peer: ", peer, "peerConnection.connectionState: ", webpeers[peer].peerConnection.connectionState);
+                                if (webpeers[peer].peerConnection.connectionState == 'disconnected') {
+                                    console.log(peer, 'peerConnection.onconnectionstatechange: disconnected');
+                                }
+                            }
+
+                            webpeers[peer].peerConnection.oniceconnectionstatechange = function () {
+                                console.log("on ice connection state change:  ", peer, webpeers[peer].peerConnection.connectionState);
+                                if (webpeers[peer].peerConnection.iceConnectionState == 'disconnected') {
+                                    console.log(  peer , '>>>>>>>>>>>>> disconnected');
+                                    chatEvents.fireEvent('callEvents', {
+                                        type: 'CALL_STATUS',
+                                        errorCode: 7000,
+                                        errorMessage: `Call Peer (${peer}) is disconnected!`,
+                                        errorInfo: webpeers[peer]
+                                    });
+
+                                    setTimeout(function () {
+                                        restartMedia(callTopics['sendVideoTopic'])
+                                    }, 2000);
+
+                                    setTimeout(function () {
+                                        restartMedia(callTopics['sendVideoTopic'])
+                                    }, 6000);
+
+                                    alert('Internet connection failed, Reconnect your call');
+                                    /!*shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
+                                    shouldReconnectCallTimeout = setTimeout(function () {
+                                        shouldReconnectCall();
+                                    }, 7000);*!/
+                                }
+
+                                if (webpeers[peer].peerConnection.iceConnectionState === "failed") {
+                                    chatEvents.fireEvent('callEvents', {
+                                        type: 'CALL_STATUS',
+                                        errorCode: 7000,
+                                        errorMessage: `Call Peer (${peer}) has failed!`,
+                                        errorInfo: webpeers[peer]
+                                    });
+                                }
+
+                                if (webpeers[peer].peerConnection.iceConnectionState === "connected") {
+                                    chatEvents.fireEvent('callEvents', {
+                                        type: 'CALL_STATUS',
+                                        errorCode: 7000,
+                                        errorMessage: `Call Peer (${peer}) has connected!`,
+                                        errorInfo: webpeers[peer]
+                                    });
+
+                                    setTimeout(function () {
+                                        restartMedia(callTopics['sendVideoTopic'])
+                                    }, 2000);
+
+                                    setTimeout(function () {
+                                        restartMedia(callTopics['sendVideoTopic'])
+                                    }, 6000);
+                                }
+                            }
+                        }
+                    }
+                }, 6000);*!/
+
+                setTimeout(function () {
+                    restartMedia(callTopics['sendVideoTopic'])
+                }, 4000);
+                setTimeout(function () {
+                    restartMedia(callTopics['sendVideoTopic'])
+                }, 8000);
+                setTimeout(function () {
+                    restartMedia(callTopics['sendVideoTopic'])
+                }, 12000);
+                setTimeout(function () {
+                    restartMedia(callTopics['sendVideoTopic'])
+                }, 20000);
+            },
+
+            watchRTCPeerConnection = function (topic) {
+                console.log("set callback on webpeers: ", topic);
+                if (webpeers[topic]) {
+                    webpeers[topic].peerConnection.onconnectionstatechange = function () {
+                        console.log("on connection state change, ", "peer: ", topic, "peerConnection.connectionState: ", webpeers[topic].peerConnection.connectionState);
+                        if (webpeers[topic].peerConnection.connectionState == 'disconnected') {
+                            console.log(topic, 'peerConnection.onconnectionstatechange: disconnected');
+                        }
+                    }
+
+                    webpeers[topic].peerConnection.oniceconnectionstatechange = function () {
+                        console.log("on ice connection state change:  ", topic, webpeers[topic].peerConnection.iceConnectionState);
+                        if (webpeers[topic].peerConnection.iceConnectionState == 'disconnected') {
+                            console.log(topic, 'peerConnection.oniceconnectionstatechange disconnected');
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_STATUS',
+                                errorCode: 7000,
+                                errorMessage: `Call Peer (${topic}) is disconnected!`,
+                                errorInfo: webpeers[topic]
+                            });
+
+                            /!*setTimeout(function () {
+                                restartMedia(callTopics['sendVideoTopic'])
+                            }, 2000);*!/
+
+                            /!*setTimeout(function () {
+                                restartMedia(callTopics['sendVideoTopic'])
+                            }, 6000);*!/
+
+                            console.log('Internet connection failed, Reconnect your call, topic:', topic);
+                            //shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
+                            /!*shouldReconnectCallTimeout = setTimeout(function () {
+                                shouldReconnectCall(topic);
+                            }, 7000);*!/
+                        }
+
+                        if (webpeers[topic].peerConnection.iceConnectionState === "failed") {
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_STATUS',
+                                errorCode: 7000,
+                                errorMessage: `Call Peer (${topic}) has failed!`,
+                                errorInfo: webpeers[topic]
+                            });
+
+                            if(chatMessaging.chatState) {
+                                shouldReconnectCall(topic);
+                            } else {
+                                setTimeout(function () {
+                                    if(chatMessaging.chatState) {
+                                        shouldReconnectCall(topic);
+                                    }
+                                }, 5000);
+                            }
+                        }
+
+                        if (webpeers[topic].peerConnection.iceConnectionState === "connected") {
+                            callRequestController.callEstablishedInMySide = true;
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_STATUS',
+                                errorCode: 7000,
+                                errorMessage: `Call Peer (${topic}) has connected!`,
+                                errorInfo: webpeers[topic]
+                            });
+
+                            /!*setTimeout(function () {
+                                restartMedia(callTopics['sendVideoTopic'])
+                            }, 2000);*!/
+
+                            /!*setTimeout(function () {
+                                restartMedia(callTopics['sendVideoTopic'])
+                            }, 6000);*!/
+                        }
+                    }
+                }
+
+            },
+*/
+
+            sendCallSocketError = function (message) {
+                chatEvents.fireEvent('callEvents', {
+                    type: 'CALL_ERROR',
+                    code: 7000,
+                    message: message
+                });
+
+                sendCallMessage({
+                    id: 'ERROR',
+                    message: message,
+                });
+            },
+
+            explainUserMediaError = function (err, deviceType, deviceSource) {
+                chatEvents.fireEvent('callEvents', {
+                    type: 'CALL_ERROR',
+                    code: 7000,
+                    message: err
+                });
+
+                const n = err.name;
+                if (n === 'NotFoundError' || n === 'DevicesNotFoundError') {
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_ERROR',
+                        code: 7000,
+                        message: "Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks"
+                    });
+                    alert("Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks");
+                    return "Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks";
+                } else if (n === 'NotReadableError' || n === 'TrackStartError') {
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_ERROR',
+                        code: 7000,
+                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use"
+                    });
+
+                    alert((deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use");
+                    return (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use";
+                } else if (n === 'OverconstrainedError' || n === 'ConstraintNotSatisfiedError') {
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_ERROR',
+                        code: 7000,
+                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks"
+                    });
+                    alert((deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks");
+                    return (deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks";
+                } else if (n === 'NotAllowedError' || n === 'PermissionDeniedError') {
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_ERROR',
+                        code: 7000,
+                        message: (deviceType === 'video' ? (deviceSource === 'screen'? 'ScreenShare' : 'Webcam') : 'Mice') + " permission has been denied by the user"
+                    });
+                    alert((deviceType === 'video' ? (deviceSource === 'screen'? 'ScreenShare' : 'Webcam') : 'Mice') + " permission has been denied by the user");
+                    return (deviceType === 'video' ? (deviceSource === 'screen'? 'ScreenShare' : 'Webcam') : 'Mice') + " permission has been denied by the user";
+                } else if (n === 'TypeError') {
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_ERROR',
+                        code: 7000,
+                        message: "No media tracks have been requested"
+                    });
+                    return "No media tracks have been requested";
+                } else {
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_ERROR',
+                        code: 7000,
+                        message: "Unknown error: " + err
+                    });
+                    return "Unknown error: " + err;
+                }
+            },
+
+            setCallServerName = function (serverName) {
+                if (!!serverName) {
+                    callServerName = serverName;
+                }
+            },
+
+            startMedia = function (media) {
+                consoleLogging && console.log("startMedia:: ", media);
+                media.play().catch((err) => {
+                    if (err.name === 'NotAllowedError') {
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_ERROR',
+                            code: 7000,
+                            message: "[start] Browser doesn't allow playing media: " + err
+                        });
+                    } else {
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_ERROR',
+                            code: 7000,
+                            message: "[start] Error in media.play(): " + err
+                        });
+                    }
+                });
+            },
+
+            restartMedia = function (videoTopicParam) {
+                if (currentCallParams && Object.keys(currentCallParams).length) {
+                    consoleLogging && console.log('Sending Key Frame ...');
+
+                    var videoTopic = !!videoTopicParam ? videoTopicParam : callTopics['sendVideoTopic'];
+                    let videoElement = document.getElementById(`uiRemoteVideo-${videoTopic}`);
+
+                    if (videoElement) {
+                        let videoTrack = videoElement.srcObject.getTracks()[0];
+
+                        if (navigator && !!navigator.userAgent.match(/firefox/gi)) {
+                            videoTrack.enable = false;
+                            let newWidth = callVideoMinWidth - (Math.ceil(Math.random() * 50) + 20);
+                            let newHeight = callVideoMinHeight - (Math.ceil(Math.random() * 50) + 20);
+
+                            videoTrack.applyConstraints({
+                                width: {
+                                    min: newWidth,
+                                    ideal: 1280
+                                },
+                                height: {
+                                    min: newHeight,
+                                    ideal: 720
+                                },
+                                advanced: [
+                                    {
+                                        width: newWidth,
+                                        height: newHeight
+                                    },
+                                    {
+                                        aspectRatio: 1.333
+                                    }
+                                ]
+                            }).then((res) => {
+                                videoTrack.enabled = true;
+                                setTimeout(() => {
+                                    videoTrack.applyConstraints({
+                                        "width": callVideoMinWidth,
+                                        "height": callVideoMinHeight
+                                    });
+                                }, 500);
+                            }).catch(e => consoleLogging && console.log(e));
+                        } else {
+                            videoTrack.applyConstraints({
+                                "width": callVideoMinWidth - (Math.ceil(Math.random() * 5) + 5)
+                            }).then((res) => {
+                                setTimeout(function () {
+                                    videoTrack.applyConstraints({
+                                        "width": callVideoMinWidth
+                                    });
+                                }, 500);
+                            }).catch(e => consoleLogging && console.log(e));
+                        }
+                    }
+                }
+            },
+
+            handleProcessSdpAnswer = function (jsonMessage) {
+                let sampleWebRtc = webpeers[jsonMessage.topic];
+
+                if (sampleWebRtc == null) {
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_ERROR',
+                        code: 7000,
+                        message: "[handleProcessSdpAnswer] Skip, no WebRTC Peer",
+                        error: webpeers[jsonMessage.topic]
+                    });
+                    return;
+                }
+
+                sampleWebRtc.processAnswer(jsonMessage.sdpAnswer, (err) => {
+                    if (err) {
+                        sendCallSocketError("[handleProcessSdpAnswer] Error: " + err);
+
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_ERROR',
+                            code: 7000,
+                            message: "[handleProcessSdpAnswer] Error: " + err
+                        });
+
+                        return;
+                    }
+
+                    if (webpeersMetadata[jsonMessage.topic].interval !== null) {
+                        webpeersMetadata[jsonMessage.topic].sdpAnswerReceived = true;
+                    }
+                    startMedia(uiRemoteMedias[jsonMessage.topic]);
+                });
+            },
+
+            handleAddIceCandidate = function (jsonMessage) {
+                let sampleWebRtc = webpeers[jsonMessage.topic];
+                if (sampleWebRtc == null) {
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_ERROR',
+                        code: 7000,
+                        message: "[handleAddIceCandidate] Skip, no WebRTC Peer",
+                        error: JSON.stringify(webpeers[jsonMessage.topic])
+                    });
+                    return;
+                }
+
+                sampleWebRtc.addIceCandidate(jsonMessage.candidate, (err) => {
+                    if (err) {
+                        console.error("[handleAddIceCandidate] " + err);
+
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_ERROR',
+                            code: 7000,
+                            message: "[handleAddIceCandidate] " + err,
+                            error: JSON.stringify(jsonMessage.candidate)
+                        });
+
+                        return;
+                    }
+                });
+            },
+
+            handlePartnerFreeze = function (jsonMessage) {
+                if (!!jsonMessage && !!jsonMessage.topic && jsonMessage.topic.substring(0, 2) === 'Vi') {
+                    restartMedia(jsonMessage.topic);
+                    setTimeout(function () {
+                        restartMedia(jsonMessage.topic)
+                    }, 4000);
+                    setTimeout(function () {
+                        restartMedia(jsonMessage.topic)
+                    }, 8000);
+                }
+            },
+
+            handleError = function (jsonMessage, sendingTopic, receiveTopic) {
+                const errMessage = jsonMessage.message;
+
+                chatEvents.fireEvent('callEvents', {
+                    type: 'CALL_ERROR',
+                    code: 7000,
+                    message: "Kurento error: " + errMessage
+                });
+            },
+
+            callStop = function () {
+                consoleLogging && console.log('Call is stopping ...');
+
+                for (var media in uiRemoteMedias) {
+                    removeStreamFromWebRTC(media);
+                }
+
+                for (var i in webpeers) {
+                    if (webpeers[i]) {
+                        callStateController.removeConnectionQualityInterval(i);
+                        webpeers[i].dispose();
+                        webpeers[i] = null;
+                    }
+                }
+
+                if (callStopQueue.callStarted) {
+                    sendCallMessage({
+                        id: 'CLOSE'
+                    });
+                    callStopQueue.callStarted = false;
+                }
+
+                callRequestController.callEstablishedInMySide = false;
+                callRequestController.callRequestReceived = false;
+                currentCallParams = {};
+                currentCallId = null;
+            },
+
+            removeStreamFromWebRTC = function (RTCStream) {
+                var callParentDiv = document.getElementById(callDivId);
+
+                if (uiRemoteMedias.hasOwnProperty(RTCStream)) {
+                    const stream = uiRemoteMedias[RTCStream].srcObject;
+                    if (!!stream) {
+                        const tracks = stream.getTracks();
+
+                        if (!!tracks) {
+                            tracks.forEach(function (track) {
+                                track.stop();
+                            });
+                        }
+
+                        uiRemoteMedias[RTCStream].srcObject = null;
+                    }
+
+                    uiRemoteMedias[RTCStream].remove();
+                    delete (uiRemoteMedias[RTCStream]);
+                }
+            },
+
+            removeFromCallUI = function (topic) {
+                var videoElement = 'Vi-' + topic;
+                var audioElement = 'Vo-' + topic;
+
+                if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(videoElement)) {
+                    removeStreamFromWebRTC(videoElement);
+                }
+
+                if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(audioElement)) {
+                    removeStreamFromWebRTC(audioElement);
+                }
+            };
+
+        this.updateToken = function (newToken) {
+            token = newToken;
+        }
+
+        this.callMessageHandler = function (callMessage) {
+            var jsonMessage = (typeof callMessage.content === 'string' && Utility.isValidJson(callMessage.content))
+                ? JSON.parse(callMessage.content)
+                : callMessage.content,
+                uniqueId = jsonMessage.uniqueId;
+
+
+            asyncRequestTimeouts[uniqueId] && clearTimeout(asyncRequestTimeouts[uniqueId]);
+
+            switch (jsonMessage.id) {
+                case 'PROCESS_SDP_ANSWER':
+                    handleProcessSdpAnswer(jsonMessage);
+                    break;
+
+                case 'ADD_ICE_CANDIDATE':
+                    handleAddIceCandidate(jsonMessage);
+                    break;
+
+                case 'GET_KEY_FRAME':
+                    setTimeout(function () {
+                        restartMedia(callTopics['sendVideoTopic']);
+                    }, 2000);
+                    setTimeout(function () {
+                        restartMedia(callTopics['sendVideoTopic']);
+                    }, 4000);
+                    setTimeout(function () {
+                        restartMedia(callTopics['sendVideoTopic']);
+                    }, 8000);
+                    setTimeout(function () {
+                        restartMedia(callTopics['sendVideoTopic']);
+                    }, 12000);
+                    break;
+
+                case 'FREEZED':
+                    handlePartnerFreeze(jsonMessage);
+                    break;
+
+                /*case 'STOPALL':
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
+                    }
+                    break;*/
+                case 'STOP':
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
+                    }
+                    break;
+                case 'CLOSE':
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
+                    }
+                    break;
+
+                case 'SESSION_NEW_CREATED':
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
+                    }
+                    break;
+
+                case 'SESSION_REFRESH':
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
+                    }
+                    break;
+
+                case 'ERROR':
+                    handleError(jsonMessage, params.sendingTopic, params.receiveTopic);
+                    break;
+
+                default:
+                    console.warn("[onmessage] Invalid message, id: " + jsonMessage.id, jsonMessage);
+                    if (jsonMessage.match(/NOT CREATE SESSION/g)) {
+                        if (currentCallParams && Object.keys(currentCallParams)) {
+                            //handleCallSocketOpen(currentCallParams);
+                            callStateController.createSessionInChat(currentCallParams);
+                        }
+                    }
+                    break;
+            }
+        };
+
+        this.asyncInitialized = function (async) {
+            asyncClient = async
+        };
+
+        this.handleChatMessages = function(type, chatMessageVOTypes, messageContent, contentCount, threadId, uniqueId) {
+            switch (type) {
+                /**
+                 * Type 70    Send Call Request
+                 */
+                case chatMessageVOTypes.CALL_REQUEST:
+                    callRequestController.callRequestReceived = true;
+                    callReceived({
+                        callId: messageContent.callId
+                    }, function (r) {
+
+                    });
+
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'RECEIVE_CALL',
+                        result: messageContent
+                    });
+
+                    currentCallId = messageContent.callId;
+
+                    break;
+
+                /**
+                 * Type 71    Accept Call Request
+                 */
+                case chatMessageVOTypes.ACCEPT_CALL:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'ACCEPT_CALL',
+                        result: messageContent
+                    });
+
+                    break;
+
+                /**
+                 * Type 72    Reject Call Request
+                 */
+                case chatMessageVOTypes.REJECT_CALL:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'REJECT_CALL',
+                        result: messageContent
+                    });
+
+                    break;
+
+                /**
+                 * Type 73    Receive Call Request
+                 */
+                case chatMessageVOTypes.RECEIVE_CALL_REQUEST:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    if (messageContent.callId > 0) {
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'RECEIVE_CALL',
+                            result: messageContent
+                        });
+                    } else {
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'PARTNER_RECEIVED_YOUR_CALL',
+                            result: messageContent
+                        });
+                    }
+
+                    currentCallId = messageContent.callId;
+
+                    break;
+
+                /**
+                 * Type 74    Start Call Request
+                 */
+                case chatMessageVOTypes.START_CALL:
+                    if(!callRequestController.iCanAcceptTheCall()) {
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_STARTED_ELSEWHERE',
+                            message: 'Call already started somewhere else..., aborting...'
+                        });
+                        return;
+                    }
+
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_STARTED',
+                        result: messageContent
+                    });
+
+                    for (var peer in webpeers) {
+                        if (webpeers[peer]) {
+                            webpeers[peer].dispose();
+                            delete webpeers[peer];
+                        }
+                    }
+                    webpeers = {};
+
+                    if (typeof messageContent === 'object'
+                        && messageContent.hasOwnProperty('chatDataDto')
+                        && !!messageContent.chatDataDto.kurentoAddress) {
+
+                        setCallServerName(messageContent.chatDataDto.kurentoAddress.split(',')[0]);
+
+                        startCallWebRTCFunctions({
+                            video: messageContent.clientDTO.video,
+                            mute: messageContent.clientDTO.mute,
+                            sendingTopic: messageContent.clientDTO.topicSend,
+                            receiveTopic: messageContent.clientDTO.topicReceive,
+                            brokerAddress: messageContent.chatDataDto.brokerAddressWeb,
+                            turnAddress: messageContent.chatDataDto.turnAddress,
+                        }, function (callDivs) {
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_DIVS',
+                                result: callDivs
+                            });
+                        });
+                    } else {
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_ERROR',
+                            message: 'Chat Data DTO is not present!'
+                        });
+                    }
+
+                    break;
+
+                /**
+                 * Type 75    End Call Request
+                 */
+                case chatMessageVOTypes.END_CALL_REQUEST:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'END_CALL',
+                        result: messageContent
+                    });
+
+                    callStop();
+
+                    break;
+
+                /**
+                 * Type 76   Call Ended
+                 */
+                case chatMessageVOTypes.END_CALL:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_ENDED',
+                        result: messageContent
+                    });
+
+                    callStop();
+
+                    break;
+
+                /**
+                 * Type 77    Get Calls History
+                 */
+                case chatMessageVOTypes.GET_CALLS:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    break;
+
+                /**
+                 * Type 78    Call Partner Reconnecting
+                 */
+                case chatMessageVOTypes.RECONNECT:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_PARTICIPANT_RECONNECTING',
+                        result: messageContent
+                    });
+
+                    break;
+
+                /**
+                 * Type 79    Call Partner Connects
+                 */
+                case chatMessageVOTypes.CONNECT:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_PARTICIPANT_CONNECTED',
+                        result: messageContent
+                    });
+
+                    restartMedia(callTopics['sendVideoTopic']);
+
+                    break;
+
+                /**
+                 * Type 90    Contacts Synced
+                 */
+                case chatMessageVOTypes.CONTACT_SYNCED:
+                    chatEvents.fireEvent('contactEvents', {
+                        type: 'CONTACTS_SYNCED',
+                        result: messageContent
+                    });
+                    break;
+
+                /**
+                 * Type 91    Send Group Call Request
+                 */
+                case chatMessageVOTypes.GROUP_CALL_REQUEST:
+                    callReceived({
+                        callId: messageContent.callId
+                    }, function (r) {
+                    });
+
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'RECEIVE_CALL',
+                        result: messageContent
+                    });
+
+                    currentCallId = messageContent.callId;
+
+                    break;
+
+                /**
+                 * Type 92    Call Partner Leave
+                 */
+                case chatMessageVOTypes.LEAVE_CALL:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_PARTICIPANT_LEFT',
+                        result: messageContent
+                    });
+
+                    if (!!messageContent[0].sendTopic) {
+                        removeFromCallUI(messageContent[0].sendTopic);
+                    }
+
+                    break;
+
+                /**
+                 * Type 93    Add Call Participant
+                 */
+                case chatMessageVOTypes.ADD_CALL_PARTICIPANT:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    break;
+
+                /**
+                 * Type 94    Call Participant Joined
+                 */
+                case chatMessageVOTypes.CALL_PARTICIPANT_JOINED:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_PARTICIPANT_JOINED',
+                        result: messageContent
+                    });
+
+                    restartMedia(callTopics['sendVideoTopic']);
+
+                    break;
+
+                /**
+                 * Type 95    Remove Call Participant
+                 */
+                case chatMessageVOTypes.REMOVE_CALL_PARTICIPANT:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_PARTICIPANT_REMOVED',
+                        result: messageContent
+                    });
+
+
+                    break;
+
+                /**
+                 * Type 96    Terminate Call
+                 */
+                case chatMessageVOTypes.TERMINATE_CALL:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'TERMINATE_CALL',
+                        result: messageContent
+                    });
+
+                    callStop();
+
+                    break;
+
+                /**
+                 * Type 97    Mute Call Participant
+                 */
+                case chatMessageVOTypes.MUTE_CALL_PARTICIPANT:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_PARTICIPANT_MUTE',
+                        result: messageContent
+                    });
+
+                    break;
+
+                /**
+                 * Type 98    UnMute Call Participant
+                 */
+                case chatMessageVOTypes.UNMUTE_CALL_PARTICIPANT:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_PARTICIPANT_UNMUTE',
+                        result: messageContent
+                    });
+
+                    break;
+
+                /**
+                 * Type 110    Active Call Participants List
+                 */
+                case chatMessageVOTypes.ACTIVE_CALL_PARTICIPANTS:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+                    break;
+
+                /**
+                 * Type 111    Kafka Call Session Created
+                 */
+                case chatMessageVOTypes.CALL_SESSION_CREATED:
+                    if(!callRequestController.callEstablishedInMySide)
+                        return;
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_SESSION_CREATED',
+                        result: messageContent
+                    });
+
+                    currentCallId = messageContent.callId;
+
+                    break;
+
+                /**
+                 * Type 113    Turn On Video Call
+                 */
+                case chatMessageVOTypes.TURN_ON_VIDEO_CALL:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'TURN_ON_VIDEO_CALL',
+                        result: messageContent
+                    });
+
+                    break;
+
+                /**
+                 * Type 114    Turn Off Video Call
+                 */
+                case chatMessageVOTypes.TURN_OFF_VIDEO_CALL:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'TURN_OFF_VIDEO_CALL',
+                        result: messageContent
+                    });
+
+                    break;
+
+                /**
+                 * Type 121    Record Call Request
+                 */
+                case chatMessageVOTypes.RECORD_CALL:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'START_RECORDING_CALL',
+                        result: messageContent
+                    });
+
+                    restartMedia(callTopics['sendVideoTopic']);
+
+                    break;
+
+                /**
+                 * Type 122   End Record Call Request
+                 */
+                case chatMessageVOTypes.END_RECORD_CALL:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'STOP_RECORDING_CALL',
+                        result: messageContent
+                    });
+
+                    break;
+
+                /**
+                 * Type 123   Start Screen Share
+                 */
+                case chatMessageVOTypes.START_SCREEN_SHARE:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'START_SCREEN_SHARE',
+                        result: messageContent
+                    });
+
+                    break;
+
+                /**
+                 * Type 124   End Screen Share
+                 */
+                case chatMessageVOTypes.END_SCREEN_SHARE:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'END_SCREEN_SHARE',
+                        result: messageContent
+                    });
+
+                    break;
+
+                /**
+                 * Type 125   Delete From Call List
+                 */
+                case chatMessageVOTypes.DELETE_FROM_CALL_HISTORY:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'DELETE_FROM_CALL_LIST',
+                        result: messageContent
+                    });
+
+                    break;
+            }
+        }
+
+        this.startCall = function (params, callback) {
+            var startCallData = {
+                chatMessageVOType: chatMessageVOTypes.CALL_REQUEST,
+                typeCode: params.typeCode,
+                pushMsgType: 3,
+                token: token
+            }, content = {
+                creatorClientDto: {}
+            };
+
+            if (params) {
+                if (typeof params.type === 'string' && callTypes.hasOwnProperty(params.type.toUpperCase())) {
+                    content.type = callTypes[params.type.toUpperCase()];
+                } else {
+                    content.type = 0x0; // Defaults to AUDIO Call
+                }
+
+                //TODO: Check for mute
+                content.creatorClientDto.mute = (params.mute && typeof params.mute === 'boolean') ? params.mute : false;
+                content.mute = (params.mute && typeof params.mute === 'boolean') ? params.mute : false;
+
+                if (params.clientType
+                    && typeof params.clientType === 'string'
+                    && callClientTypes[params.clientType.toUpperCase()] > 0) {
+                    content.creatorClientDto.clientType = callClientTypes[params.clientType.toUpperCase()];
+                } else {
+                    content.creatorClientDto.clientType = callClientType.WEB;
+                }
+
+                if (typeof +params.threadId === 'number' && +params.threadId > 0) {
+                    content.threadId = +params.threadId;
+                } else {
+                    if (Array.isArray(params.invitees)) {
+                        content.invitees = [];
+                        for (var i = 0; i < params.invitees.length; i++) {
+                            var tempInvitee = formatDataToMakeInvitee(params.invitees[i]);
+                            if (tempInvitee) {
+                                content.invitees.push(tempInvitee);
+                            }
+                        }
+                    } else {
+                        chatEvents.fireEvent('error', {
+                            code: 999,
+                            message: 'Invitees list is empty! Send an array of invitees to start a call with, Or send a Thread Id to start a call with current participants'
+                        });
+                        return;
+                    }
+                }
+
+                startCallData.content = JSON.stringify(content);
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to start call!'
+                });
+                return;
+            }
+
+            callRequestController.callRequestReceived = true;
+            callRequestController.callEstablishedInMySide = true;
+
+            return chatMessaging.sendMessage(startCallData, {
+                onResult: function (result) {
+                    callback && callback(result);
+                }
+            });
+        };
+
+        this.startGroupCall = function (params, callback) {
+            var startCallData = {
+                chatMessageVOType: chatMessageVOTypes.GROUP_CALL_REQUEST,
+                typeCode: params.typeCode,
+                pushMsgType: 3,
+                token: token
+            }, content = {
+                creatorClientDto: {}
+            };
+
+            if (params) {
+                if (typeof params.type === 'string' && callTypes.hasOwnProperty(params.type.toUpperCase())) {
+                    content.type = callTypes[params.type.toUpperCase()];
+                } else {
+                    content.type = 0x0; // Defaults to AUDIO Call
+                }
+
+                content.creatorClientDto.mute = (typeof params.mute === 'boolean') ? params.mute : false;
+
+                if (params.clientType && typeof params.clientType === 'string' && callClientTypes[params.clientType.toUpperCase()] > 0) {
+                    content.creatorClientDto.clientType = callClientTypes[params.clientType.toUpperCase()];
+                } else {
+                    content.creatorClientDto.clientType = callClientType.WEB;
+                }
+
+                if (typeof +params.threadId === 'number' && params.threadId > 0) {
+                    content.threadId = +params.threadId;
+                } else {
+                    if (Array.isArray(params.invitees)) {
+                        content.invitees = [];
+                        for (var i = 0; i < params.invitees.length; i++) {
+                            var tempInvitee = formatDataToMakeInvitee(params.invitees[i]);
+                            if (tempInvitee) {
+                                content.invitees.push(tempInvitee);
+                            }
+                        }
+                    } else {
+                        chatEvents.fireEvent('error', {
+                            code: 999,
+                            message: 'Invitees list is empty! Send an array of invitees to start a call with, Or send a Thread Id to start a call with current participants'
+                        });
+                        return;
+                    }
+                }
+
+                startCallData.content = JSON.stringify(content);
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to start call!'
+                });
+                return;
+            }
+
+            return chatMessaging.sendMessage(startCallData, {
+                onResult: function (result) {
+                    callback && callback(result);
+                }
+            });
+        };
+
+        this.callReceived = callReceived;
+
+        this.terminateCall = function (params, callback) {
+            var terminateCallData = {
+                chatMessageVOType: chatMessageVOTypes.TERMINATE_CALL,
+                typeCode: params.typeCode,
+                pushMsgType: 3,
+                token: token
+            }, content = {};
+
+            if (params) {
+                if (typeof +params.callId === 'number' && params.callId > 0) {
+                    terminateCallData.subjectId = +params.callId;
+                } else {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'Invalid call id!'
+                    });
+                    return;
+                }
+
+                terminateCallData.content = JSON.stringify(content);
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to terminate the call!'
+                });
+                return;
+            }
+
+            return chatMessaging.sendMessage(terminateCallData, {
+                onResult: function (result) {
+                    callback && callback(result);
+                }
+            });
+        };
+
+        this.acceptCall = function (params, callback) {
+            var acceptCallData = {
+                chatMessageVOType: chatMessageVOTypes.ACCEPT_CALL,
+                typeCode: params.typeCode,
+                pushMsgType: 3,
+                token: token
+            }, content = {};
+
+            if (params) {
+                if (typeof +params.callId === 'number' && params.callId > 0) {
+                    acceptCallData.subjectId = +params.callId;
+                } else {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'Invalid call id!'
+                    });
+                    return;
+                }
+
+                content.mute = (typeof params.mute === 'boolean') ? params.mute : false;
+
+                content.video = (typeof params.video === 'boolean') ? params.video : false;
+
+                content.videoCall = content.video;
+
+                if (params.clientType && typeof params.clientType === 'string' && callClientTypes[params.clientType.toUpperCase()] > 0) {
+                    content.clientType = callClientTypes[params.clientType.toUpperCase()];
+                } else {
+                    content.clientType = callClientType.WEB;
+                }
+
+                acceptCallData.content = JSON.stringify(content);
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to accept the call!'
+                });
+                return;
+            }
+            callRequestController.callEstablishedInMySide = true;
+            return chatMessaging.sendMessage(acceptCallData, {
+                onResult: function (result) {
+                    callback && callback(result);
+                }
+            });
+        };
+
+        this.rejectCall = this.cancelCall = function (params, callback) {
+            var rejectCallData = {
+                chatMessageVOType: chatMessageVOTypes.REJECT_CALL,
+                typeCode: params.typeCode,
+                pushMsgType: 3,
+                token: token
+            };
+
+            if (params) {
+                if (typeof +params.callId === 'number' && params.callId > 0) {
+                    rejectCallData.subjectId = +params.callId;
+                } else {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'Invalid call id!'
+                    });
+                    return;
+                }
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to reject the call!'
+                });
+                return;
+            }
+
+            return chatMessaging.sendMessage(rejectCallData, {
+                onResult: function (result) {
+                    callback && callback(result);
+                }
+            });
+        };
+
+        this.endCall = endCall;
+
+        this.startRecordingCall = function (params, callback) {
+            var recordCallData = {
+                chatMessageVOType: chatMessageVOTypes.RECORD_CALL,
+                typeCode: params.typeCode,
+                pushMsgType: 3,
+                token: token
+            };
+
+            if (params) {
+                if (typeof +params.callId === 'number' && params.callId > 0) {
+                    recordCallData.subjectId = +params.callId;
+                } else {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'Invalid Call id!'
+                    });
+                    return;
+                }
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to Record call!'
+                });
+                return;
+            }
+
+            return chatMessaging.sendMessage(recordCallData, {
+                onResult: function (result) {
+                    restartMedia(callTopics['sendVideoTopic']);
+                    callback && callback(result);
+                }
+            });
+        };
+
+        this.stopRecordingCall = function (params, callback) {
+            var stopRecordingCallData = {
+                chatMessageVOType: chatMessageVOTypes.END_RECORD_CALL,
+                typeCode: params.typeCode,
+                pushMsgType: 3,
+                token: token
+            };
+
+            if (params) {
+                if (typeof +params.callId === 'number' && params.callId > 0) {
+                    stopRecordingCallData.subjectId = +params.callId;
+                } else {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'Invalid Call id!'
+                    });
+                    return;
+                }
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to Stop Recording the call!'
+                });
+                return;
+            }
+
+            return chatMessaging.sendMessage(stopRecordingCallData, {
+                onResult: function (result) {
+                    callback && callback(result);
+                }
+            });
+        };
+
+        this.startScreenShare = function (params, callback) {
+            var sendData = {
+                chatMessageVOType: chatMessageVOTypes.START_SCREEN_SHARE,
+                typeCode: params.typeCode,
+                pushMsgType: 3,
+                token: token
+            };
+
+            if(!webpeers[callTopics['sendVideoTopic']]) {
+                console.log('[SDK][startScreenShare] No video send connection available');
+            } else {
+                callStateController.removeTopic(callTopics['sendVideoTopic']);
+                callStateController.createTopic(callTopics['sendVideoTopic'], "video", "send", true);
+                /*if (!displayMediaStream) {
+                    webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
+
+                    navigator.mediaDevices.getDisplayMedia().then(function (result) {
+                        console.log("webpeers[callTopics['sendVideoTopic']]", webpeers[callTopics['sendVideoTopic']].getLocalStream());
+                        /!*webpeers[callTopics['sendVideoTopic']].replaceTrack(result.getTracks()[0]).then(function (replacedPeer){
+                        });*!/
+                        uiRemoteMedias[callTopics["sendVideoTopic"]].srcObject = result;
+                        var localStream = result;
+                        webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks().forEach(track => {
+                            webpeers[callTopics['sendVideoTopic']].remove
+                        });
+                        setTimeout(function() {
+                            localStream.getTracks().forEach(function (track) {
+                                webpeers[callTopics['sendVideoTopic']].peerConnection.addTrack(track, localStream);
+                            });
+                            webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = true;
+                            restartMedia(uiRemoteMedias[callTopics["sendVideoTopic"]])
+                        }, 2000);
+                        startMedia(uiRemoteMedias[callTopics["sendVideoTopic"]]);
+                    });
+                }*/
+            }
+
+            if (params) {
+                if (typeof +params.callId === 'number' && params.callId > 0) {
+                    sendData.subjectId = +params.callId;
+                } else {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'Invalid Call id!'
+                    });
+                    return;
+                }
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to Share Screen!'
+                });
+                return;
+            }
+
+            return chatMessaging.sendMessage(sendData, {
+                onResult: function (result) {
+                    callback && callback(result);
+                }
+            });
+        };
+
+        this.endScreenShare = function (params, callback) {
+            var sendData = {
+                chatMessageVOType: chatMessageVOTypes.END_SCREEN_SHARE,
+                typeCode: params.typeCode,
+                pushMsgType: 3,
+                token: token
+            };
+
+            if (params) {
+                if (typeof +params.callId === 'number' && params.callId > 0) {
+                    sendData.subjectId = +params.callId;
+                } else {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'Invalid Call id!'
+                    });
+                    return;
+                }
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to End Screen Sharing!'
+                });
+                return;
+            }
+
+            if(!webpeers[callTopics['sendVideoTopic']]) {
+                console.log('[SDK][endScreenShare] No video send connection available');
+            } else {
+                var startCamera = typeof params.startCamera !== 'undefined' ? params.startCamera : true;
+                callStateController.removeTopic(callTopics['sendVideoTopic']);
+                if(startCamera)
+                    callStateController.createTopic(callTopics['sendVideoTopic'], "video", "send");
+                /*if (!displayMediaStream) {
+                    webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
+
+                    navigator.mediaDevices.getDisplayMedia().then(function (result) {
+                        console.log("webpeers[callTopics['sendVideoTopic']]", webpeers[callTopics['sendVideoTopic']].getLocalStream());
+                        /!*webpeers[callTopics['sendVideoTopic']].replaceTrack(result.getTracks()[0]).then(function (replacedPeer){
+                        });*!/
+                        uiRemoteMedias[callTopics["sendVideoTopic"]].srcObject = result;
+                        var localStream = result;
+                        webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks().forEach(track => {
+                            webpeers[callTopics['sendVideoTopic']].remove
+                        });
+                        setTimeout(function() {
+                            localStream.getTracks().forEach(function (track) {
+                                webpeers[callTopics['sendVideoTopic']].peerConnection.addTrack(track, localStream);
+                            });
+                            webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = true;
+                            restartMedia(uiRemoteMedias[callTopics["sendVideoTopic"]])
+                        }, 2000);
+                        startMedia(uiRemoteMedias[callTopics["sendVideoTopic"]]);
+                    });
+                }*/
+            }
+
+            return chatMessaging.sendMessage(sendData, {
+                onResult: function (result) {
+                    callback && callback(result);
+                }
+            });
+        };
+
+        this.getCallsList = function (params, callback) {
+            var getCallListData = {
+                chatMessageVOType: chatMessageVOTypes.GET_CALLS,
+                typeCode: params.typeCode,
+                pushMsgType: 3,
+                token: token
+            }, content = {};
+
+            if (params) {
+                if (typeof params.count === 'number' && params.count >= 0) {
+                    content.count = +params.count;
+                } else {
+                    content.count = 50;
+                }
+
+                if (typeof params.offset === 'number' && params.offset >= 0) {
+                    content.offset = +params.offset;
+                } else {
+                    content.offset = 0;
+                }
+
+                if (typeof params.creatorCoreUserId === 'number' && params.creatorCoreUserId > 0) {
+                    content.creatorCoreUserId = +params.creatorCoreUserId;
+                }
+
+                if (typeof params.creatorSsoId === 'number' && params.creatorSsoId > 0) {
+                    content.creatorSsoId = +params.creatorSsoId;
+                }
+
+                if (typeof params.name === 'string') {
+                    content.name = params.name;
+                }
+
+                if (typeof params.type === 'string' && callTypes.hasOwnProperty(params.type.toUpperCase())) {
+                    content.type = callTypes[params.type.toUpperCase()];
+                }
+
+                if (Array.isArray(params.callIds)) {
+                    content.callIds = params.callIds;
+                }
+
+                if (typeof params.contactType === 'string') {
+                    content.contactType = params.contactType;
+                }
+
+                if (typeof params.uniqueId === 'string') {
+                    content.uniqueId = params.uniqueId;
+                }
+
+                getCallListData.content = JSON.stringify(content);
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to End the call!'
+                });
+                return;
+            }
+
+            return chatMessaging.sendMessage(getCallListData, {
+                onResult: function (result) {
+                    callback && callback(result);
+                }
+            });
+        };
+
+        this.deleteFromCallList = function (params, callback) {
+            var sendData = {
+                chatMessageVOType: chatMessageVOTypes.DELETE_FROM_CALL_HISTORY,
+                typeCode: params.typeCode,
+                content: []
+            };
+
+            if (params) {
+                if (typeof params.contactType === 'string' && params.contactType.length) {
+                    sendData.content.contactType = params.contactType;
+                } else {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'You should enter a contactType!'
+                    });
+                    return;
+                }
+
+                if (Array.isArray(params.callIds)) {
+                    sendData.content = params.callIds;
+                }
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to Delete a call from Call History!'
+                });
+                return;
+            }
+
+            return chatMessaging.sendMessage(sendData, {
+                onResult: function (result) {
+                    var returnData = {
+                        hasError: result.hasError,
+                        cache: false,
+                        errorMessage: result.errorMessage,
+                        errorCode: result.errorCode
+                    };
+                    if (!returnData.hasError) {
+                        var messageContent = result.result;
+                        returnData.result = messageContent;
+                    }
+                    callback && callback(returnData);
+                }
+            });
+        };
+
+        this.getCallParticipants = function (params, callback) {
+            var sendMessageParams = {
+                chatMessageVOType: chatMessageVOTypes.ACTIVE_CALL_PARTICIPANTS,
+                typeCode: params.typeCode,
+                content: {}
+            };
+
+            if (params) {
+                if (isNaN(params.callId)) {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'Call Id should be a valid number!'
+                    });
+                    return;
+                } else {
+                    var callId = +params.callId;
+                    sendMessageParams.subjectId = callId;
+
+                    var offset = (parseInt(params.offset) > 0)
+                        ? parseInt(params.offset)
+                        : 0,
+                        count = (parseInt(params.count) > 0)
+                            ? parseInt(params.count)
+                            : config.getHistoryCount;
+
+                    sendMessageParams.content.count = count;
+                    sendMessageParams.content.offset = offset;
+
+                    return chatMessaging.sendMessage(sendMessageParams, {
+                        onResult: function (result) {
+                            var returnData = {
+                                hasError: result.hasError,
+                                cache: false,
+                                errorMessage: result.errorMessage,
+                                errorCode: result.errorCode
+                            };
+
+                            if (!returnData.hasError) {
+                                var messageContent = result.result,
+                                    messageLength = messageContent.length,
+                                    resultData = {
+                                        participants: reformatCallParticipants(messageContent),
+                                        contentCount: result.contentCount,
+                                        hasNext: (sendMessageParams.content.offset + sendMessageParams.content.count < result.contentCount && messageLength > 0),
+                                        nextOffset: sendMessageParams.content.offset * 1 + messageLength * 1
+                                    };
+
+                                returnData.result = resultData;
+                            }
+
+                            callback && callback(returnData);
+                            /**
+                             * Delete callback so if server pushes response before
+                             * cache, cache won't send data again
+                             */
+                            callback = undefined;
+
+                            if (!returnData.hasError) {
+                                chatEvents.fireEvent('callEvents', {
+                                    type: 'CALL_PARTICIPANTS_LIST_CHANGE',
+                                    threadId: callId,
+                                    result: returnData.result
+                                });
+                            }
+                        }
+                    });
+                }
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to Get Call Participants!'
+                });
+                return;
+            }
+        };
+
+        this.addCallParticipants = function (params, callback) {
+            /**
+             * + AddCallParticipantsRequest     {object}
+             *    - subjectId                   {int}
+             *    + content                     {list} List of CONTACT IDs or inviteeVO Objects
+             *    - uniqueId                    {string}
+             */
+
+            var sendMessageParams = {
+                chatMessageVOType: chatMessageVOTypes.ADD_CALL_PARTICIPANT,
+                typeCode: params.typeCode,
+                content: []
+            };
+
+            if (params) {
+                if (typeof params.callId === 'number' && params.callId > 0) {
+                    sendMessageParams.subjectId = params.callId;
+                }
+
+                if (Array.isArray(params.contactIds)) {
+                    sendMessageParams.content = params.contactIds;
+                }
+
+                if (Array.isArray(params.usernames)) {
+                    sendMessageParams.content = [];
+                    for (var i = 0; i < params.usernames.length; i++) {
+                        sendMessageParams.content.push({
+                            id: params.usernames[i],
+                            idType: inviteeVOidTypes.TO_BE_USER_USERNAME
+                        });
+                    }
+                }
+
+                if (Array.isArray(params.coreUserids)) {
+                    sendMessageParams.content = [];
+                    for (var i = 0; i < params.coreUserids.length; i++) {
+                        sendMessageParams.content.push({
+                            id: params.coreUserids[i],
+                            idType: inviteeVOidTypes.TO_BE_CORE_USER_ID
+                        });
+                    }
+                }
+            }
+
+            return chatMessaging.sendMessage(sendMessageParams, {
+                onResult: function (result) {
+                    var returnData = {
+                        hasError: result.hasError,
+                        cache: false,
+                        errorMessage: result.errorMessage,
+                        errorCode: result.errorCode
+                    };
+                    if (!returnData.hasError) {
+                        // TODO : What is the result?!
+                        var messageContent = result.result;
+                        returnData.result = messageContent;
+                    }
+                    callback && callback(returnData);
+                }
+            });
+        };
+
+        this.removeCallParticipants = function (params, callback) {
+            /**
+             * + removeCallParticipantsRequest     {object}
+             *    - subjectId                   {int}
+             *    + content                     {list} List of Participants UserIds
+             */
+
+            var sendMessageParams = {
+                chatMessageVOType: chatMessageVOTypes.REMOVE_CALL_PARTICIPANT,
+                typeCode: params.typeCode,
+                content: []
+            };
+
+            if (params) {
+                if (typeof params.callId === 'number' && params.callId > 0) {
+                    sendMessageParams.subjectId = params.callId;
+                }
+
+                if (Array.isArray(params.userIds)) {
+                    sendMessageParams.content = params.userIds;
+                }
+            }
+
+            return chatMessaging.sendMessage(sendMessageParams, {
+                onResult: function (result) {
+                    var returnData = {
+                        hasError: result.hasError,
+                        cache: false,
+                        errorMessage: result.errorMessage,
+                        errorCode: result.errorCode
+                    };
+                    if (!returnData.hasError) {
+                        // TODO : What is the result?!
+                        var messageContent = result.result;
+                        returnData.result = messageContent;
+                    }
+                    callback && callback(returnData);
+                }
+            });
+        };
+
+        this.muteCallParticipants = function (params, callback) {
+            /**
+             * + muteCallParticipantsRequest     {object}
+             *    - subjectId                   {int}
+             *    + content                     {list} List of Participants UserIds
+             */
+
+            var sendMessageParams = {
+                chatMessageVOType: chatMessageVOTypes.MUTE_CALL_PARTICIPANT,
+                typeCode: params.typeCode,
+                content: []
+            };
+
+            if (params) {
+                if (typeof params.callId === 'number' && params.callId > 0) {
+                    sendMessageParams.subjectId = params.callId;
+                }
+
+                if (Array.isArray(params.userIds)) {
+                    sendMessageParams.content = params.userIds;
+                }
+            }
+
+            return chatMessaging.sendMessage(sendMessageParams, {
+                onResult: function (result) {
+                    var returnData = {
+                        hasError: result.hasError,
+                        cache: false,
+                        errorMessage: result.errorMessage,
+                        errorCode: result.errorCode
+                    };
+                    if (!returnData.hasError) {
+                        // TODO : What is the result?!
+                        var messageContent = result.result;
+                        returnData.result = messageContent;
+                    }
+                    callback && callback(returnData);
+                }
+            });
+        };
+
+        this.unMuteCallParticipants = function (params, callback) {
+            /**
+             * + unMuteCallParticipantsRequest     {object}
+             *    - subjectId                   {int}
+             *    + content                     {list} List of Participants UserIds
+             */
+
+            var sendMessageParams = {
+                chatMessageVOType: chatMessageVOTypes.UNMUTE_CALL_PARTICIPANT,
+                typeCode: params.typeCode,
+                content: []
+            };
+
+            if (params) {
+                if (typeof params.callId === 'number' && params.callId > 0) {
+                    sendMessageParams.subjectId = params.callId;
+                }
+
+                if (Array.isArray(params.userIds)) {
+                    sendMessageParams.content = params.userIds;
+                }
+            }
+
+            return chatMessaging.sendMessage(sendMessageParams, {
+                onResult: function (result) {
+                    var returnData = {
+                        hasError: result.hasError,
+                        cache: false,
+                        errorMessage: result.errorMessage,
+                        errorCode: result.errorCode
+                    };
+                    if (!returnData.hasError) {
+                        // TODO : What is the result?!
+                        var messageContent = result.result;
+                        returnData.result = messageContent;
+                    }
+                    callback && callback(returnData);
+                }
+            });
+        };
+
+        this.turnOnVideoCall = function (params, callback) {
+            var turnOnVideoData = {
+                chatMessageVOType: chatMessageVOTypes.TURN_ON_VIDEO_CALL,
+                typeCode: params.typeCode,
+                pushMsgType: 3,
+                token: token
+            };
+
+            if (params) {
+                if (typeof +params.callId === 'number' && params.callId > 0) {
+                    turnOnVideoData.subjectId = +params.callId;
+                } else {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'Invalid call id!'
+                    });
+                    return;
+                }
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to turn on the video call!'
+                });
+                return;
+            }
+
+            return chatMessaging.sendMessage(turnOnVideoData, {
+                onResult: function (result) {
+                    callback && callback(result);
+                }
+            });
+        };
+
+        this.turnOffVideoCall = function (params, callback) {
+            var turnOffVideoData = {
+                chatMessageVOType: chatMessageVOTypes.TURN_OFF_VIDEO_CALL,
+                typeCode: params.typeCode,
+                pushMsgType: 3,
+                token: token
+            };
+
+            if (params) {
+                if (typeof +params.callId === 'number' && params.callId > 0) {
+                    turnOffVideoData.subjectId = +params.callId;
+                } else {
+                    chatEvents.fireEvent('error', {
+                        code: 999,
+                        message: 'Invalid call id!'
+                    });
+                    return;
+                }
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to turn off the video call!'
+                });
+                return;
+            }
+
+            return chatMessaging.sendMessage(turnOffVideoData, {
+                onResult: function (result) {
+                    callback && callback(result);
+                }
+            });
+        };
+
+        /**
+         * Pauses camera-send without closing its topic
+         * @param params
+         * @param callback
+         */
+        this.pauseCamera = function (params, callback) {
+            if(!webpeers || !callTopics['sendVideoTopic'] || !webpeers[callTopics['sendVideoTopic']])
+                return;
+
+            webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = false;
+            callback && callback();
+        };
+
+        this.resumeCamera = function (params, callback) {
+            if(!webpeers || !callTopics['sendVideoTopic'] || !webpeers[callTopics['sendVideoTopic']])
+                return;
+
+            webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].enabled = true;
+            callback && callback();
+        };
+
+        /**
+         * Pauses mice-send without closing its topic
+         * @param params
+         * @param callback
+         */
+        this.pauseMice = function (params, callback) {
+            if(!webpeers || !callTopics['sendAudioTopic'] || !webpeers[callTopics['sendAudioTopic']])
+                return;
+
+            webpeers[callTopics['sendAudioTopic']].getLocalStream().getTracks()[0].enabled = false;
+            callback && callback();
+        };
+
+        this.resumeMice = function (params, callback) {
+            if(!webpeers || !callTopics['sendAudioTopic'] || !webpeers[callTopics['sendAudioTopic']])
+                return;
+
+            webpeers[callTopics['sendAudioTopic']].getLocalStream().getTracks()[0].enabled = true;
+            callback && callback();
+        };
+
+        this.resizeCallVideo = function (params, callback) {
+            if (params) {
+                if (!!params.width && +params.width > 0) {
+                    callVideoMinWidth = +params.width;
+                }
+
+                if (!!params.height && +params.height > 0) {
+                    callVideoMinHeight = +params.height;
+                }
+
+                webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].applyConstraints({
+                    "width": callVideoMinWidth,
+                    "height": callVideoMinHeight
+                })
+                    .then((res) => {
+                        uiRemoteMedias[callTopics['sendVideoTopic']].style.width = callVideoMinWidth + 'px';
+                        uiRemoteMedias[callTopics['sendVideoTopic']].style.height = callVideoMinHeight + 'px';
+                        callback && callback();
+                    })
+                    .catch((e) => {
+                        chatEvents.fireEvent('error', {
+                            code: 999,
+                            message: e
+                        });
+                    });
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to resize the video call! Send an object like {width: 640, height: 480}'
+                });
+                return;
+            }
+        };
+
+        this.callStop = callStop;
+
+        this.restartMedia = restartMedia;
+    }
+
+    if (typeof module !== 'undefined' && typeof module.exports != 'undefined') {
+        module.exports = ChatCall;
+    } else {
+        if (!window.POD) {
+            window.POD = {};
+        }
+        window.POD.ChatCall = ChatCall;
+    }
+})();
+
+},{"kurento-utils":298,"webrtc-adapter":318}],331:[function(require,module,exports){
 'use strict';
 
 (function () {
@@ -54792,25 +59586,28 @@ WildEmitter.mixin(WildEmitter);
     var Async,
         ChatUtility,
         Dexie,
-        KurentoUtils,
-        WebrtcAdapter,
-        Sentry;
+        Sentry,
+        ChatCall,
+        ChatEvents,
+        ChatMessaging;
 
     function Chat(params) {
         if (typeof (require) !== 'undefined' && typeof (exports) !== 'undefined') {
             Async = require('podasync-ws-only');
             ChatUtility = require('./utility/utility.js');
             Dexie = require('dexie').default || require('dexie');
-            KurentoUtils = require('kurento-utils');
-            WebrtcAdapter = require('webrtc-adapter');
             Sentry = require('@sentry/browser');
+            ChatEvents = require('./events.module.js');
+            ChatMessaging = require('./messaging.module.js');
+            ChatCall = require('./call.module.js');
         } else {
             Async = window.POD.Async;
             ChatUtility = window.POD.ChatUtility;
             Dexie = window.Dexie;
-            KurentoUtils = window.kurentoUtils;
-            WebrtcAdapter = window.adapter;
             Sentry = window.Sentry;
+            ChatEvents = window.POD.ChatEvents;
+            ChatMessaging = window.POD.ChatMessaging;
+            ChatCall = window.POD.ChatCall;
         }
 
         /*******************************************************
@@ -54821,10 +59618,12 @@ WildEmitter.mixin(WildEmitter);
 
         if (!!Sentry) {
             Sentry.init({
-                dsn: 'http://784a14966f6a416b8b58a4b144aef0f5@talksentry.sakku-khatam.ir:9000/4',
+                dsn: 'https://784a14966f6a416b8b58a4b144aef0f5@talk-sentry.sakku-khatam.ir/4',
                 attachStacktrace: true
             });
             Sentry.setContext("Chat Params", params);
+            Sentry.setTag("sdk.details", "js browser");
+            Sentry.setTag("client.name", params.clientName);
         }
 
         var asyncClient,
@@ -54851,22 +59650,6 @@ WildEmitter.mixin(WildEmitter);
             grantDeviceIdFromSSO = (params.grantDeviceIdFromSSO && typeof params.grantDeviceIdFromSSO === 'boolean')
                 ? params.grantDeviceIdFromSSO
                 : false,
-            eventCallbacks = {
-                connect: {},
-                disconnect: {},
-                reconnect: {},
-                messageEvents: {},
-                threadEvents: {},
-                contactEvents: {},
-                botEvents: {},
-                userEvents: {},
-                callEvents: {},
-                fileUploadEvents: {},
-                systemEvents: {},
-                chatReady: {},
-                error: {},
-                chatState: {}
-            },
             messagesCallbacks = {},
             messagesDelivery = {},
             messagesSeen = {},
@@ -54944,7 +59727,7 @@ WildEmitter.mixin(WildEmitter);
                 CALL_REQUEST: 70,
                 ACCEPT_CALL: 71,
                 REJECT_CALL: 72,
-                RECIVE_CALL_REQUEST: 73,
+                RECEIVE_CALL_REQUEST: 73,
                 START_CALL: 74,
                 END_CALL_REQUEST: 75,
                 END_CALL: 76,
@@ -54991,6 +59774,7 @@ WildEmitter.mixin(WildEmitter);
                 REMOVE_TAG_PARTICIPANT: 144,
                 GET_TAG_LIST: 145,
                 DELETE_MESSAGE_THREAD: 151,
+                EXPORT_CHAT: 152,
                 ERROR: 999
             },
             inviteeVOidTypes = {
@@ -55048,56 +59832,24 @@ WildEmitter.mixin(WildEmitter);
                 'THREAD': 2,
                 'CONTACTS': 3
             },
-            callTypes = {
-                'VOICE': 0x0,
-                'VIDEO': 0x1
-            },
-            callOptions = params.callOptions,
-            callTurnIp = (params.callOptions
-                && params.callOptions.hasOwnProperty('callTurnIp')
-                && typeof params.callOptions.callTurnIp === 'string')
-                ? params.callOptions.callTurnIp
-                : '46.32.6.188',
-            callDivId = (params.callOptions
-                && params.callOptions.hasOwnProperty('callDivId')
-                && typeof params.callOptions.callDivId === 'string')
-                ? params.callOptions.callDivId
-                : 'call-div',
-            callAudioTagClassName = (params.callOptions
-                && params.callOptions.hasOwnProperty('callAudioTagClassName')
-                && typeof params.callOptions.callAudioTagClassName === 'string')
-                ? params.callOptions.callAudioTagClassName
-                : '',
-            callVideoTagClassName = (params.callOptions
-                && params.callOptions.hasOwnProperty('callVideoTagClassName')
-                && typeof params.callOptions.callVideoTagClassName === 'string')
-                ? params.callOptions.callVideoTagClassName
-                : '',
-            callVideoMinWidth = (params.callOptions
-                && params.callOptions.hasOwnProperty('callVideo')
-                && typeof params.callOptions.callVideo === 'object'
-                && params.callOptions.callVideo.hasOwnProperty('minWidth'))
-                ? params.callOptions.callVideo.minWidth
-                : 320,
-            callVideoMinHeight = (params.callOptions
-                && params.callOptions.hasOwnProperty('callVideo')
-                && typeof params.callOptions.callVideo === 'object'
-                && params.callOptions.callVideo.hasOwnProperty('minHeight'))
-                ? params.callOptions.callVideo.minHeight
-                : 180,
-            currentCallParams = {},
             currentCallId = null,
-            shouldReconnectCallTimeout = null,
             callTopics = {},
-            callWebSocket = null,
-            callSocketForceReconnect = true,
-            callClientType = {
-                WEB: 1,
-                ANDROID: 2,
-                DESKTOP: 3
-            },
             webpeers = {},
+            webpeersMetadata = {},
+            callRequestController = {
+                callRequestReceived: false,
+                callEstablishedInMySide: false,
+                iCanAcceptTheCall: function () {
+                    if(callRequestController.callRequestReceived && callRequestController.callEstablishedInMySide) {
+                        return true;
+                    }
+                    return false;
+                }
+            },
             uiRemoteMedias = {},
+            callStopQueue = {
+                callStarted: false,
+            },
             systemMessageIntervalPitch = params.systemMessageIntervalPitch || 1000,
             isTypingInterval,
             protocol = params.protocol || 'websocket',
@@ -55146,13 +59898,21 @@ WildEmitter.mixin(WildEmitter);
                 UPLOAD_FILE: '/nzh/uploadFile',
                 GET_FILE: '/nzh/file/',
                 // POD Drive Services
-                PODSPACE_UPLOAD_FILE_TO_USERGROUP: '/userGroup/uploadFile',
-                PODSPACE_UPLOAD_IMAGE_TO_USERGROUP: '/userGroup/uploadImage',
-                PODSPACE_UPLOAD_FILE: '/nzh/drive/uploadFile',
-                PODSPACE_UPLOAD_FILE_FROM_URL: '/nzh/drive/uploadFileFromUrl',
-                PODSPACE_UPLOAD_IMAGE: '/nzh/drive/uploadImage',
-                PODSPACE_DOWNLOAD_FILE: '/nzh/drive/downloadFile',
-                PODSPACE_DOWNLOAD_IMAGE: '/nzh/drive/downloadImage',
+                PODSPACE_UPLOAD_FILE_TO_USERGROUP: '/userGroup/uploadFile', //TODO: to be removed
+                PODSPACE_UPLOAD_FILE_TO_USERGROUP_NEW: '/api/usergroups/{userGroupHash}/files',
+                PODSPACE_UPLOAD_IMAGE_TO_USERGROUP: '/userGroup/uploadImage', //TODO: to be removed
+                PODSPACE_UPLOAD_IMAGE_TO_USERGROUP_NEW: '/api/usergroups/{userGroupHash}/images',
+                //PODSPACE_UPLOAD_FILE: '/nzh/drive/uploadFile',
+                //PODSPACE_UPLOAD_FILE_FROM_URL: '/nzh/drive/uploadFileFromUrl',
+                //TODO: maybe deprecated
+                PODSPACE_UPLOAD_IMAGE: '/nzh/drive/uploadImage', //TODO: to be removed
+                PODSPACE_UPLOAD_IMAGE_NEW: '/api/images',
+                PODSPACE_UPLOAD_FILE_NEW: '/api/files',
+                PODSPACE_DOWNLOAD_FILE: '/nzh/drive/downloadFile', //TODO: to be removed
+                PODSPACE_DOWNLOAD_FILE_NEW: '/api/files/{fileHash}',
+                PODSPACE_DOWNLOAD_IMAGE: '/nzh/drive/downloadImage', //TODO: to be removed
+                PODSPACE_DOWNLOAD_IMAGE_NEW: '/api/images/{fileHash}',
+
                 // Neshan Map
                 REVERSE: '/reverse',
                 SEARCH: '/search',
@@ -55223,8 +59983,33 @@ WildEmitter.mixin(WildEmitter);
             chatSendQueue = [],
             chatWaitQueue = [],
             chatUploadQueue = [],
-            fullResponseObject = params.fullResponseObject || false;
-
+            fullResponseObject = params.fullResponseObject || false,
+            chatEvents = new ChatEvents(Object.assign(params, {
+                Sentry: Sentry,
+                Utility: Utility,
+                consoleLogging: consoleLogging,
+            })),
+            chatMessaging = new ChatMessaging(Object.assign(params, {
+                asyncClient: asyncClient,
+                Sentry: Sentry,
+                Utility: Utility,
+                consoleLogging: consoleLogging,
+                generalTypeCode: generalTypeCode,
+                chatMessageVOTypes: chatMessageVOTypes,
+                chatPingMessageInterval: chatPingMessageInterval,
+                asyncRequestTimeout: asyncRequestTimeout,
+                serverName: serverName,
+                messageTtl: messageTtl,
+                msgPriority: msgPriority
+            })),
+            callModule = new ChatCall(Object.assign(params, {
+                Sentry: Sentry,
+                Utility: Utility,
+                consoleLogging: consoleLogging,
+                chatEvents: chatEvents,
+                asyncClient: asyncClient,
+                chatMessaging: chatMessaging
+            }));
         /*******************************************************
          *            P R I V A T E   M E T H O D S            *
          *******************************************************/
@@ -55284,6 +60069,8 @@ WildEmitter.mixin(WildEmitter);
                     reconnectOnClose: reconnectOnClose,
                     asyncLogging: asyncLogging
                 });
+                callModule.asyncInitialized(asyncClient);
+                chatMessaging.asyncInitialized(asyncClient);
 
                 asyncClient.on('asyncReady', function () {
                     if (actualTimingLog) {
@@ -55292,7 +60079,7 @@ WildEmitter.mixin(WildEmitter);
 
                     peerId = asyncClient.getPeerId();
 
-                    if (!userInfo) {
+                    if (!chatMessaging.userInfo) {
                         var getUserInfoTime = new Date().getTime();
 
                         getUserInfo(function (userInfoResult) {
@@ -55300,9 +60087,9 @@ WildEmitter.mixin(WildEmitter);
                                 Utility.chatStepLogger('Get User Info ', new Date().getTime() - getUserInfoTime);
                             }
                             if (!userInfoResult.hasError) {
-                                userInfo = userInfoResult.result.user;
+                                chatMessaging.userInfo = userInfoResult.result.user;
 
-                                !!Sentry && Sentry.setUser(userInfo);
+                                !!Sentry && Sentry.setUser(chatMessaging.userInfo);
 
                                 getAllThreads({
                                     summary: true,
@@ -55316,7 +60103,7 @@ WildEmitter.mixin(WildEmitter);
                                     if (db) {
                                         db.users
                                             .where('id')
-                                            .equals(parseInt(userInfo.id))
+                                            .equals(parseInt(chatMessaging.userInfo.id))
                                             .toArray()
                                             .then(function (users) {
                                                 if (users.length > 0 && typeof users[0].keyId != 'undefined') {
@@ -55328,8 +60115,8 @@ WildEmitter.mixin(WildEmitter);
                                                         if (!result.hasError) {
                                                             cacheSecret = result.secretKey;
 
-                                                            chatState = true;
-                                                            fireEvent('chatReady');
+                                                            chatMessaging.chatState = true;
+                                                            chatEvents.fireEvent('chatReady');
                                                             chatSendQueueHandler();
                                                         } else {
                                                             if (result.message !== '') {
@@ -55340,8 +60127,8 @@ WildEmitter.mixin(WildEmitter);
                                                                             keyAlgorithm: 'AES',
                                                                             keySize: 256
                                                                         }, function () {
-                                                                            chatState = true;
-                                                                            fireEvent('chatReady');
+                                                                            chatMessaging.chatState = true;
+                                                                            chatEvents.fireEvent('chatReady');
                                                                             chatSendQueueHandler();
                                                                         });
                                                                     }
@@ -55356,36 +60143,36 @@ WildEmitter.mixin(WildEmitter);
                                                         keyAlgorithm: 'AES',
                                                         keySize: 256
                                                     }, function () {
-                                                        chatState = true;
-                                                        fireEvent('chatReady');
+                                                        chatMessaging.chatState = true;
+                                                        chatEvents.fireEvent('chatReady');
                                                         chatSendQueueHandler();
                                                     });
                                                 }
                                             })
                                             .catch(function (error) {
-                                                fireEvent('error', {
+                                                chatEvents.fireEvent('error', {
                                                     code: error.errorCode,
                                                     message: error.errorMessage,
                                                     error: error
                                                 });
                                             });
                                     } else {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: 6601,
                                             message: CHAT_ERRORS[6601],
                                             error: null
                                         });
                                     }
                                 } else {
-                                    chatState = true;
-                                    fireEvent('chatReady');
+                                    chatMessaging.chatState = true;
+                                    chatEvents.fireEvent('chatReady');
                                     chatSendQueueHandler();
                                 }
                             }
                         });
-                    } else if (userInfo.id > 0) {
-                        chatState = true;
-                        fireEvent('chatReady');
+                    } else if (chatMessaging.userInfo.id > 0) {
+                        chatMessaging.chatState = true;
+                        chatEvents.fireEvent('chatReady');
                         chatSendQueueHandler();
                     }
 
@@ -55405,27 +60192,27 @@ WildEmitter.mixin(WildEmitter);
                         }
                     }, seenIntervalPitch);
 
-                    shouldReconnectCall();
+                    //shouldReconnectCall();
                 });
 
                 asyncClient.on('stateChange', function (state) {
-                    fireEvent('chatState', state);
+                    chatEvents.fireEvent('chatState', state);
                     chatFullStateObject = state;
 
                     switch (state.socketState) {
                         case 1: // CONNECTED
                             if (state.deviceRegister && state.serverRegister) {
-                                chatState = true;
-                                ping();
+                                chatMessaging.chatState = true;
+                                chatMessaging.ping();
                             }
                             break;
                         case 0: // CONNECTING
                         case 2: // CLOSING
                         case 3: // CLOSED
-                            chatState = false;
+                            chatMessaging.chatState = false;
 
                             // TODO: Check if this is OK or not?!
-                            sendPingTimeout && clearTimeout(sendPingTimeout);
+                            chatMessaging.sendPingTimeout && clearTimeout(chatMessaging.sendPingTimeout);
                             break;
                     }
                 });
@@ -55433,16 +60220,16 @@ WildEmitter.mixin(WildEmitter);
                 asyncClient.on('connect', function (newPeerId) {
                     asyncGetReadyTime = new Date().getTime();
                     peerId = newPeerId;
-                    fireEvent('connect');
-                    ping();
+                    chatEvents.fireEvent('connect');
+                    chatMessaging.ping();
                 });
 
                 asyncClient.on('disconnect', function (event) {
                     oldPeerId = peerId;
                     peerId = undefined;
-                    fireEvent('disconnect', event);
+                    chatEvents.fireEvent('disconnect', event);
 
-                    fireEvent('callEvents', {
+                    chatEvents.fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
                         message: 'Call Socket is closed!',
@@ -55452,7 +60239,7 @@ WildEmitter.mixin(WildEmitter);
 
                 asyncClient.on('reconnect', function (newPeerId) {
                     peerId = newPeerId;
-                    fireEvent('reconnect');
+                    chatEvents.fireEvent('reconnect');
                 });
 
                 asyncClient.on('message', function (params, ack) {
@@ -55461,7 +60248,7 @@ WildEmitter.mixin(WildEmitter);
                 });
 
                 asyncClient.on('error', function (error) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: error.errorCode,
                         message: error.errorMessage,
                         error: error.errorEvent
@@ -55504,7 +60291,7 @@ WildEmitter.mixin(WildEmitter);
                             }
 
                             if (!deviceId) {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6000,
                                     message: CHAT_ERRORS[6000],
                                     error: null
@@ -55513,14 +60300,14 @@ WildEmitter.mixin(WildEmitter);
                                 callback(deviceId);
                             }
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 6001,
                                 message: CHAT_ERRORS[6001],
                                 error: null
                             });
                         }
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: result.errorCode,
                             message: result.errorMessage,
                             error: result
@@ -55585,7 +60372,7 @@ WildEmitter.mixin(WildEmitter);
                         if (canUseCache) {
                             if (db) {
                                 db.users
-                                    .update(userInfo.id, {keyId: response.keyId})
+                                    .update(chatMessaging.userInfo.id, {keyId: response.keyId})
                                     .then(function () {
                                         getEncryptionKey({
                                             keyId: response.keyId
@@ -55597,14 +60384,14 @@ WildEmitter.mixin(WildEmitter);
                                         });
                                     })
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -55612,7 +60399,7 @@ WildEmitter.mixin(WildEmitter);
                             }
                         }
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: result.error,
                             message: result.error_description,
                             error: result
@@ -55669,7 +60456,7 @@ WildEmitter.mixin(WildEmitter);
                                     message: result.errorMessage
                                 });
 
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: result.errorCode,
                                     message: result.errorMessage,
                                     error: result
@@ -55740,7 +60527,7 @@ WildEmitter.mixin(WildEmitter);
                         if (callback) {
                             if (hasFile) {
                                 hasError = true;
-                                fireEvent('fileUploadEvents', {
+                                chatEvents.fireEvent('fileUploadEvents', {
                                     threadId: threadId,
                                     uniqueId: fileUniqueId,
                                     state: 'UPLOAD_ERROR',
@@ -55767,7 +60554,7 @@ WildEmitter.mixin(WildEmitter);
                         if (callback) {
                             if (hasFile) {
                                 hasError = true;
-                                fireEvent('fileUploadEvents', {
+                                chatEvents.fireEvent('fileUploadEvents', {
                                     threadId: threadId,
                                     uniqueId: fileUniqueId,
                                     state: 'UPLOAD_CANCELED',
@@ -55851,7 +60638,7 @@ WildEmitter.mixin(WildEmitter);
 
                                 httpRequestObject[eval('fileUploadUniqueId')].upload.onprogress = function (event) {
                                     if (event.lengthComputable && !hasError) {
-                                        fireEvent('fileUploadEvents', {
+                                        chatEvents.fireEvent('fileUploadEvents', {
                                             threadId: threadId,
                                             uniqueId: fileUniqueId,
                                             state: 'UPLOADING',
@@ -55915,7 +60702,7 @@ WildEmitter.mixin(WildEmitter);
                                     consoleLogging && console.log(e)
                                 }
 
-                                fireEvent('fileUploadEvents', {
+                                chatEvents.fireEvent('fileUploadEvents', {
                                     threadId: threadId,
                                     uniqueId: fileUniqueId,
                                     fileHash: fileHashCode,
@@ -55942,7 +60729,7 @@ WildEmitter.mixin(WildEmitter);
                         } else {
                             if (hasFile) {
                                 hasError = true;
-                                fireEvent('fileUploadEvents', {
+                                chatEvents.fireEvent('fileUploadEvents', {
                                     threadId: threadId,
                                     uniqueId: fileUniqueId,
                                     state: 'UPLOAD_ERROR',
@@ -55989,7 +60776,7 @@ WildEmitter.mixin(WildEmitter);
 
                     getUserInfoRetryCount = 0;
 
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 6101,
                         message: CHAT_ERRORS[6101],
                         error: null
@@ -56001,7 +60788,7 @@ WildEmitter.mixin(WildEmitter);
                         getUserInfoRecursive(callback);
                     }, getUserInfoRetryCount * 10000);
 
-                    return sendMessage({
+                    return chatMessaging.sendMessage({
                         chatMessageVOType: chatMessageVOTypes.USER_INFO,
                         typeCode: params.typeCode
                     }, {
@@ -56038,7 +60825,7 @@ WildEmitter.mixin(WildEmitter);
                                                             name: currentUser.name
                                                         })
                                                         .catch(function (error) {
-                                                            fireEvent('error', {
+                                                            chatEvents.fireEvent('error', {
                                                                 code: error.code,
                                                                 message: error.message,
                                                                 error: error
@@ -56047,7 +60834,7 @@ WildEmitter.mixin(WildEmitter);
                                                 } else {
                                                     db.users.put(currentUser)
                                                         .catch(function (error) {
-                                                            fireEvent('error', {
+                                                            chatEvents.fireEvent('error', {
                                                                 code: error.code,
                                                                 message: error.message,
                                                                 error: error
@@ -56056,7 +60843,7 @@ WildEmitter.mixin(WildEmitter);
                                                 }
                                             });
                                     } else {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: 6601,
                                             message: CHAT_ERRORS[6601],
                                             error: null
@@ -56083,285 +60870,8 @@ WildEmitter.mixin(WildEmitter);
                 }
             },
 
-            /**
-             * Send Message
-             *
-             * All socket messages go through this function
-             *
-             * @access private
-             *
-             * @param {string}    token           SSO Token of current user
-             * @param {string}    tokenIssuer     Issuer of token (default : 1)
-             * @param {int}       type            Type of message (object : chatMessageVOTypes)
-             * @param {string}    typeCode        Type of contact who is going to receive the message
-             * @param {int}       messageType     Type of Message, in order to filter messages
-             * @param {long}      subjectId       Id of chat thread
-             * @param {string}    uniqueId        Tracker id for client
-             * @param {string}    content         Content of message
-             * @param {long}      time            Time of message, filled by chat server
-             * @param {string}    medadata        Metadata for message (Will use when needed)
-             * @param {string}    systemMedadata  Metadata for message (To be Set by client)
-             * @param {long}      repliedTo       Id of message to reply to (Should be filled by client)
-             * @param {function}  callback        The callback function to run after
-             *
-             * @return {object} Instant Function Return
-             */
-            sendMessage = function (params, callbacks, recursiveCallback) {
-                /**
-                 * + ChatMessage        {object}
-                 *    - token           {string}
-                 *    - tokenIssuer     {string}
-                 *    - type            {int}
-                 *    - typeCode        {string}
-                 *    - messageType     {int}
-                 *    - subjectId       {int}
-                 *    - uniqueId        {string}
-                 *    - content         {string}
-                 *    - time            {int}
-                 *    - medadata        {string}
-                 *    - systemMedadata  {string}
-                 *    - repliedTo       {int}
-                 */
-                var threadId = null;
-
-                var asyncPriority = (params.asyncPriority > 0)
-                    ? params.asyncPriority
-                    : msgPriority;
-
-                var messageVO = {
-                    type: params.chatMessageVOType,
-                    token: token,
-                    tokenIssuer: 1
-                };
-
-                if (params.typeCode) {
-                    messageVO.typeCode = params.typeCode;
-                } else if (generalTypeCode) {
-                    messageVO.typeCode = generalTypeCode;
-                }
-
-                if (params.messageType) {
-                    messageVO.messageType = params.messageType;
-                }
-
-                if (params.subjectId) {
-                    threadId = params.subjectId;
-                    messageVO.subjectId = params.subjectId;
-                }
-
-                if (params.content) {
-                    if (typeof params.content == 'object') {
-                        messageVO.content = JSON.stringify(params.content);
-                    } else {
-                        messageVO.content = params.content;
-                    }
-                }
-
-                if (params.metadata) {
-                    messageVO.metadata = params.metadata;
-                }
-
-                if (params.systemMetadata) {
-                    messageVO.systemMetadata = params.systemMetadata;
-                }
-
-                if (params.repliedTo) {
-                    messageVO.repliedTo = params.repliedTo;
-                }
-
-                var uniqueId;
-
-                if (typeof params.uniqueId != 'undefined') {
-                    uniqueId = params.uniqueId;
-                } else if (params.chatMessageVOType !== chatMessageVOTypes.PING) {
-                    uniqueId = Utility.generateUUID();
-                }
-
-                if (Array.isArray(uniqueId)) {
-                    messageVO.uniqueId = JSON.stringify(uniqueId);
-                } else {
-                    messageVO.uniqueId = uniqueId;
-                }
-
-                if (typeof callbacks == 'object') {
-                    if (callbacks.onSeen || callbacks.onDeliver || callbacks.onSent) {
-                        if (!threadCallbacks[threadId]) {
-                            threadCallbacks[threadId] = {};
-                        }
-
-                        threadCallbacks[threadId][uniqueId] = {};
-
-                        sendMessageCallbacks[uniqueId] = {};
-
-                        if (callbacks.onSent) {
-                            sendMessageCallbacks[uniqueId].onSent = callbacks.onSent;
-                            threadCallbacks[threadId][uniqueId].onSent = false;
-                            threadCallbacks[threadId][uniqueId].uniqueId = uniqueId;
-                        }
-
-                        if (callbacks.onSeen) {
-                            sendMessageCallbacks[uniqueId].onSeen = callbacks.onSeen;
-                            threadCallbacks[threadId][uniqueId].onSeen = false;
-                        }
-
-                        if (callbacks.onDeliver) {
-                            sendMessageCallbacks[uniqueId].onDeliver = callbacks.onDeliver;
-                            threadCallbacks[threadId][uniqueId].onDeliver = false;
-                        }
-
-                    } else if (callbacks.onResult) {
-                        messagesCallbacks[uniqueId] = callbacks.onResult;
-                    }
-                } else if (typeof callbacks == 'function') {
-                    messagesCallbacks[uniqueId] = callbacks;
-                }
-
-                /**
-                 * Message to send through async SDK
-                 *
-                 * + MessageWrapperVO  {object}
-                 *    - type           {int}       Type of ASYNC message based on content
-                 *    + content        {string}
-                 *       -peerName     {string}    Name of receiver Peer
-                 *       -receivers[]  {int}      Array of receiver peer ids (if you use this, peerName will be ignored)
-                 *       -priority     {int}       Priority of message 1-10, lower has more priority
-                 *       -messageId    {int}      Id of message on your side, not required
-                 *       -ttl          {int}      Time to live for message in milliseconds
-                 *       -content      {string}    Chat Message goes here after stringifying
-                 *    - trackId        {int}      Tracker id of message that you receive from DIRANA previously (if you are replying a sync message)
-                 */
-
-                var data = {
-                    type: (parseInt(params.pushMsgType) > 0)
-                        ? params.pushMsgType
-                        : 3,
-                    content: {
-                        peerName: serverName,
-                        priority: asyncPriority,
-                        content: JSON.stringify(messageVO),
-                        ttl: (params.messageTtl > 0)
-                            ? params.messageTtl
-                            : messageTtl
-                    }
-                };
-
-                asyncClient.send(data, function (res) {
-                    if (!res.hasError && callbacks) {
-                        if (typeof callbacks == 'function') {
-                            callbacks(res);
-                        } else if (typeof callbacks == 'object' && typeof callbacks.onResult == 'function') {
-                            callbacks.onResult(res);
-                        }
-
-                        if (messagesCallbacks[uniqueId]) {
-                            delete messagesCallbacks[uniqueId];
-                        }
-                    }
-                });
-
-                if (asyncRequestTimeout > 0) {
-                    asyncRequestTimeouts[uniqueId] && clearTimeout(asyncRequestTimeouts[uniqueId]);
-                    asyncRequestTimeouts[uniqueId] = setTimeout(function () {
-                        if (typeof callbacks == 'function') {
-                            callbacks({
-                                hasError: true,
-                                errorCode: 408,
-                                errorMessage: 'Async Request Timed Out!'
-                            });
-                        } else if (typeof callbacks == 'object' && typeof callbacks.onResult == 'function') {
-                            callbacks.onResult({
-                                hasError: true,
-                                errorCode: 408,
-                                errorMessage: 'Async Request Timed Out!'
-                            });
-                        }
-
-                        if (messagesCallbacks[uniqueId]) {
-                            delete messagesCallbacks[uniqueId];
-                        }
-                        if (sendMessageCallbacks[uniqueId]) {
-                            delete sendMessageCallbacks[uniqueId];
-                        }
-                        if (!!threadCallbacks[threadId] && threadCallbacks[threadId][uniqueId]) {
-                            threadCallbacks[threadId][uniqueId] = {};
-                            delete threadCallbacks[threadId][uniqueId];
-                        }
-
-                    }, asyncRequestTimeout);
-                }
-
-                sendPingTimeout && clearTimeout(sendPingTimeout);
-                sendPingTimeout = setTimeout(function () {
-                    ping();
-                }, chatPingMessageInterval);
-
-                recursiveCallback && recursiveCallback();
-
-                return {
-                    uniqueId: uniqueId,
-                    threadId: threadId,
-                    participant: userInfo,
-                    content: params.content
-                };
-            },
-
-            sendCallMessage = function (message, callback) {
-                message.token = token;
-
-                var uniqueId;
-
-                if (typeof params.uniqueId != 'undefined') {
-                    uniqueId = params.uniqueId;
-                } else {
-                    uniqueId = Utility.generateUUID();
-                }
-
-                message.uniqueId = uniqueId;
-
-                var data = {
-                    type: 3,
-                    content: {
-                        peerName: callServerName,
-                        priority: 1,
-                        content: JSON.stringify(message),
-                        ttl: messageTtl
-                    }
-                };
-
-                if (typeof callback == 'function') {
-                    messagesCallbacks[uniqueId] = callback;
-                }
-
-                asyncClient.send(data, function (res) {
-                    if (!res.hasError && callback) {
-                        if (typeof callback == 'function') {
-                            callback(res);
-                        }
-
-                        if (messagesCallbacks[uniqueId]) {
-                            delete messagesCallbacks[uniqueId];
-                        }
-                    }
-                });
-
-                if (callRequestTimeout > 0) {
-                    asyncRequestTimeouts[uniqueId] && clearTimeout(asyncRequestTimeouts[uniqueId]);
-                    asyncRequestTimeouts[uniqueId] = setTimeout(function () {
-                        if (typeof callback == 'function') {
-                            callback({
-                                done: 'SKIP'
-                            });
-                        }
-
-                        if (messagesCallbacks[uniqueId]) {
-                            delete messagesCallbacks[uniqueId];
-                        }
-                    }, callRequestTimeout);
-                }
-            },
-
             sendSystemMessage = function (params) {
-                return sendMessage({
+                return chatMessaging.sendMessage({
                     chatMessageVOType: chatMessageVOTypes.SYSTEM_MESSAGE,
                     subjectId: params.threadId,
                     content: params.content,
@@ -56389,7 +60899,7 @@ WildEmitter.mixin(WildEmitter);
                      * Getting chatSendQueue from either cache or
                      * memory and scrolling through the send queue
                      * to send all the messages which are waiting
-                     * for chatState to become TRUE
+                     * for chatMessaging.chatState to become TRUE
                      *
                      * There is a small possibility that a Message
                      * wouldn't make it through network, so it Will
@@ -56403,11 +60913,11 @@ WildEmitter.mixin(WildEmitter);
                      * will have failed messages alongside with typical
                      * messages history.
                      */
-                    if (chatState) {
+                    if (chatMessaging.chatState) {
                         getChatSendQueue(0, function (chatSendQueue) {
                             deleteFromChatSentQueue(messageToBeSend,
                                 function () {
-                                    sendMessage(messageToBeSend.message, messageToBeSend.callbacks, function () {
+                                    chatMessaging.sendMessage(messageToBeSend.message, messageToBeSend.callbacks, function () {
                                         if (chatSendQueue.length) {
                                             chatSendQueueHandler();
                                         }
@@ -56455,7 +60965,7 @@ WildEmitter.mixin(WildEmitter);
              */
             messagesDeliveryQueueHandler = function () {
                 if (Object.keys(messagesDelivery).length) {
-                    if (chatState) {
+                    if (chatMessaging.chatState) {
                         for (var key in messagesDelivery) {
                             deliver({
                                 messageId: messagesDelivery[key]
@@ -56480,7 +60990,7 @@ WildEmitter.mixin(WildEmitter);
              */
             messagesSeenQueueHandler = function () {
                 if (Object.keys(messagesSeen).length) {
-                    if (chatState) {
+                    if (chatMessaging.chatState) {
                         for (var key in messagesSeen) {
                             seen({
                                 messageId: messagesSeen[key]
@@ -56489,32 +60999,6 @@ WildEmitter.mixin(WildEmitter);
                             delete messagesSeen[key];
                         }
                     }
-                }
-            },
-
-            /**
-             * Ping
-             *
-             * This Function sends ping message to keep user connected to
-             * chat server and updates its status
-             *
-             * @access private
-             *
-             * @return {undefined}
-             */
-            ping = function () {
-                if (chatState && typeof userInfo !== 'undefined') {
-                    /**
-                     * Ping messages should be sent ASAP, because
-                     * we don't want to wait for send queue, we send them
-                     * right through async from here
-                     */
-                    sendMessage({
-                        chatMessageVOType: chatMessageVOTypes.PING,
-                        pushMsgType: 3
-                    });
-                } else {
-                    sendPingTimeout && clearTimeout(sendPingTimeout);
                 }
             },
 
@@ -56529,7 +61013,7 @@ WildEmitter.mixin(WildEmitter);
              * @return {undefined}
              */
             clearChatServerCaches = function () {
-                sendMessage({
+                chatMessaging.sendMessage({
                     chatMessageVOType: chatMessageVOTypes.LOGOUT,
                     pushMsgType: 3
                 });
@@ -56561,28 +61045,8 @@ WildEmitter.mixin(WildEmitter);
                     var content = JSON.parse(asyncMessage.content);
                     chatMessageHandler(content);
                 } else {
-                    callMessageHandler(asyncMessage);
+                    callModule.callMessageHandler(asyncMessage);
                 }
-            },
-
-            /**
-             * is Valid Json
-             *
-             * This functions checks if a string is valid json or not?
-             *
-             * @access private
-             *
-             * @param {string}  jsonString   Json String to be checked
-             *
-             * @return {boolean}
-             */
-            isValidJson = function (jsonString) {
-                try {
-                    JSON.parse(jsonString);
-                } catch (e) {
-                    return false;
-                }
-                return true;
             },
 
             /**
@@ -56599,14 +61063,14 @@ WildEmitter.mixin(WildEmitter);
             chatMessageHandler = function (chatMessage) {
                 var threadId = chatMessage.subjectId,
                     type = chatMessage.type,
-                    messageContent = (typeof chatMessage.content === 'string' && isValidJson(chatMessage.content))
+                    messageContent = (typeof chatMessage.content === 'string' && Utility.isValidJson(chatMessage.content))
                         ? JSON.parse(chatMessage.content)
                         : chatMessage.content,
                     contentCount = chatMessage.contentCount,
                     uniqueId = chatMessage.uniqueId,
                     time = chatMessage.time;
 
-                asyncRequestTimeouts[uniqueId] && clearTimeout(asyncRequestTimeouts[uniqueId]);
+                chatMessaging.asyncRequestTimeouts[uniqueId] && clearTimeout(chatMessaging.asyncRequestTimeouts[uniqueId]);
 
                 switch (type) {
                     /**
@@ -56615,9 +61079,9 @@ WildEmitter.mixin(WildEmitter);
                     case chatMessageVOTypes.CREATE_THREAD:
                         messageContent.uniqueId = uniqueId;
 
-                        if (messagesCallbacks[uniqueId]) {
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
                             createThread(messageContent, true, true);
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         } else {
                             createThread(messageContent, true, false);
                         }
@@ -56635,13 +61099,13 @@ WildEmitter.mixin(WildEmitter);
                      * Type 3    Message Sent
                      */
                     case chatMessageVOTypes.SENT:
-                        if (sendMessageCallbacks[uniqueId] && sendMessageCallbacks[uniqueId].onSent) {
-                            sendMessageCallbacks[uniqueId].onSent({
+                        if (chatMessaging.sendMessageCallbacks[uniqueId] && chatMessaging.sendMessageCallbacks[uniqueId].onSent) {
+                            chatMessaging.sendMessageCallbacks[uniqueId].onSent({
                                 uniqueId: uniqueId,
                                 messageId: messageContent
                             });
-                            delete (sendMessageCallbacks[uniqueId].onSent);
-                            threadCallbacks[threadId][uniqueId].onSent = true;
+                            delete (chatMessaging.sendMessageCallbacks[uniqueId].onSent);
+                            chatMessaging.threadCallbacks[threadId][uniqueId].onSent = true;
                         }
                         break;
 
@@ -56656,7 +61120,7 @@ WildEmitter.mixin(WildEmitter);
                             lastParticipantId: messageContent.participantId
                         };
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_LAST_ACTIVITY_TIME',
                             result: {
                                 thread: threadObject
@@ -56671,7 +61135,7 @@ WildEmitter.mixin(WildEmitter);
                         //         cache: false
                         //     }, function (result) {
                         //         if (!result.hasError) {
-                        //             fireEvent('messageEvents', {
+                        //             chatEvents.fireEvent('messageEvents', {
                         //                 type: 'MESSAGE_DELIVERY',
                         //                 result: {
                         //                     message: result.result.history[0],
@@ -56682,7 +61146,7 @@ WildEmitter.mixin(WildEmitter);
                         //         }
                         //     });
                         // } else {
-                        //     fireEvent('messageEvents', {
+                        //     chatEvents.fireEvent('messageEvents', {
                         //         type: 'MESSAGE_DELIVERY',
                         //         result: {
                         //             message: messageContent.messageId,
@@ -56706,41 +61170,21 @@ WildEmitter.mixin(WildEmitter);
                             lastParticipantId: messageContent.participantId
                         };
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_LAST_ACTIVITY_TIME',
                             result: {
                                 thread: threadObject
                             }
                         });
 
-                        // if (fullResponseObject) {
-                        //     getHistory({
-                        //         offset: 0,
-                        //         threadId: threadId,
-                        //         id: messageContent.messageId,
-                        //         cache: false
-                        //     }, function (result) {
-                        //         if (!result.hasError) {
-                        //             fireEvent('messageEvents', {
-                        //                 type: 'MESSAGE_SEEN',
-                        //                 result: {
-                        //                     message: result.result.history[0],
-                        //                     threadId: threadId,
-                        //                     senderId: messageContent.participantId
-                        //                 }
-                        //             });
-                        //         }
-                        //     });
-                        // } else {
-                        //     fireEvent('messageEvents', {
-                        //         type: 'MESSAGE_SEEN',
-                        //         result: {
-                        //             message: messageContent.messageId,
-                        //             threadId: threadId,
-                        //             senderId: messageContent.participantId
-                        //         }
-                        //     });
-                        // }
+                        chatEvents.fireEvent('messageEvents', {
+                            type: 'MESSAGE_SEEN',
+                            result: {
+                                message: messageContent.messageId,
+                                threadId: threadId,
+                                senderId: messageContent.participantId
+                            }
+                        });
 
                         sendMessageCallbacksHandler(chatMessageVOTypes.SEEN, threadId, uniqueId);
                         break;
@@ -56755,8 +61199,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 7    Block Contact
                      */
                     case chatMessageVOTypes.BLOCK:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
                         break;
 
@@ -56764,8 +61208,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 8    Unblock Blocked User
                      */
                     case chatMessageVOTypes.UNBLOCK:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
                         break;
 
@@ -56773,8 +61217,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 9   Leave Thread
                      */
                     case chatMessageVOTypes.LEAVE_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
                         /**
@@ -56789,11 +61233,11 @@ WildEmitter.mixin(WildEmitter);
                                 db.participants.where('threadId')
                                     .equals(parseInt(threadId))
                                     .and(function (participant) {
-                                        return (participant.id === messageContent.id || participant.owner === userInfo.id);
+                                        return (participant.id === messageContent.id || participant.owner === chatMessaging.userInfo.id);
                                     })
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -56806,16 +61250,16 @@ WildEmitter.mixin(WildEmitter);
                                  * thread from this users cache database
                                  */
 
-                                if (messageContent.id === userInfo.id) {
+                                if (messageContent.id === chatMessaging.userInfo.id) {
 
                                     /**
                                      * Remove Thread from this users cache
                                      */
                                     db.threads.where('[owner+id]')
-                                        .equals([userInfo.id, threadId])
+                                        .equals([chatMessaging.userInfo.id, threadId])
                                         .delete()
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -56829,11 +61273,11 @@ WildEmitter.mixin(WildEmitter);
                                     db.messages.where('threadId')
                                         .equals(parseInt(threadId))
                                         .and(function (message) {
-                                            return message.owner === userInfo.id;
+                                            return message.owner === chatMessaging.userInfo.id;
                                         })
                                         .delete()
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -56841,7 +61285,7 @@ WildEmitter.mixin(WildEmitter);
                                         });
                                 }
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -56856,7 +61300,7 @@ WildEmitter.mixin(WildEmitter);
                                 if (!threadsResult.cache) {
                                     var threads = threadsResult.result.threads;
                                     if (threads.length > 0) {
-                                        fireEvent('threadEvents', {
+                                        chatEvents.fireEvent('threadEvents', {
                                             type: 'THREAD_LEAVE_PARTICIPANT',
                                             result: {
                                                 thread: threads[0],
@@ -56864,14 +61308,14 @@ WildEmitter.mixin(WildEmitter);
                                             }
                                         });
 
-                                        fireEvent('threadEvents', {
+                                        chatEvents.fireEvent('threadEvents', {
                                             type: 'THREAD_LAST_ACTIVITY_TIME',
                                             result: {
                                                 thread: threads[0]
                                             }
                                         });
                                     } else {
-                                        fireEvent('threadEvents', {
+                                        chatEvents.fireEvent('threadEvents', {
                                             type: 'THREAD_LEAVE_PARTICIPANT',
                                             result: {
                                                 threadId: threadId,
@@ -56882,7 +61326,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_LEAVE_PARTICIPANT',
                                 result: {
                                     thread: threadId,
@@ -56890,7 +61334,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_LAST_ACTIVITY_TIME',
                                 result: {
                                     thread: threadId
@@ -56903,8 +61347,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 11    Add Participant to Thread
                      */
                     case chatMessageVOTypes.ADD_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
                         /**
@@ -56920,7 +61364,7 @@ WildEmitter.mixin(WildEmitter);
                                             salt = Utility.generateUUID();
 
                                         tempData.id = messageContent.participants[i].id;
-                                        tempData.owner = userInfo.id;
+                                        tempData.owner = chatMessaging.userInfo.id;
                                         tempData.threadId = messageContent.id;
                                         tempData.notSeenDuration = messageContent.participants[i].notSeenDuration;
                                         tempData.admin = messageContent.participants[i].admin;
@@ -56934,7 +61378,7 @@ WildEmitter.mixin(WildEmitter);
 
                                         cacheData.push(tempData);
                                     } catch (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -56944,14 +61388,14 @@ WildEmitter.mixin(WildEmitter);
 
                                 db.participants.bulkPut(cacheData)
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -56966,14 +61410,14 @@ WildEmitter.mixin(WildEmitter);
                                 var threads = threadsResult.result.threads;
 
                                 if (!threadsResult.cache) {
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_ADD_PARTICIPANTS',
                                         result: {
                                             thread: threads[0]
                                         }
                                     });
 
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_LAST_ACTIVITY_TIME',
                                         result: {
                                             thread: threads[0]
@@ -56982,14 +61426,14 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_ADD_PARTICIPANTS',
                                 result: {
                                     thread: messageContent
                                 }
                             });
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_LAST_ACTIVITY_TIME',
                                 result: {
                                     thread: messageContent
@@ -57002,8 +61446,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 13    Get Contacts List
                      */
                     case chatMessageVOTypes.GET_CONTACTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -57011,8 +61455,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 14    Get Threads List
                      */
                     case chatMessageVOTypes.GET_THREADS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount, uniqueId));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount, uniqueId));
                         }
                         break;
 
@@ -57020,8 +61464,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 15    Get Message History of an Thread
                      */
                     case chatMessageVOTypes.GET_HISTORY:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -57030,7 +61474,7 @@ WildEmitter.mixin(WildEmitter);
                      */
                     case chatMessageVOTypes.REMOVED_FROM_THREAD:
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_REMOVED_FROM',
                             result: {
                                 thread: threadId
@@ -57048,10 +61492,10 @@ WildEmitter.mixin(WildEmitter);
                                  * Remove Thread from this users cache
                                  */
                                 db.threads.where('[owner+id]')
-                                    .equals([userInfo.id, threadId])
+                                    .equals([chatMessaging.userInfo.id, threadId])
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -57065,11 +61509,11 @@ WildEmitter.mixin(WildEmitter);
                                 db.messages.where('threadId')
                                     .equals(parseInt(threadId))
                                     .and(function (message) {
-                                        return message.owner === userInfo.id;
+                                        return message.owner === chatMessaging.userInfo.id;
                                     })
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -57083,11 +61527,11 @@ WildEmitter.mixin(WildEmitter);
                                 db.participants.where('threadId')
                                     .equals(parseInt(threadId))
                                     .and(function (participant) {
-                                        return participant.owner === userInfo.id;
+                                        return participant.owner === chatMessaging.userInfo.id;
                                     })
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -57095,7 +61539,7 @@ WildEmitter.mixin(WildEmitter);
                                     });
 
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -57109,8 +61553,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 18    Remove a participant from Thread
                      */
                     case chatMessageVOTypes.REMOVE_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
                         /**
@@ -57126,7 +61570,7 @@ WildEmitter.mixin(WildEmitter);
                                         })
                                         .delete()
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -57134,7 +61578,7 @@ WildEmitter.mixin(WildEmitter);
                                         });
                                 }
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -57149,14 +61593,14 @@ WildEmitter.mixin(WildEmitter);
                                 var threads = threadsResult.result.threads;
 
                                 if (!threadsResult.cache) {
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_REMOVE_PARTICIPANTS',
                                         result: {
                                             thread: threads[0]
                                         }
                                     });
 
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_LAST_ACTIVITY_TIME',
                                         result: {
                                             thread: threads[0]
@@ -57165,14 +61609,14 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_REMOVE_PARTICIPANTS',
                                 result: {
                                     thread: threadId
                                 }
                             });
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_LAST_ACTIVITY_TIME',
                                 result: {
                                     thread: threadId
@@ -57185,8 +61629,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 19    Mute Thread
                      */
                     case chatMessageVOTypes.MUTE_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -57196,7 +61640,7 @@ WildEmitter.mixin(WildEmitter);
                                 var thread = threadsResult.result.threads[0];
                                 thread.mute = true;
 
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_MUTE',
                                     result: {
                                         thread: thread
@@ -57204,7 +61648,7 @@ WildEmitter.mixin(WildEmitter);
                                 });
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_MUTE',
                                 result: {
                                     thread: threadId
@@ -57218,8 +61662,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 20    Unmute muted Thread
                      */
                     case chatMessageVOTypes.UNMUTE_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -57229,7 +61673,7 @@ WildEmitter.mixin(WildEmitter);
                                 var thread = threadsResult.result.threads[0];
                                 thread.mute = false;
 
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_UNMUTE',
                                     result: {
                                         thread: thread
@@ -57237,7 +61681,7 @@ WildEmitter.mixin(WildEmitter);
                                 });
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_UNMUTE',
                                 result: {
                                     thread: threadId
@@ -57250,8 +61694,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 21    Update Thread Info
                      */
                     case chatMessageVOTypes.UPDATE_THREAD_INFO:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -57272,13 +61716,13 @@ WildEmitter.mixin(WildEmitter);
                                             var salt = Utility.generateUUID();
 
                                             tempData.id = thread.id;
-                                            tempData.owner = userInfo.id;
+                                            tempData.owner = chatMessaging.userInfo.id;
                                             tempData.title = Utility.crypt(thread.title, cacheSecret, salt);
                                             tempData.time = thread.time;
                                             tempData.data = Utility.crypt(JSON.stringify(unsetNotSeenDuration(thread)), cacheSecret, salt);
                                             tempData.salt = salt;
                                         } catch (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -57287,14 +61731,14 @@ WildEmitter.mixin(WildEmitter);
 
                                         db.threads.put(tempData)
                                             .catch(function (error) {
-                                                fireEvent('error', {
+                                                chatEvents.fireEvent('error', {
                                                     code: error.code,
                                                     message: error.message,
                                                     error: error
                                                 });
                                             });
                                     } else {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: 6601,
                                             message: CHAT_ERRORS[6601],
                                             error: null
@@ -57302,7 +61746,7 @@ WildEmitter.mixin(WildEmitter);
                                     }
                                 }
 
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_INFO_UPDATED',
                                     result: {
                                         thread: thread
@@ -57310,7 +61754,7 @@ WildEmitter.mixin(WildEmitter);
                                 });
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_INFO_UPDATED',
                                 result: {
                                     thread: messageContent
@@ -57330,11 +61774,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 23    User Info
                      */
                     case chatMessageVOTypes.USER_INFO:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('systemEvents', {
+                        chatEvents.fireEvent('systemEvents', {
                             type: 'SERVER_TIME',
                             result: {
                                 time: time
@@ -57347,8 +61791,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 25    Get Blocked List
                      */
                     case chatMessageVOTypes.GET_BLOCKED:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -57356,8 +61800,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 27    Thread Participants List
                      */
                     case chatMessageVOTypes.THREAD_PARTICIPANTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -57365,8 +61809,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 28    Edit Message
                      */
                     case chatMessageVOTypes.EDIT_MESSAGE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         chatEditMessageHandler(threadId, messageContent);
                         break;
@@ -57375,8 +61819,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 29    Delete Message
                      */
                     case chatMessageVOTypes.DELETE_MESSAGE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
                         if (messageContent.pinned) {
@@ -57393,18 +61837,18 @@ WildEmitter.mixin(WildEmitter);
                                 db.messages.where('id')
                                     .equals(messageContent)
                                     .and(function (message) {
-                                        return message.owner === userInfo.id;
+                                        return message.owner === chatMessaging.userInfo.id;
                                     })
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: 6602,
                                             message: CHAT_ERRORS[6602],
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -57418,7 +61862,7 @@ WildEmitter.mixin(WildEmitter);
                             }, function (threadsResult) {
                                 var threads = threadsResult.result.threads;
                                 if (!threadsResult.cache) {
-                                    fireEvent('messageEvents', {
+                                    chatEvents.fireEvent('messageEvents', {
                                         type: 'MESSAGE_DELETE',
                                         result: {
                                             message: {
@@ -57429,7 +61873,7 @@ WildEmitter.mixin(WildEmitter);
                                         }
                                     });
                                     if (messageContent.pinned) {
-                                        fireEvent('threadEvents', {
+                                        chatEvents.fireEvent('threadEvents', {
                                             type: 'THREAD_LAST_ACTIVITY_TIME',
                                             result: {
                                                 thread: threads[0]
@@ -57439,7 +61883,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
                         } else {
-                            fireEvent('messageEvents', {
+                            chatEvents.fireEvent('messageEvents', {
                                 type: 'MESSAGE_DELETE',
                                 result: {
                                     message: {
@@ -57450,7 +61894,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
                             if (messageContent.pinned) {
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_LAST_ACTIVITY_TIME',
                                     result: {
                                         thread: threadId
@@ -57484,14 +61928,14 @@ WildEmitter.mixin(WildEmitter);
                         //             var salt = Utility.generateUUID();
                         //
                         //             tempData.id = thread.id;
-                        //             tempData.owner = userInfo.id;
+                        //             tempData.owner = chatMessaging.userInfo.id;
                         //             tempData.title = Utility.crypt(thread.title, cacheSecret, salt);
                         //             tempData.time = thread.time;
                         //             tempData.data = Utility.crypt(JSON.stringify(unsetNotSeenDuration(thread)), cacheSecret, salt);
                         //             tempData.salt = salt;
                         //         }
                         //         catch (error) {
-                        //             fireEvent('error', {
+                        //             chatEvents.fireEvent('error', {
                         //                 code: error.code,
                         //                 message: error.message,
                         //                 error: error
@@ -57500,7 +61944,7 @@ WildEmitter.mixin(WildEmitter);
                         //
                         //         db.threads.put(tempData)
                         //             .catch(function (error) {
-                        //                 fireEvent('error', {
+                        //                 chatEvents.fireEvent('error', {
                         //                     code: error.code,
                         //                     message: error.message,
                         //                     error: error
@@ -57508,14 +61952,14 @@ WildEmitter.mixin(WildEmitter);
                         //             });
                         //     }
                         //     else {
-                        //         fireEvent('error', {
+                        //         chatEvents.fireEvent('error', {
                         //             code: 6601,
                         //             message: CHAT_ERRORS[6601],
                         //             error: null
                         //         });
                         //     }
                         // }
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_INFO_UPDATED',
                             result: {
                                 thread: thread
@@ -57530,7 +61974,7 @@ WildEmitter.mixin(WildEmitter);
                         var threadObject = messageContent;
                         threadObject.unreadCount = (messageContent.unreadCount) ? messageContent.unreadCount : 0;
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_UNREAD_COUNT_UPDATED',
                             result: {
                                 thread: threadObject,
@@ -57545,7 +61989,7 @@ WildEmitter.mixin(WildEmitter);
                         //         var threads = threadsResult.result.threads;
                         //
                         //         if (!threadsResult.cache) {
-                        //             fireEvent('threadEvents', {
+                        //             chatEvents.fireEvent('threadEvents', {
                         //                 type: 'THREAD_UNREAD_COUNT_UPDATED',
                         //                 result: {
                         //                     thread: threads[0],
@@ -57553,7 +61997,7 @@ WildEmitter.mixin(WildEmitter);
                         //                 }
                         //             });
                         //
-                        //             fireEvent('threadEvents', {
+                        //             chatEvents.fireEvent('threadEvents', {
                         //                 type: 'THREAD_LAST_ACTIVITY_TIME',
                         //                 result: {
                         //                     thread: threads[0]
@@ -57562,7 +62006,7 @@ WildEmitter.mixin(WildEmitter);
                         //         }
                         //     });
                         // } else {
-                        //     fireEvent('threadEvents', {
+                        //     chatEvents.fireEvent('threadEvents', {
                         //         type: 'THREAD_UNREAD_COUNT_UPDATED',
                         //         result: {
                         //             thread: threadId,
@@ -57570,7 +62014,7 @@ WildEmitter.mixin(WildEmitter);
                         //         }
                         //     });
                         //
-                        //     fireEvent('threadEvents', {
+                        //     chatEvents.fireEvent('threadEvents', {
                         //         type: 'THREAD_LAST_ACTIVITY_TIME',
                         //         result: {
                         //             thread: threadId
@@ -57584,8 +62028,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 32    Get Message Delivered List
                      */
                     case chatMessageVOTypes.GET_MESSAGE_DELEVERY_PARTICIPANTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -57593,8 +62037,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 33    Get Message Seen List
                      */
                     case chatMessageVOTypes.GET_MESSAGE_SEEN_PARTICIPANTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -57602,8 +62046,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 34    Is Public Group Name Available?
                      */
                     case chatMessageVOTypes.IS_NAME_AVAILABLE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -57611,8 +62055,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 39    Join Public Group or Channel
                      */
                     case chatMessageVOTypes.JOIN_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -57620,7 +62064,7 @@ WildEmitter.mixin(WildEmitter);
                      * Type 40    Bot Messages
                      */
                     case chatMessageVOTypes.BOT_MESSAGE:
-                        fireEvent('botEvents', {
+                        chatEvents.fireEvent('botEvents', {
                             type: 'BOT_MESSAGE',
                             result: {
                                 bot: messageContent
@@ -57632,8 +62076,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 41    Spam P2P Thread
                      */
                     case chatMessageVOTypes.SPAM_PV_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
                         break;
 
@@ -57641,8 +62085,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 42    Set Role To User
                      */
                     case chatMessageVOTypes.SET_ROLE_TO_USER:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -57652,7 +62096,7 @@ WildEmitter.mixin(WildEmitter);
                                 var threads = threadsResult.result.threads;
 
                                 if (!threadsResult.cache) {
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_ADD_ADMIN',
                                         result: {
                                             thread: threads[0],
@@ -57660,7 +62104,7 @@ WildEmitter.mixin(WildEmitter);
                                         }
                                     });
 
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_LAST_ACTIVITY_TIME',
                                         result: {
                                             thread: threads[0],
@@ -57670,7 +62114,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_ADD_ADMIN',
                                 result: {
                                     thread: threadId,
@@ -57678,7 +62122,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_LAST_ACTIVITY_TIME',
                                 result: {
                                     thread: threadId,
@@ -57693,8 +62137,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 43    Remove Role From User
                      */
                     case chatMessageVOTypes.REMOVE_ROLE_FROM_USER:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -57704,7 +62148,7 @@ WildEmitter.mixin(WildEmitter);
                                 var threads = threadsResult.result.threads;
 
                                 if (!threadsResult.cache) {
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_REMOVE_ADMIN',
                                         result: {
                                             thread: threads[0],
@@ -57712,7 +62156,7 @@ WildEmitter.mixin(WildEmitter);
                                         }
                                     });
 
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_LAST_ACTIVITY_TIME',
                                         result: {
                                             thread: threads[0],
@@ -57722,7 +62166,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_REMOVE_ADMIN',
                                 result: {
                                     thread: threadId,
@@ -57730,7 +62174,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_LAST_ACTIVITY_TIME',
                                 result: {
                                     thread: threadId,
@@ -57745,8 +62189,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 44    Clear History
                      */
                     case chatMessageVOTypes.CLEAR_HISTORY:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
                         break;
 
@@ -57754,7 +62198,7 @@ WildEmitter.mixin(WildEmitter);
                      * Type 46    System Messages
                      */
                     case chatMessageVOTypes.SYSTEM_MESSAGE:
-                        fireEvent('systemEvents', {
+                        chatEvents.fireEvent('systemEvents', {
                             type: 'IS_TYPING',
                             result: {
                                 thread: threadId,
@@ -57767,8 +62211,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 47    Get Not Seen Duration
                      */
                     case chatMessageVOTypes.GET_NOT_SEEN_DURATION:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
                         break;
 
@@ -57776,8 +62220,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 48    Pin Thread
                      */
                     case chatMessageVOTypes.PIN_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -57786,7 +62230,7 @@ WildEmitter.mixin(WildEmitter);
                             }, function (threadsResult) {
                                 var thread = threadsResult.result.threads[0];
 
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_PIN',
                                     result: {
                                         thread: thread
@@ -57794,7 +62238,7 @@ WildEmitter.mixin(WildEmitter);
                                 });
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_PIN',
                                 result: {
                                     thread: threadId
@@ -57808,8 +62252,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 49    UnPin Thread
                      */
                     case chatMessageVOTypes.UNPIN_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -57818,7 +62262,7 @@ WildEmitter.mixin(WildEmitter);
                             }, function (threadsResult) {
                                 var thread = threadsResult.result.threads[0];
 
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_UNPIN',
                                     result: {
                                         thread: thread
@@ -57826,7 +62270,7 @@ WildEmitter.mixin(WildEmitter);
                                 });
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_UNPIN',
                                 result: {
                                     thread: threadId
@@ -57840,10 +62284,10 @@ WildEmitter.mixin(WildEmitter);
                      * Type 50    Pin Message
                      */
                     case chatMessageVOTypes.PIN_MESSAGE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'MESSAGE_PIN',
                             result: {
                                 thread: threadId,
@@ -57856,10 +62300,10 @@ WildEmitter.mixin(WildEmitter);
                      * Type 51    UnPin Message
                      */
                     case chatMessageVOTypes.UNPIN_MESSAGE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'MESSAGE_UNPIN',
                             result: {
                                 thread: threadId,
@@ -57872,10 +62316,10 @@ WildEmitter.mixin(WildEmitter);
                      * Type 52    Update Chat Profile
                      */
                     case chatMessageVOTypes.UPDATE_CHAT_PROFILE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
-                        fireEvent('userEvents', {
+                        chatEvents.fireEvent('userEvents', {
                             type: 'CHAT_PROFILE_UPDATED',
                             result: {
                                 user: messageContent
@@ -57887,11 +62331,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 53    Change Thread Privacy
                      */
                     case chatMessageVOTypes.CHANGE_THREAD_PRIVACY:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_PRIVACY_CHANGED',
                             result: {
                                 thread: messageContent
@@ -57904,10 +62348,10 @@ WildEmitter.mixin(WildEmitter);
                      * Type 54    Get Participant Roles
                      */
                     case chatMessageVOTypes.GET_PARTICIPANT_ROLES:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
-                        fireEvent('userEvents', {
+                        chatEvents.fireEvent('userEvents', {
                             type: 'GET_PARTICIPANT_ROLES',
                             result: {
                                 roles: messageContent
@@ -57919,7 +62363,7 @@ WildEmitter.mixin(WildEmitter);
                      * Type 60    Get Contact Not Seen Duration
                      */
                     case chatMessageVOTypes.GET_CONTACT_NOT_SEEN_DURATION:
-                        fireEvent('contactEvents', {
+                        chatEvents.fireEvent('contactEvents', {
                             type: 'CONTACTS_LAST_SEEN',
                             result: messageContent
                         });
@@ -57929,11 +62373,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 61      Get All Unread Message Count
                      */
                     case chatMessageVOTypes.ALL_UNREAD_MESSAGE_COUNT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('systemEvents', {
+                        chatEvents.fireEvent('systemEvents', {
                             type: 'ALL_UNREAD_MESSAGES_COUNT',
                             result: messageContent
                         });
@@ -57944,8 +62388,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 62    Create Bot
                      */
                     case chatMessageVOTypes.CREATE_BOT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -57953,8 +62397,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 63    Define Bot Commands
                      */
                     case chatMessageVOTypes.DEFINE_BOT_COMMAND:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -57962,8 +62406,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 64    Start Bot
                      */
                     case chatMessageVOTypes.START_BOT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -57971,8 +62415,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 65    Stop Bot
                      */
                     case chatMessageVOTypes.STOP_BOT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -57987,7 +62431,7 @@ WildEmitter.mixin(WildEmitter);
                                 var threads = threadsResult.result.threads;
 
                                 if (!threadsResult.cache) {
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_INFO_UPDATED',
                                         result: {
                                             thread: threads[0]
@@ -57998,7 +62442,7 @@ WildEmitter.mixin(WildEmitter);
                         } else {
                             var thread = formatDataToMakeConversation(messageContent);
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_INFO_UPDATED',
                                 result: {
                                     thread: thread
@@ -58018,7 +62462,7 @@ WildEmitter.mixin(WildEmitter);
                                 var threads = threadsResult.result.threads;
 
                                 if (!threadsResult.cache) {
-                                    fireEvent('threadEvents', {
+                                    chatEvents.fireEvent('threadEvents', {
                                         type: 'THREAD_INFO_UPDATED',
                                         result: {
                                             thread: threads[0]
@@ -58029,7 +62473,7 @@ WildEmitter.mixin(WildEmitter);
                         } else {
                             var thread = formatDataToMakeConversation(messageContent);
 
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_INFO_UPDATED',
                                 result: {
                                     thread: thread
@@ -58042,8 +62486,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 68    Get Bot Commands List
                      */
                     case chatMessageVOTypes.BOT_COMMANDS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -58051,8 +62495,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 69    Get Thread All Bots
                      */
                     case chatMessageVOTypes.THREAD_ALL_BOTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -58060,349 +62504,54 @@ WildEmitter.mixin(WildEmitter);
                      * Type 70    Send Call Request
                      */
                     case chatMessageVOTypes.CALL_REQUEST:
-                        callReceived({
-                            callId: messageContent.callId
-                        }, function (r) {
-
-                        });
-
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'RECEIVE_CALL',
-                            result: messageContent
-                        });
-
-                        currentCallId = messageContent.callId;
-
-                        break;
-
-                    /**
-                     * Type 71    Accept Call Request
-                     */
                     case chatMessageVOTypes.ACCEPT_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'ACCEPT_CALL',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 72    Reject Call Request
-                     */
                     case chatMessageVOTypes.REJECT_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'REJECT_CALL',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 73    Receive Call Request
-                     */
-                    case chatMessageVOTypes.RECIVE_CALL_REQUEST:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        if (messageContent.callId > 0) {
-                            fireEvent('callEvents', {
-                                type: 'RECEIVE_CALL',
-                                result: messageContent
-                            });
-                        }
-
-                        currentCallId = messageContent.callId;
-
-                        break;
-
-                    /**
-                     * Type 74    Start Call Request
-                     */
+                    case chatMessageVOTypes.RECEIVE_CALL_REQUEST:
                     case chatMessageVOTypes.START_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_STARTED',
-                            result: messageContent
-                        });
-
-                        for (var peer in webpeers) {
-                            if (webpeers[peer]) {
-                                webpeers[peer].dispose();
-                                delete webpeers[peer];
-                            }
-                        }
-                        webpeers = {};
-
-                        if (typeof messageContent === 'object'
-                            && messageContent.hasOwnProperty('chatDataDto')
-                            && !!messageContent.chatDataDto.kurentoAddress) {
-
-                            setCallServerName(messageContent.chatDataDto.kurentoAddress.split(',')[0]);
-
-                            startCallWebRTCFunctions({
-                                video: messageContent.clientDTO.video,
-                                mute: messageContent.clientDTO.mute,
-                                sendingTopic: messageContent.clientDTO.topicSend,
-                                receiveTopic: messageContent.clientDTO.topicReceive,
-                                brokerAddress: messageContent.chatDataDto.brokerAddressWeb,
-                                turnAddress: messageContent.chatDataDto.turnAddress,
-                            }, function (callDivs) {
-                                fireEvent('callEvents', {
-                                    type: 'CALL_DIVS',
-                                    result: callDivs
-                                });
-                            });
-                        } else {
-                            fireEvent('callEvents', {
-                                type: 'CALL_ERROR',
-                                message: 'Chat Data DTO is not present!'
-                            });
-                        }
-
-                        break;
-
-                    /**
-                     * Type 75    End Call Request
-                     */
                     case chatMessageVOTypes.END_CALL_REQUEST:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'END_CALL',
-                            result: messageContent
-                        });
-
-                        callStop();
-
-                        break;
-
-                    /**
-                     * Type 76   Call Ended
-                     */
                     case chatMessageVOTypes.END_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_ENDED',
-                            result: messageContent
-                        });
-
-                        callStop();
-
-                        break;
-
-                    /**
-                     * Type 77    Get Calls History
-                     */
                     case chatMessageVOTypes.GET_CALLS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        break;
-
-                    /**
-                     * Type 78    Call Partner Reconnecting
-                     */
                     case chatMessageVOTypes.RECONNECT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_RECONNETING',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 79    Call Partner Connects
-                     */
                     case chatMessageVOTypes.CONNECT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_CONNECTED',
-                            result: messageContent
-                        });
-
-                        restartMedia(callTopics['sendVideoTopic']);
-
+                    case chatMessageVOTypes.GROUP_CALL_REQUEST:
+                    case chatMessageVOTypes.LEAVE_CALL:
+                    case chatMessageVOTypes.ADD_CALL_PARTICIPANT:
+                    case chatMessageVOTypes.CALL_PARTICIPANT_JOINED:
+                    case chatMessageVOTypes.REMOVE_CALL_PARTICIPANT:
+                    case chatMessageVOTypes.TERMINATE_CALL:
+                    case chatMessageVOTypes.MUTE_CALL_PARTICIPANT:
+                    case chatMessageVOTypes.UNMUTE_CALL_PARTICIPANT:
+                    case chatMessageVOTypes.RECORD_CALL:
+                    case chatMessageVOTypes.END_RECORD_CALL:
+                    case chatMessageVOTypes.START_SCREEN_SHARE:
+                    case chatMessageVOTypes.END_SCREEN_SHARE:
+                    case chatMessageVOTypes.DELETE_FROM_CALL_HISTORY:
+                    case chatMessageVOTypes.TURN_ON_VIDEO_CALL:
+                    case chatMessageVOTypes.TURN_OFF_VIDEO_CALL:
+                    case chatMessageVOTypes.ACTIVE_CALL_PARTICIPANTS:
+                    case chatMessageVOTypes.CALL_SESSION_CREATED:
+                        callModule.handleChatMessages(type, chatMessageVOTypes, messageContent, contentCount, threadId, uniqueId);
                         break;
 
                     /**
                      * Type 90    Contacts Synced
                      */
                     case chatMessageVOTypes.CONTACT_SYNCED:
-                        fireEvent('contactEvents', {
+                        chatEvents.fireEvent('contactEvents', {
                             type: 'CONTACTS_SYNCED',
                             result: messageContent
                         });
                         break;
 
                     /**
-                     * Type 91    Send Group Call Request
-                     */
-                    case chatMessageVOTypes.GROUP_CALL_REQUEST:
-                        callReceived({
-                            callId: messageContent.callId
-                        }, function (r) {
-                        });
-
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'RECEIVE_CALL',
-                            result: messageContent
-                        });
-
-                        currentCallId = messageContent.callId;
-
-                        break;
-
-                    /**
-                     * Type 92    Call Partner Leave
-                     */
-                    case chatMessageVOTypes.LEAVE_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_LEFT',
-                            result: messageContent
-                        });
-
-                        if (!!messageContent[0].sendTopic) {
-                            removeFromCallUI(messageContent[0].sendTopic);
-                        }
-
-                        break;
-
-                    /**
-                     * Type 93    Add Call Participant
-                     */
-                    case chatMessageVOTypes.ADD_CALL_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        break;
-
-                    /**
-                     * Type 94    Call Participant Joined
-                     */
-                    case chatMessageVOTypes.CALL_PARTICIPANT_JOINED:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_JOINED',
-                            result: messageContent
-                        });
-
-                        restartMedia(callTopics['sendVideoTopic']);
-
-                        break;
-
-                    /**
-                     * Type 95    Remove Call Participant
-                     */
-                    case chatMessageVOTypes.REMOVE_CALL_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_REMOVED',
-                            result: messageContent
-                        });
-
-
-                        break;
-
-                    /**
-                     * Type 96    Terminate Call
-                     */
-                    case chatMessageVOTypes.TERMINATE_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'TERMINATE_CALL',
-                            result: messageContent
-                        });
-
-                        callStop();
-
-                        break;
-
-                    /**
-                     * Type 97    Mute Call Participant
-                     */
-                    case chatMessageVOTypes.MUTE_CALL_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_MUTE',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 98    UnMute Call Participant
-                     */
-                    case chatMessageVOTypes.UNMUTE_CALL_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_PARTICIPANT_UNMUTE',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
                      * Type 101    Location Ping
                      */
                     case chatMessageVOTypes.LOCATION_PING:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('systemEvents', {
+                        chatEvents.fireEvent('systemEvents', {
                             type: 'LOCATION_PING',
                             result: messageContent
                         });
@@ -58412,8 +62561,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 102    Close Thread
                      */
                     case chatMessageVOTypes.CLOSE_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
                         if (fullResponseObject) {
@@ -58423,7 +62572,7 @@ WildEmitter.mixin(WildEmitter);
                                 var thread = threadsResult.result.threads[0];
                                 thread.mute = true;
 
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_CLOSE',
                                     result: {
                                         thread: thread
@@ -58431,7 +62580,7 @@ WildEmitter.mixin(WildEmitter);
                                 });
                             });
                         } else {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_CLOSE',
                                 result: {
                                     thread: threadId
@@ -58445,8 +62594,8 @@ WildEmitter.mixin(WildEmitter);
                      * Type 104    Remove Bot Commands
                      */
                     case chatMessageVOTypes.REMOVE_BOT_COMMANDS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
                         break;
 
@@ -58454,11 +62603,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 107    Register Assistant
                      */
                     case chatMessageVOTypes.REGISTER_ASSISTANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANT_REGISTER',
                             result: messageContent
                         });
@@ -58469,11 +62618,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 108    Deactivate Assistant
                      */
                     case chatMessageVOTypes.DEACTIVATE_ASSISTANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANT_DEACTIVATE',
                             result: messageContent
                         });
@@ -58484,64 +62633,12 @@ WildEmitter.mixin(WildEmitter);
                      * Type 109    Get Assistants List
                      */
                     case chatMessageVOTypes.GET_ASSISTANTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANTS_LIST',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 110    Active Call Participants List
-                     */
-                    case chatMessageVOTypes.ACTIVE_CALL_PARTICIPANTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-                        break;
-
-                    /**
-                     * Type 111    Kafka Call Session Created
-                     */
-                    case chatMessageVOTypes.CALL_SESSION_CREATED:
-                        fireEvent('callEvents', {
-                            type: 'CALL_SESSION_CREATED',
-                            result: messageContent
-                        });
-
-                        currentCallId = messageContent.callId;
-
-                        break;
-
-                    /**
-                     * Type 113    Turn On Video Call
-                     */
-                    case chatMessageVOTypes.TURN_ON_VIDEO_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'TURN_ON_VIDEO_CALL',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 114    Turn Off Video Call
-                     */
-                    case chatMessageVOTypes.TURN_OFF_VIDEO_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'TURN_OFF_VIDEO_CALL',
                             result: messageContent
                         });
 
@@ -58551,11 +62648,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 115    Get Assistants History
                      */
                     case chatMessageVOTypes.ASSISTANT_HISTORY:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANTS_HSITORY',
                             result: messageContent
                         });
@@ -58566,11 +62663,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 116    Block Assistants
                      */
                     case chatMessageVOTypes.BLOCK_ASSISTANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANT_BLOCK',
                             result: messageContent
                         });
@@ -58581,11 +62678,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 117    UnBlock Assistant
                      */
                     case chatMessageVOTypes.UNBLOCK_ASSISTANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANT_UNBLOCK',
                             result: messageContent
                         });
@@ -58596,89 +62693,12 @@ WildEmitter.mixin(WildEmitter);
                      * Type 118    Blocked Assistants List
                      */
                     case chatMessageVOTypes.BLOCKED_ASSISTANTS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
-                        fireEvent('assistantEvents', {
+                        chatEvents.fireEvent('assistantEvents', {
                             type: 'ASSISTANTS_BLOCKED_LIST',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 121    Record Call Request
-                     */
-                    case chatMessageVOTypes.RECORD_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'START_RECORDING_CALL',
-                            result: messageContent
-                        });
-
-                        restartMedia(callTopics['sendVideoTopic']);
-
-                        break;
-
-                    /**
-                     * Type 122   End Record Call Request
-                     */
-                    case chatMessageVOTypes.END_RECORD_CALL:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'STOP_RECORDING_CALL',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 123   Start Screen Share
-                     */
-                    case chatMessageVOTypes.START_SCREEN_SHARE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'START_SCREEN_SHARE',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 124   End Screen Share
-                     */
-                    case chatMessageVOTypes.END_SCREEN_SHARE:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'END_SCREEN_SHARE',
-                            result: messageContent
-                        });
-
-                        break;
-
-                    /**
-                     * Type 125   Delete From Call List
-                     */
-                    case chatMessageVOTypes.DELETE_FROM_CALL_HISTORY:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
-                        }
-
-                        fireEvent('callEvents', {
-                            type: 'DELETE_FROM_CALL_LIST',
                             result: messageContent
                         });
 
@@ -58688,11 +62708,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 130    Mutual Groups
                      */
                     case chatMessageVOTypes.MUTUAL_GROUPS:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'MUTUAL_GROUPS',
                             result: messageContent
                         });
@@ -58703,11 +62723,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 140    Create Tag
                      */
                     case chatMessageVOTypes.CREATE_TAG:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'NEW_TAG',
                             result: messageContent
                         });
@@ -58718,11 +62738,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 141    Edit Tag
                      */
                     case chatMessageVOTypes.EDIT_TAG:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'EDIT_TAG',
                             result: messageContent
                         });
@@ -58733,11 +62753,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 142    Delete Tag
                      */
                     case chatMessageVOTypes.DELETE_TAG:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'DELETE_TAG',
                             result: messageContent
                         });
@@ -58748,11 +62768,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 143    Delete Tag
                      */
                     case chatMessageVOTypes.ADD_TAG_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'ADD_TAG_PARTICIPANT',
                             result: messageContent
                         });
@@ -58763,11 +62783,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 144    Delete Tag
                      */
                     case chatMessageVOTypes.REMOVE_TAG_PARTICIPANT:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'REMOVE_TAG_PARTICIPANT',
                             result: messageContent
                         });
@@ -58778,11 +62798,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 145    Delete Tag
                      */
                     case chatMessageVOTypes.GET_TAG_LIST:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'TAG_LIST',
                             result: messageContent
                         });
@@ -58793,11 +62813,11 @@ WildEmitter.mixin(WildEmitter);
                      * Type 151    Delete Message Thread
                      */
                     case chatMessageVOTypes.DELETE_MESSAGE_THREAD:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent));
                         }
 
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'DELETE_THREAD',
                             result: messageContent
                         });
@@ -58805,11 +62825,21 @@ WildEmitter.mixin(WildEmitter);
                         break;
 
                     /**
+                     * Type 152    Gives us a json to export for user
+                     */
+                    case chatMessageVOTypes.EXPORT_CHAT:
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount, uniqueId));
+                        }
+
+                        break;
+
+                    /**
                      * Type 999   All unknown errors
                      */
                     case chatMessageVOTypes.ERROR:
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](Utility.createReturnData(true, messageContent.message, messageContent.code, messageContent, 0));
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(true, messageContent.message, messageContent.code, messageContent, 0));
                         }
 
                         /**
@@ -58818,7 +62848,7 @@ WildEmitter.mixin(WildEmitter);
                          */
                         if (messageContent.code === 21) {
                             // TODO: Temporarily removed due to unknown side-effects
-                            // chatState = false;
+                            // chatMessaging.chatState = false;
                             // asyncClient.logout();
                             // clearChatServerCaches();
                         }
@@ -58827,9 +62857,9 @@ WildEmitter.mixin(WildEmitter);
                          * has been blocked cause of spam activity
                          */
                         if (messageContent.code === 208) {
-                            if (sendMessageCallbacks[uniqueId]) {
+                            if (chatMessaging.sendMessageCallbacks[uniqueId]) {
                                 getItemFromChatWaitQueue(uniqueId, function (message) {
-                                    fireEvent('messageEvents', {
+                                    chatEvents.fireEvent('messageEvents', {
                                         type: 'MESSAGE_FAILED',
                                         cache: false,
                                         result: {
@@ -58840,89 +62870,13 @@ WildEmitter.mixin(WildEmitter);
                             }
                         }
 
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: messageContent.code,
                             message: messageContent.message,
                             error: messageContent,
                             uniqueId: uniqueId
                         });
 
-                        break;
-                }
-            },
-
-            callMessageHandler = function (callMessage) {
-                var jsonMessage = (typeof callMessage.content === 'string' && isValidJson(callMessage.content))
-                    ? JSON.parse(callMessage.content)
-                    : callMessage.content,
-                    uniqueId = jsonMessage.uniqueId;
-
-
-                asyncRequestTimeouts[uniqueId] && clearTimeout(asyncRequestTimeouts[uniqueId]);
-
-                switch (jsonMessage.id) {
-                    case 'PROCESS_SDP_ANSWER':
-                        handleProcessSdpAnswer(jsonMessage);
-                        break;
-
-                    case 'ADD_ICE_CANDIDATE':
-                        handleAddIceCandidate(jsonMessage);
-                        break;
-
-                    case 'GET_KEY_FRAME':
-                        setTimeout(function () {
-                            restartMedia(callTopics['sendVideoTopic']);
-                        }, 2000);
-                        setTimeout(function () {
-                            restartMedia(callTopics['sendVideoTopic']);
-                        }, 4000);
-                        setTimeout(function () {
-                            restartMedia(callTopics['sendVideoTopic']);
-                        }, 8000);
-                        setTimeout(function () {
-                            restartMedia(callTopics['sendVideoTopic']);
-                        }, 12000);
-                        break;
-
-                    case 'FREEZED':
-                        handlePartnerFreeze(jsonMessage);
-                        break;
-
-                    case 'STOPALL':
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](jsonMessage);
-                        }
-                        break;
-
-                    case 'CLOSE':
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](jsonMessage);
-                        }
-                        break;
-
-                    case 'SESSION_NEW_CREATED':
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](jsonMessage);
-                        }
-                        break;
-
-                    case 'SESSION_REFRESH':
-                        if (messagesCallbacks[uniqueId]) {
-                            messagesCallbacks[uniqueId](jsonMessage);
-                        }
-                        break;
-
-                    case 'ERROR':
-                        handleError(jsonMessage, params.sendingTopic, params.receiveTopic);
-                        break;
-
-                    default:
-                        console.warn("[onmessage] Invalid message, id: " + jsonMessage.id, jsonMessage);
-                        if (jsonMessage.match(/NOT CREATE SESSION/g)) {
-                            if (currentCallParams && Object.keys(currentCallParams)) {
-                                handleCallSocketOpen(currentCallParams);
-                            }
-                        }
                         break;
                 }
             },
@@ -58947,20 +62901,20 @@ WildEmitter.mixin(WildEmitter);
                 switch (actionType) {
 
                     case chatMessageVOTypes.DELIVERY:
-                        if (threadCallbacks[threadId]) {
-                            var lastThreadCallbackIndex = Object.keys(threadCallbacks[threadId])
+                        if (chatMessaging.threadCallbacks[threadId]) {
+                            var lastThreadCallbackIndex = Object.keys(chatMessaging.threadCallbacks[threadId])
                                 .indexOf(uniqueId);
                             if (typeof lastThreadCallbackIndex !== 'undefined') {
                                 while (lastThreadCallbackIndex > -1) {
-                                    var tempUniqueId = Object.entries(threadCallbacks[threadId])[lastThreadCallbackIndex][0];
-                                    if (sendMessageCallbacks[tempUniqueId] && sendMessageCallbacks[tempUniqueId].onDeliver) {
-                                        if (threadCallbacks[threadId][tempUniqueId] && threadCallbacks[threadId][tempUniqueId].onSent) {
-                                            sendMessageCallbacks[tempUniqueId].onDeliver(
+                                    var tempUniqueId = Object.entries(chatMessaging.threadCallbacks[threadId])[lastThreadCallbackIndex][0];
+                                    if (chatMessaging.sendMessageCallbacks[tempUniqueId] && chatMessaging.sendMessageCallbacks[tempUniqueId].onDeliver) {
+                                        if (chatMessaging.threadCallbacks[threadId][tempUniqueId] && chatMessaging.threadCallbacks[threadId][tempUniqueId].onSent) {
+                                            chatMessaging.sendMessageCallbacks[tempUniqueId].onDeliver(
                                                 {
                                                     uniqueId: tempUniqueId
                                                 });
-                                            delete (sendMessageCallbacks[tempUniqueId].onDeliver);
-                                            threadCallbacks[threadId][tempUniqueId].onDeliver = true;
+                                            delete (chatMessaging.sendMessageCallbacks[tempUniqueId].onDeliver);
+                                            chatMessaging.threadCallbacks[threadId][tempUniqueId].onDeliver = true;
                                         }
                                     }
 
@@ -58971,37 +62925,37 @@ WildEmitter.mixin(WildEmitter);
                         break;
 
                     case chatMessageVOTypes.SEEN:
-                        if (threadCallbacks[threadId]) {
-                            var lastThreadCallbackIndex = Object.keys(threadCallbacks[threadId])
+                        if (chatMessaging.threadCallbacks[threadId]) {
+                            var lastThreadCallbackIndex = Object.keys(chatMessaging.threadCallbacks[threadId])
                                 .indexOf(uniqueId);
                             if (typeof lastThreadCallbackIndex !== 'undefined') {
                                 while (lastThreadCallbackIndex > -1) {
-                                    var tempUniqueId = Object.entries(threadCallbacks[threadId])[lastThreadCallbackIndex][0];
+                                    var tempUniqueId = Object.entries(chatMessaging.threadCallbacks[threadId])[lastThreadCallbackIndex][0];
 
-                                    if (sendMessageCallbacks[tempUniqueId] && sendMessageCallbacks[tempUniqueId].onSeen) {
-                                        if (threadCallbacks[threadId][tempUniqueId] && threadCallbacks[threadId][tempUniqueId].onSent) {
-                                            if (!threadCallbacks[threadId][tempUniqueId].onDeliver) {
-                                                sendMessageCallbacks[tempUniqueId].onDeliver(
+                                    if (chatMessaging.sendMessageCallbacks[tempUniqueId] && chatMessaging.sendMessageCallbacks[tempUniqueId].onSeen) {
+                                        if (chatMessaging.threadCallbacks[threadId][tempUniqueId] && chatMessaging.threadCallbacks[threadId][tempUniqueId].onSent) {
+                                            if (!chatMessaging.threadCallbacks[threadId][tempUniqueId].onDeliver) {
+                                                chatMessaging.sendMessageCallbacks[tempUniqueId].onDeliver(
                                                     {
                                                         uniqueId: tempUniqueId
                                                     });
-                                                delete (sendMessageCallbacks[tempUniqueId].onDeliver);
-                                                threadCallbacks[threadId][tempUniqueId].onDeliver = true;
+                                                delete (chatMessaging.sendMessageCallbacks[tempUniqueId].onDeliver);
+                                                chatMessaging.threadCallbacks[threadId][tempUniqueId].onDeliver = true;
                                             }
 
-                                            sendMessageCallbacks[tempUniqueId].onSeen(
+                                            chatMessaging.sendMessageCallbacks[tempUniqueId].onSeen(
                                                 {
                                                     uniqueId: tempUniqueId
                                                 });
 
-                                            delete (sendMessageCallbacks[tempUniqueId].onSeen);
-                                            threadCallbacks[threadId][tempUniqueId].onSeen = true;
+                                            delete (chatMessaging.sendMessageCallbacks[tempUniqueId].onSeen);
+                                            chatMessaging.threadCallbacks[threadId][tempUniqueId].onSeen = true;
 
-                                            if (threadCallbacks[threadId][tempUniqueId].onSent &&
-                                                threadCallbacks[threadId][tempUniqueId].onDeliver &&
-                                                threadCallbacks[threadId][tempUniqueId].onSeen) {
-                                                delete threadCallbacks[threadId][tempUniqueId];
-                                                delete sendMessageCallbacks[tempUniqueId];
+                                            if (chatMessaging.threadCallbacks[threadId][tempUniqueId].onSent &&
+                                                chatMessaging.threadCallbacks[threadId][tempUniqueId].onDeliver &&
+                                                chatMessaging.threadCallbacks[threadId][tempUniqueId].onSeen) {
+                                                delete chatMessaging.threadCallbacks[threadId][tempUniqueId];
+                                                delete chatMessaging.sendMessageCallbacks[tempUniqueId];
                                             }
                                         }
                                     }
@@ -59052,7 +63006,7 @@ WildEmitter.mixin(WildEmitter);
                         try {
                             var salt = Utility.generateUUID();
                             tempData.id = parseInt(message.id);
-                            tempData.owner = parseInt(userInfo.id);
+                            tempData.owner = parseInt(chatMessaging.userInfo.id);
                             tempData.threadId = parseInt(message.threadId);
                             tempData.time = message.time;
                             tempData.message = Utility.crypt(message.message, cacheSecret, salt);
@@ -59061,7 +63015,7 @@ WildEmitter.mixin(WildEmitter);
                             tempData.sendStatus = 'sent';
 
                         } catch (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
@@ -59070,14 +63024,14 @@ WildEmitter.mixin(WildEmitter);
 
                         db.messages.put(tempData)
                             .catch(function (error) {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: error.code,
                                     message: error.message,
                                     error: error
                                 });
                             });
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6601,
                             message: CHAT_ERRORS[6601],
                             error: null
@@ -59085,7 +63039,7 @@ WildEmitter.mixin(WildEmitter);
                     }
                 }
 
-                fireEvent('messageEvents', {
+                chatEvents.fireEvent('messageEvents', {
                     type: 'MESSAGE_NEW',
                     cache: false,
                     result: {
@@ -59102,7 +63056,7 @@ WildEmitter.mixin(WildEmitter);
                 threadObject.lastParticipantName = (!!message.participant && message.participant.hasOwnProperty('name')) ? message.participant.name : '';
                 threadObject.lastMessage = (message.hasOwnProperty('message')) ? message.message : '';
 
-                fireEvent('threadEvents', {
+                chatEvents.fireEvent('threadEvents', {
                     type: 'THREAD_UNREAD_COUNT_UPDATED',
                     result: {
                         thread: threadObject,
@@ -59110,7 +63064,7 @@ WildEmitter.mixin(WildEmitter);
                     }
                 });
 
-                fireEvent('threadEvents', {
+                chatEvents.fireEvent('threadEvents', {
                     type: 'THREAD_LAST_ACTIVITY_TIME',
                     result: {
                         thread: threadObject
@@ -59123,7 +63077,7 @@ WildEmitter.mixin(WildEmitter);
                 //     }, function (threadsResult) {
                 //         var threads = threadsResult.result.threads;
                 //
-                //         fireEvent('threadEvents', {
+                //         chatEvents.fireEvent('threadEvents', {
                 //             type: 'THREAD_UNREAD_COUNT_UPDATED',
                 //             result: {
                 //                 thread: threads[0],
@@ -59131,7 +63085,7 @@ WildEmitter.mixin(WildEmitter);
                 //             }
                 //         });
                 //
-                //         fireEvent('threadEvents', {
+                //         chatEvents.fireEvent('threadEvents', {
                 //             type: 'THREAD_LAST_ACTIVITY_TIME',
                 //             result: {
                 //                 thread: threads[0]
@@ -59140,14 +63094,14 @@ WildEmitter.mixin(WildEmitter);
                 //
                 //     });
                 // } else {
-                //     fireEvent('threadEvents', {
+                //     chatEvents.fireEvent('threadEvents', {
                 //         type: 'THREAD_LAST_ACTIVITY_TIME',
                 //         result: {
                 //             thread: threadId
                 //         }
                 //     });
                 //
-                //     fireEvent('threadEvents', {
+                //     chatEvents.fireEvent('threadEvents', {
                 //         type: 'THREAD_UNREAD_COUNT_UPDATED',
                 //         result: {
                 //             thread: messageContent.id,
@@ -59188,7 +63142,7 @@ WildEmitter.mixin(WildEmitter);
                             var tempData = {},
                                 salt = Utility.generateUUID();
                             tempData.id = parseInt(message.id);
-                            tempData.owner = parseInt(userInfo.id);
+                            tempData.owner = parseInt(chatMessaging.userInfo.id);
                             tempData.threadId = parseInt(message.threadId);
                             tempData.time = message.time;
                             tempData.message = Utility.crypt(message.message, cacheSecret, salt);
@@ -59200,21 +63154,21 @@ WildEmitter.mixin(WildEmitter);
                              */
                             db.messages.put(tempData)
                                 .catch(function (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: error.code,
                                         message: error.message,
                                         error: error
                                     });
                                 });
                         } catch (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
                             });
                         }
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6601,
                             message: CHAT_ERRORS[6601],
                             error: null
@@ -59228,14 +63182,14 @@ WildEmitter.mixin(WildEmitter);
                     }, function (threadsResult) {
                         var threads = threadsResult.result.threads;
                         if (!threadsResult.cache) {
-                            fireEvent('messageEvents', {
+                            chatEvents.fireEvent('messageEvents', {
                                 type: 'MESSAGE_EDIT',
                                 result: {
                                     message: message
                                 }
                             });
                             if (message.pinned) {
-                                fireEvent('threadEvents', {
+                                chatEvents.fireEvent('threadEvents', {
                                     type: 'THREAD_LAST_ACTIVITY_TIME',
                                     result: {
                                         thread: threads[0]
@@ -59245,14 +63199,14 @@ WildEmitter.mixin(WildEmitter);
                         }
                     });
                 } else {
-                    fireEvent('messageEvents', {
+                    chatEvents.fireEvent('messageEvents', {
                         type: 'MESSAGE_EDIT',
                         result: {
                             message: message
                         }
                     });
                     if (message.pinned) {
-                        fireEvent('threadEvents', {
+                        chatEvents.fireEvent('threadEvents', {
                             type: 'THREAD_LAST_ACTIVITY_TIME',
                             result: {
                                 thread: threadId
@@ -59283,7 +63237,7 @@ WildEmitter.mixin(WildEmitter);
                 var redirectToThread = (showThread === true) ? showThread : false;
 
                 if (addFromService) {
-                    fireEvent('threadEvents', {
+                    chatEvents.fireEvent('threadEvents', {
                         type: 'THREAD_NEW',
                         redirectToThread: redirectToThread,
                         result: {
@@ -59302,13 +63256,13 @@ WildEmitter.mixin(WildEmitter);
                                 var salt = Utility.generateUUID();
 
                                 tempData.id = threadData.id;
-                                tempData.owner = userInfo.id;
+                                tempData.owner = chatMessaging.userInfo.id;
                                 tempData.title = Utility.crypt(threadData.title, cacheSecret, salt);
                                 tempData.time = threadData.time;
                                 tempData.data = Utility.crypt(JSON.stringify(unsetNotSeenDuration(threadData)), cacheSecret, salt);
                                 tempData.salt = salt;
                             } catch (error) {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: error.code,
                                     message: error.message,
                                     error: error
@@ -59317,14 +63271,14 @@ WildEmitter.mixin(WildEmitter);
 
                             db.threads.put(tempData)
                                 .catch(function (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: error.code,
                                         message: error.message,
                                         error: error
                                     });
                                 });
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 6601,
                                 message: CHAT_ERRORS[6601],
                                 error: null
@@ -59661,65 +63615,6 @@ WildEmitter.mixin(WildEmitter);
             },
 
             /**
-             * Format Data To Make Call Participant
-             *
-             * This functions reformats given JSON to proper Object
-             *
-             * @access private
-             *
-             * @param {object}  messageContent    Json object of thread taken from chat server
-             *
-             * @param threadId
-             * @return {object} participant Object
-             */
-            formatDataToMakeCallParticipant = function (messageContent) {
-                /**
-                 * + CallParticipantVO                   {object}
-                 *    - id                           {int}
-                 *    - joinTime                     {int}
-                 *    - leaveTime                    {int}
-                 *    - threadParticipant            {object}
-                 *    - sendTopic                    {string}
-                 *    - receiveTopic                 {string}
-                 *    - brokerAddress                {string}
-                 *    - active                       {boolean}
-                 *    - callSession                  {object}
-                 *    - callStatus                   {int}
-                 *    - createTime                   {int}
-                 *    - sendKey                      {string}
-                 *    - mute                         {boolean}
-                 */
-
-                var participant = {
-                    id: messageContent.id,
-                    joinTime: messageContent.joinTime,
-                    leaveTime: messageContent.leaveTime,
-                    sendTopic: messageContent.sendTopic,
-                    receiveTopic: messageContent.receiveTopic,
-                    brokerAddress: messageContent.brokerAddress,
-                    active: messageContent.active,
-                    callSession: messageContent.callSession,
-                    callStatus: messageContent.callStatus,
-                    createTime: messageContent.createTime,
-                    sendKey: messageContent.sendKey,
-                    mute: messageContent.mute
-                };
-
-                // Add Chat Participant if exist
-                if (messageContent.participantVO) {
-                    participant.participantVO = messageContent.participantVO;
-                }
-
-                // Add Call Session if exist
-                if (messageContent.callSession) {
-                    participant.callSession = messageContent.callSession;
-                }
-
-                // return participant;
-                return JSON.parse(JSON.stringify(participant));
-            },
-
-            /**
              * Format Data To Make Conversation
              *
              * This functions reformats given JSON to proper Object
@@ -60011,7 +63906,8 @@ WildEmitter.mixin(WildEmitter);
                     systemMetadata: pushMessageVO.systemMetadata,
                     time: time,
                     timeMiliSeconds: timeMiliSeconds,
-                    timeNanos: parseInt(pushMessageVO.timeNanos)
+                    timeNanos: parseInt(pushMessageVO.timeNanos),
+                    callHistory: pushMessageVO.callHistoryVO
                 };
 
                 if (pushMessageVO.participant) {
@@ -60078,50 +63974,6 @@ WildEmitter.mixin(WildEmitter);
             },
 
             /**
-             * Format Data To Make Call Message
-             *
-             * This functions reformats given JSON to proper Object
-             *
-             * @access private
-             *
-             * @param {object}  messageContent    Json object of thread taken from chat server
-             *
-             * @return {object} Call message Object
-             */
-            formatDataToMakeCallMessage = function (threadId, pushMessageVO) {
-                /**
-                 * + CallVO                   {object}
-                 *    - id                    {int}
-                 *    - creatorId             {int}
-                 *    - type                  {int}
-                 *    - createTime            {string}
-                 *    - startTime             {string}
-                 *    - endTime               {string}
-                 *    - status                {int}
-                 *    - isGroup               {boolean}
-                 *    - callParticipants      {object}
-                 *    - partnerParticipantVO  {object}
-                 *    - conversationVO        {object}
-                 */
-                var callMessage = {
-                    id: pushMessageVO.id,
-                    creatorId: pushMessageVO.creatorId,
-                    type: pushMessageVO.type,
-                    createTime: pushMessageVO.createTime,
-                    startTime: pushMessageVO.startTime,
-                    endTime: pushMessageVO.endTime,
-                    status: pushMessageVO.status,
-                    isGroup: pushMessageVO.isGroup,
-                    callParticipants: pushMessageVO.callParticipants,
-                    partnerParticipantVO: pushMessageVO.partnerParticipantVO,
-                    conversationVO: pushMessageVO.conversationVO
-                };
-
-                // return pinMessage;
-                return JSON.parse(JSON.stringify(callMessage));
-            },
-
-            /**
              * Reformat Thread History
              *
              * This functions reformats given Array of thread Messages
@@ -60162,29 +64014,6 @@ WildEmitter.mixin(WildEmitter);
 
                 for (var i = 0; i < participantsContent.length; i++) {
                     returnData.push(formatDataToMakeParticipant(participantsContent[i], threadId));
-                }
-
-                return returnData;
-            },
-
-            /**
-             * Reformat Call Participants
-             *
-             * This functions reformats given Array of call Participants
-             * into proper call participant
-             *
-             * @access private
-             *
-             * @param {object}  participantsContent   Array of Call Participant Objects
-             * @param {int}    threadId              Id of call
-             *
-             * @return {object} Formatted Call Participant Array
-             */
-            reformatCallParticipants = function (participantsContent) {
-                var returnData = [];
-
-                for (var i = 0; i < participantsContent.length; i++) {
-                    returnData.push(formatDataToMakeCallParticipant(participantsContent[i]));
                 }
 
                 return returnData;
@@ -60328,20 +64157,20 @@ WildEmitter.mixin(WildEmitter);
 
                         if (Object.keys(whereClause).length === 0) {
                             thenAble = db.threads.where('[owner+time]')
-                                .between([userInfo.id, minIntegerValue], [userInfo.id, maxIntegerValue * 1000])
+                                .between([chatMessaging.userInfo.id, minIntegerValue], [chatMessaging.userInfo.id, maxIntegerValue * 1000])
                                 .reverse();
                         } else {
                             if (whereClause.hasOwnProperty('threadIds')) {
                                 thenAble = db.threads.where('id')
                                     .anyOf(whereClause.threadIds)
                                     .and(function (thread) {
-                                        return thread.owner === userInfo.id;
+                                        return thread.owner === chatMessaging.userInfo.id;
                                     });
                             }
 
                             if (whereClause.hasOwnProperty('name')) {
                                 thenAble = db.threads.where('owner')
-                                    .equals(parseInt(userInfo.id))
+                                    .equals(parseInt(chatMessaging.userInfo.id))
                                     .filter(function (thread) {
                                         var reg = new RegExp(whereClause.name);
                                         return reg.test(chatDecrypt(thread.title, cacheSecret, thread.salt));
@@ -60350,7 +64179,7 @@ WildEmitter.mixin(WildEmitter);
 
                             if (whereClause.hasOwnProperty('creatorCoreUserId')) {
                                 thenAble = db.threads.where('owner')
-                                    .equals(parseInt(userInfo.id))
+                                    .equals(parseInt(chatMessaging.userInfo.id))
                                     .filter(function (thread) {
                                         var threadObject = JSON.parse(chatDecrypt(thread.data, cacheSecret, thread.salt), false);
                                         return parseInt(threadObject.inviter.coreUserId) === parseInt(whereClause.creatorCoreUserId);
@@ -60363,7 +64192,7 @@ WildEmitter.mixin(WildEmitter);
                             .toArray()
                             .then(function (threads) {
                                 db.threads.where('owner')
-                                    .equals(parseInt(userInfo.id))
+                                    .equals(parseInt(chatMessaging.userInfo.id))
                                     .count()
                                     .then(function (threadsCount) {
                                         var cacheData = [];
@@ -60372,7 +64201,7 @@ WildEmitter.mixin(WildEmitter);
                                             try {
                                                 cacheData.push(createThread(JSON.parse(chatDecrypt(threads[i].data, cacheSecret, threads[i].salt)), false));
                                             } catch (error) {
-                                                fireEvent('error', {
+                                                chatEvents.fireEvent('error', {
                                                     code: error.code,
                                                     message: error.message,
                                                     error: error
@@ -60401,14 +64230,14 @@ WildEmitter.mixin(WildEmitter);
                                     });
                             })
                             .catch(function (error) {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: error.code,
                                     message: error.message,
                                     error: error
                                 });
                             });
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6601,
                             message: CHAT_ERRORS[6601],
                             error: null
@@ -60419,7 +64248,7 @@ WildEmitter.mixin(WildEmitter);
                 /**
                  * Retrive get threads response from server
                  */
-                return sendMessage(sendMessageParams, {
+                return chatMessaging.sendMessage(sendMessageParams, {
                     onResult: function (result) {
                         var returnData = {
                             hasError: result.hasError,
@@ -60505,7 +64334,7 @@ WildEmitter.mixin(WildEmitter);
 
                                 var workerCommand = {
                                     type: 'getThreads',
-                                    userId: userInfo.id,
+                                    userId: chatMessaging.userInfo.id,
                                     data: JSON.stringify(resultData.threads)
                                 };
 
@@ -60544,7 +64373,7 @@ WildEmitter.mixin(WildEmitter);
                                                 salt = Utility.generateUUID();
 
                                             tempData.id = resultData.threads[i].id;
-                                            tempData.owner = userInfo.id;
+                                            tempData.owner = chatMessaging.userInfo.id;
                                             tempData.title = Utility.crypt(resultData.threads[i].title, cacheSecret, salt);
                                             tempData.pin = resultData.threads[i].pin;
                                             tempData.time = (resultData.threads[i].pin) ? resultData.threads[i].time * pinnedThreadsOrderTime : resultData.threads[i].time;
@@ -60554,7 +64383,7 @@ WildEmitter.mixin(WildEmitter);
                                             cacheData.push(tempData);
                                             pinnedThreadsOrderTime--;
                                         } catch (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -60564,14 +64393,14 @@ WildEmitter.mixin(WildEmitter);
 
                                     db.threads.bulkPut(cacheData)
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
                                             });
                                         });
                                 } else {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: 6601,
                                         message: CHAT_ERRORS[6601],
                                         error: null
@@ -60588,7 +64417,7 @@ WildEmitter.mixin(WildEmitter);
                         callback = undefined;
 
                         if (!returnData.hasError && returnCache) {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREADS_LIST_CHANGE',
                                 result: returnData.result
                             });
@@ -60606,7 +64435,7 @@ WildEmitter.mixin(WildEmitter);
 
                 sendMessageParams.content.summary = params.summary;
 
-                return sendMessage(sendMessageParams, {
+                return chatMessaging.sendMessage(sendMessageParams, {
                     onResult: function (result) {
 
                         if (!result.hasError) {
@@ -60618,20 +64447,20 @@ WildEmitter.mixin(WildEmitter);
                                     }
                                     db.threads
                                         .where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .and(function (thread) {
                                             return allThreads.indexOf(thread.id) < 0;
                                         })
                                         .delete()
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
                                             });
                                         });
                                 } else {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: 6601,
                                         message: CHAT_ERRORS[6601],
                                         error: null
@@ -60714,7 +64543,7 @@ WildEmitter.mixin(WildEmitter);
 
                                 sendingQueueMessages.push(formatDataToMakeMessage(sendQueueMessages[i].threadId, {
                                     uniqueId: sendQueueMessages[i].uniqueId,
-                                    ownerId: userInfo.id,
+                                    ownerId: chatMessaging.userInfo.id,
                                     message: sendQueueMessages[i].content,
                                     metadata: sendQueueMessages[i].metadata,
                                     systemMetadata: sendQueueMessages[i].systemMetadata,
@@ -60731,7 +64560,7 @@ WildEmitter.mixin(WildEmitter);
                     if (uploadingQueue) {
                         getChatUploadQueue(parseInt(params.threadId), function (uploadQueueMessages) {
                             for (var i = 0; i < uploadQueueMessages.length; i++) {
-                                uploadQueueMessages[i].message.participant = userInfo;
+                                uploadQueueMessages[i].message.participant = chatMessaging.userInfo;
                                 var time = new Date().getTime();
                                 uploadQueueMessages[i].message.time = time;
                                 uploadQueueMessages[i].message.timeNanos = (time % 1000) * 1000000;
@@ -60755,13 +64584,13 @@ WildEmitter.mixin(WildEmitter);
                                 failedQueueMessages[i] = formatDataToMakeMessage(waitQueueMessages[i].threadId,
                                     {
                                         uniqueId: decryptedEnqueuedMessage.uniqueId,
-                                        ownerId: userInfo.id,
+                                        ownerId: chatMessaging.userInfo.id,
                                         message: decryptedEnqueuedMessage.content,
                                         metadata: decryptedEnqueuedMessage.metadata,
                                         systemMetadata: decryptedEnqueuedMessage.systemMetadata,
                                         replyInfo: decryptedEnqueuedMessage.replyInfo,
                                         forwardInfo: decryptedEnqueuedMessage.forwardInfo,
-                                        participant: userInfo,
+                                        participant: chatMessaging.userInfo,
                                         time: time,
                                         timeNanos: (time % 1000) * 1000000
                                     }
@@ -60862,13 +64691,13 @@ WildEmitter.mixin(WildEmitter);
                                     collection = table.where('id')
                                         .equals(parseInt(params.id))
                                         .and(function (message) {
-                                            return message.owner === userInfo.id;
+                                            return message.owner === chatMessaging.userInfo.id;
                                         })
                                         .reverse();
                                 } else {
                                     collection = table.where('[threadId+owner+time]')
-                                        .between([parseInt(params.threadId), parseInt(userInfo.id), minIntegerValue],
-                                            [parseInt(params.threadId), parseInt(userInfo.id), maxIntegerValue * 1000])
+                                        .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), minIntegerValue],
+                                            [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), maxIntegerValue * 1000])
                                         .reverse();
                                 }
 
@@ -60937,8 +64766,8 @@ WildEmitter.mixin(WildEmitter);
                                             if (cacheFirstMessage && cacheFirstMessage.time > 0) {
                                                 db.messageGaps
                                                     .where('[threadId+owner+time]')
-                                                    .between([parseInt(params.threadId), parseInt(userInfo.id), cacheFirstMessage.time],
-                                                        [parseInt(params.threadId), parseInt(userInfo.id), maxIntegerValue * 1000], true, true)
+                                                    .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), cacheFirstMessage.time],
+                                                        [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), maxIntegerValue * 1000], true, true)
                                                     .toArray()
                                                     .then(function (gaps) {
                                                         // TODO fill these gaps in a worker
@@ -60947,7 +64776,7 @@ WildEmitter.mixin(WildEmitter);
                                                         }
                                                     })
                                                     .catch(function (error) {
-                                                        fireEvent('error', {
+                                                        chatEvents.fireEvent('error', {
                                                             code: error.code,
                                                             message: error.message,
                                                             error: error
@@ -60987,7 +64816,7 @@ WildEmitter.mixin(WildEmitter);
                                                                         tempMessage.systemMetadata]))
                                                                 };
                                                             } catch (error) {
-                                                                fireEvent('error', {
+                                                                chatEvents.fireEvent('error', {
                                                                     code: error.code,
                                                                     message: error.message,
                                                                     error: error
@@ -61047,7 +64876,7 @@ WildEmitter.mixin(WildEmitter);
                                                                     callback = undefined;
                                                                 })
                                                                 .catch(function (error) {
-                                                                    fireEvent('error', {
+                                                                    chatEvents.fireEvent('error', {
                                                                         code: error.code,
                                                                         message: error.message,
                                                                         error: error
@@ -61056,7 +64885,7 @@ WildEmitter.mixin(WildEmitter);
                                                         }
                                                     })
                                                     .catch(function (error) {
-                                                        fireEvent('error', {
+                                                        chatEvents.fireEvent('error', {
                                                             code: error.code,
                                                             message: error.message,
                                                             error: error
@@ -61066,14 +64895,14 @@ WildEmitter.mixin(WildEmitter);
                                         }
                                     })
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -61084,7 +64913,7 @@ WildEmitter.mixin(WildEmitter);
                         /**
                          * Get Thread Messages From Server
                          */
-                        return sendMessage(sendMessageParams, {
+                        return chatMessaging.sendMessage(sendMessageParams, {
                             onResult: function (result) {
 
                                 var returnData = {
@@ -61111,7 +64940,7 @@ WildEmitter.mixin(WildEmitter);
                                         /**
                                          * Sending Delivery for Last Message of Thread
                                          */
-                                        if (userInfo.id !== firstMessage.participant.id && !firstMessage.delivered) {
+                                        if (chatMessaging.userInfo.id !== firstMessage.participant.id && !firstMessage.delivered) {
                                             putInMessagesDeliveryQueue(params.threadId, firstMessage.id);
                                         }
                                     }
@@ -61170,11 +64999,11 @@ WildEmitter.mixin(WildEmitter);
                                                             var finalMessageTime = cacheFirstMessage.time;
 
                                                             db.messages.where('[threadId+owner+time]')
-                                                                .between([parseInt(params.threadId), parseInt(userInfo.id), finalMessageTime],
-                                                                    [parseInt(params.threadId), parseInt(userInfo.id), maxIntegerValue * 1000], true, false)
+                                                                .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), finalMessageTime],
+                                                                    [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), maxIntegerValue * 1000], true, false)
                                                                 .delete()
                                                                 .catch(function (error) {
-                                                                    fireEvent('error', {
+                                                                    chatEvents.fireEvent('error', {
                                                                         code: error.code,
                                                                         message: error.message,
                                                                         error: error
@@ -61194,11 +65023,11 @@ WildEmitter.mixin(WildEmitter);
                                                             var finalMessageTime = cacheFirstMessage.time;
 
                                                             db.messages.where('[threadId+owner+time]')
-                                                                .between([parseInt(params.threadId), parseInt(userInfo.id), 0],
-                                                                    [parseInt(params.threadId), parseInt(userInfo.id), finalMessageTime], true, true)
+                                                                .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), 0],
+                                                                    [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), finalMessageTime], true, true)
                                                                 .delete()
                                                                 .catch(function (error) {
-                                                                    fireEvent('error', {
+                                                                    chatEvents.fireEvent('error', {
                                                                         code: error.code,
                                                                         message: error.message,
                                                                         error: error
@@ -61233,11 +65062,11 @@ WildEmitter.mixin(WildEmitter);
                                                                 : firstMessage.time;
 
                                                             db.messages.where('[threadId+owner+time]')
-                                                                .between([parseInt(params.threadId), parseInt(userInfo.id), 0],
-                                                                    [parseInt(params.threadId), parseInt(userInfo.id), finalMessageTime], true, false)
+                                                                .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), 0],
+                                                                    [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), finalMessageTime], true, false)
                                                                 .delete()
                                                                 .catch(function (error) {
-                                                                    fireEvent('error', {
+                                                                    chatEvents.fireEvent('error', {
                                                                         code: error.code,
                                                                         message: error.message,
                                                                         error: error
@@ -61268,11 +65097,11 @@ WildEmitter.mixin(WildEmitter);
                                                                 var finalMessageTime = firstMessage.time;
 
                                                                 db.messages.where('[threadId+owner+time]')
-                                                                    .between([parseInt(params.threadId), parseInt(userInfo.id), 0],
-                                                                        [parseInt(params.threadId), parseInt(userInfo.id), finalMessageTime], true, false)
+                                                                    .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), 0],
+                                                                        [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), finalMessageTime], true, false)
                                                                     .delete()
                                                                     .catch(function (error) {
-                                                                        fireEvent('error', {
+                                                                        chatEvents.fireEvent('error', {
                                                                             code: error.code,
                                                                             message: error.message,
                                                                             error: error
@@ -61294,11 +65123,11 @@ WildEmitter.mixin(WildEmitter);
                                                                 var finalMessageTime = firstMessage.time;
 
                                                                 db.messages.where('[threadId+owner+time]')
-                                                                    .between([parseInt(params.threadId), parseInt(userInfo.id), finalMessageTime],
-                                                                        [parseInt(params.threadId), parseInt(userInfo.id), maxIntegerValue * 1000], false, true)
+                                                                    .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), finalMessageTime],
+                                                                        [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), maxIntegerValue * 1000], false, true)
                                                                     .delete()
                                                                     .catch(function (error) {
-                                                                        fireEvent('error', {
+                                                                        chatEvents.fireEvent('error', {
                                                                             code: error.code,
                                                                             message: error.message,
                                                                             error: error
@@ -61323,11 +65152,11 @@ WildEmitter.mixin(WildEmitter);
                                                                 : lastMessage.time;
 
                                                         db.messages.where('[threadId+owner+time]')
-                                                            .between([parseInt(params.threadId), parseInt(userInfo.id), boundryStartMessageTime],
-                                                                [parseInt(params.threadId), parseInt(userInfo.id), boundryEndMessageTime], true, true)
+                                                            .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), boundryStartMessageTime],
+                                                                [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), boundryEndMessageTime], true, true)
                                                             .delete()
                                                             .catch(function (error) {
-                                                                fireEvent('error', {
+                                                                chatEvents.fireEvent('error', {
                                                                     code: error.code,
                                                                     message: error.message,
                                                                     error: error
@@ -61358,11 +65187,11 @@ WildEmitter.mixin(WildEmitter);
                                                         db.messages.where('id')
                                                             .equals(parseInt(whereClause.id))
                                                             .and(function (message) {
-                                                                return message.owner === userInfo.id;
+                                                                return message.owner === chatMessaging.userInfo.id;
                                                             })
                                                             .delete()
                                                             .catch(function (error) {
-                                                                fireEvent('error', {
+                                                                chatEvents.fireEvent('error', {
                                                                     code: error.code,
                                                                     message: error.message,
                                                                     error: error
@@ -61380,15 +65209,15 @@ WildEmitter.mixin(WildEmitter);
                                                      */
                                                     if (whereClause.hasOwnProperty('query') && typeof whereClause.query == 'string') {
                                                         db.messages.where('[threadId+owner+time]')
-                                                            .between([parseInt(params.threadId), parseInt(userInfo.id), minIntegerValue],
-                                                                [parseInt(params.threadId), parseInt(userInfo.id), maxIntegerValue * 1000])
+                                                            .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), minIntegerValue],
+                                                                [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), maxIntegerValue * 1000])
                                                             .and(function (message) {
                                                                 var reg = new RegExp(whereClause.query);
                                                                 return reg.test(chatDecrypt(message.message, cacheSecret, message.salt));
                                                             })
                                                             .delete()
                                                             .catch(function (error) {
-                                                                fireEvent('error', {
+                                                                chatEvents.fireEvent('error', {
                                                                     code: error.code,
                                                                     message: error.message,
                                                                     error: error
@@ -61431,11 +65260,11 @@ WildEmitter.mixin(WildEmitter);
                                                                         : (whereClause.toTime + 1) * 1000000;
 
                                                                 db.messages.where('[threadId+owner+time]')
-                                                                    .between([parseInt(params.threadId), parseInt(userInfo.id), fromTime],
-                                                                        [parseInt(params.threadId), parseInt(userInfo.id), toTime], true, true)
+                                                                    .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), fromTime],
+                                                                        [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), toTime], true, true)
                                                                     .delete()
                                                                     .catch(function (error) {
-                                                                        fireEvent('error', {
+                                                                        chatEvents.fireEvent('error', {
                                                                             code: error.code,
                                                                             message: error.message,
                                                                             error: error
@@ -61456,11 +65285,11 @@ WildEmitter.mixin(WildEmitter);
                                                                     : whereClause.fromTime * 1000000;
 
                                                                 db.messages.where('[threadId+owner+time]')
-                                                                    .between([parseInt(params.threadId), parseInt(userInfo.id), fromTime],
-                                                                        [parseInt(params.threadId), parseInt(userInfo.id), maxIntegerValue * 1000], true, false)
+                                                                    .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), fromTime],
+                                                                        [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), maxIntegerValue * 1000], true, false)
                                                                     .delete()
                                                                     .catch(function (error) {
-                                                                        fireEvent('error', {
+                                                                        chatEvents.fireEvent('error', {
                                                                             code: error.code,
                                                                             message: error.message,
                                                                             error: error
@@ -61480,11 +65309,11 @@ WildEmitter.mixin(WildEmitter);
                                                                     : (whereClause.toTime + 1) * 1000000;
 
                                                                 db.messages.where('[threadId+owner+time]')
-                                                                    .between([parseInt(params.threadId), parseInt(userInfo.id), minIntegerValue],
-                                                                        [parseInt(params.threadId), parseInt(userInfo.id), toTime], true, true)
+                                                                    .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), minIntegerValue],
+                                                                        [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), toTime], true, true)
                                                                     .delete()
                                                                     .catch(function (error) {
-                                                                        fireEvent('error', {
+                                                                        chatEvents.fireEvent('error', {
                                                                             code: error.code,
                                                                             message: error.message,
                                                                             error: error
@@ -61511,11 +65340,11 @@ WildEmitter.mixin(WildEmitter);
                                                                     : lastMessage.time;
 
                                                             db.messages.where('[threadId+owner+time]')
-                                                                .between([parseInt(params.threadId), parseInt(userInfo.id), boundryStartMessageTime],
-                                                                    [parseInt(params.threadId), parseInt(userInfo.id), boundryEndMessageTime], true, true)
+                                                                .between([parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), boundryStartMessageTime],
+                                                                    [parseInt(params.threadId), parseInt(chatMessaging.userInfo.id), boundryEndMessageTime], true, true)
                                                                 .delete()
                                                                 .catch(function (error) {
-                                                                    fireEvent('error', {
+                                                                    chatEvents.fireEvent('error', {
                                                                         code: error.code,
                                                                         message: error.message,
                                                                         error: error
@@ -61545,7 +65374,7 @@ WildEmitter.mixin(WildEmitter);
                                                     var tempData = {},
                                                         salt = Utility.generateUUID();
                                                     tempData.id = parseInt(history[i].id);
-                                                    tempData.owner = parseInt(userInfo.id);
+                                                    tempData.owner = parseInt(chatMessaging.userInfo.id);
                                                     tempData.threadId = parseInt(history[i].threadId);
                                                     tempData.time = history[i].time;
                                                     tempData.message = Utility.crypt(history[i].message, cacheSecret, salt);
@@ -61557,7 +65386,7 @@ WildEmitter.mixin(WildEmitter);
                                                     cacheData.push(tempData);
                                                     resultMessagesId.push(history[i].id);
                                                 } catch (error) {
-                                                    fireEvent('error', {
+                                                    chatEvents.fireEvent('error', {
                                                         code: error.code,
                                                         message: error.message,
                                                         error: error
@@ -61579,7 +65408,7 @@ WildEmitter.mixin(WildEmitter);
                                                          */
                                                         db.messages
                                                             .where('[owner+id]')
-                                                            .between([userInfo.id, lastMessage.previousId], [userInfo.id, lastMessage.previousId], true, true)
+                                                            .between([chatMessaging.userInfo.id, lastMessage.previousId], [chatMessaging.userInfo.id, lastMessage.previousId], true, true)
                                                             .toArray()
                                                             .then(function (messages) {
                                                                 if (messages.length === 0) {
@@ -61592,16 +65421,16 @@ WildEmitter.mixin(WildEmitter);
                                                                     db.messageGaps
                                                                         .put({
                                                                             id: parseInt(lastMessage.id),
-                                                                            owner: parseInt(userInfo.id),
+                                                                            owner: parseInt(chatMessaging.userInfo.id),
                                                                             waitsFor: parseInt(lastMessage.previousId),
                                                                             threadId: parseInt(lastMessage.threadId),
                                                                             time: lastMessage.time
                                                                         })
                                                                         .then(function () {
                                                                             db.messages
-                                                                                .update([userInfo.id, lastMessage.id], {hasGap: true})
+                                                                                .update([chatMessaging.userInfo.id, lastMessage.id], {hasGap: true})
                                                                                 .catch(function (error) {
-                                                                                    fireEvent('error', {
+                                                                                    chatEvents.fireEvent('error', {
                                                                                         code: error.code,
                                                                                         message: error.message,
                                                                                         error: error
@@ -61609,7 +65438,7 @@ WildEmitter.mixin(WildEmitter);
                                                                                 });
                                                                         })
                                                                         .catch(function (error) {
-                                                                            fireEvent('error', {
+                                                                            chatEvents.fireEvent('error', {
                                                                                 code: error.code,
                                                                                 message: error.message,
                                                                                 error: error
@@ -61618,7 +65447,7 @@ WildEmitter.mixin(WildEmitter);
                                                                 }
                                                             })
                                                             .catch(function (error) {
-                                                                fireEvent('error', {
+                                                                chatEvents.fireEvent('error', {
                                                                     code: error.code,
                                                                     message: error.message,
                                                                     error: error
@@ -61636,7 +65465,7 @@ WildEmitter.mixin(WildEmitter);
                                                         .where('waitsFor')
                                                         .anyOf(resultMessagesId)
                                                         .and(function (messages) {
-                                                            return messages.owner === userInfo.id;
+                                                            return messages.owner === chatMessaging.userInfo.id;
                                                         })
                                                         .toArray()
                                                         .then(function (needsToBeDeleted) {
@@ -61649,22 +65478,22 @@ WildEmitter.mixin(WildEmitter);
                                                                  * set hasGap for those messages as false
                                                                  */
                                                                 db.messages
-                                                                    .update([userInfo.id, msg.id], {hasGap: false})
+                                                                    .update([chatMessaging.userInfo.id, msg.id], {hasGap: false})
                                                                     .catch(function (error) {
-                                                                        fireEvent('error', {
+                                                                        chatEvents.fireEvent('error', {
                                                                             code: error.code,
                                                                             message: error.message,
                                                                             error: error
                                                                         });
                                                                     });
 
-                                                                return [userInfo.id, msg.id];
+                                                                return [chatMessaging.userInfo.id, msg.id];
                                                             });
 
                                                             db.messageGaps.bulkDelete(messagesToBeDeleted);
                                                         })
                                                         .catch(function (error) {
-                                                            fireEvent('error', {
+                                                            chatEvents.fireEvent('error', {
                                                                 code: error.code,
                                                                 message: error.message,
                                                                 error: error
@@ -61672,7 +65501,7 @@ WildEmitter.mixin(WildEmitter);
                                                         });
                                                 })
                                                 .catch(function (error) {
-                                                    fireEvent('error', {
+                                                    chatEvents.fireEvent('error', {
                                                         code: error.code,
                                                         message: error.message,
                                                         error: error
@@ -61693,7 +65522,7 @@ WildEmitter.mixin(WildEmitter);
                                                         contentCount: result.contentCount
                                                     })
                                                     .catch(function (error) {
-                                                        fireEvent('error', {
+                                                        chatEvents.fireEvent('error', {
                                                             code: error.code,
                                                             message: error.message,
                                                             error: error
@@ -61701,7 +65530,7 @@ WildEmitter.mixin(WildEmitter);
                                                     });
                                             }
                                         } else {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: 6601,
                                                 message: CHAT_ERRORS[6601],
                                                 error: null
@@ -61751,7 +65580,7 @@ WildEmitter.mixin(WildEmitter);
                                                     threadId: cacheResult[key].threadId
                                                 });
 
-                                                // fireEvent('messageEvents', {
+                                                // chatEvents.fireEvent('messageEvents', {
                                                 //     type: 'MESSAGE_DELETE',
                                                 //     result: {
                                                 //         message: {
@@ -61765,7 +65594,7 @@ WildEmitter.mixin(WildEmitter);
                                         }
 
                                         if (batchDeleteMessage.length) {
-                                            fireEvent('messageEvents', {
+                                            chatEvents.fireEvent('messageEvents', {
                                                 type: 'MESSAGE_DELETE_BATCH',
                                                 cache: true,
                                                 result: batchDeleteMessage
@@ -61787,7 +65616,7 @@ WildEmitter.mixin(WildEmitter);
 
                                                     batchEditMessage.push(history[serverResult[key].index]);
 
-                                                    // fireEvent('messageEvents', {
+                                                    // chatEvents.fireEvent('messageEvents', {
                                                     //     type: 'MESSAGE_EDIT',
                                                     //     result: {
                                                     //         message: history[serverResult[key].index]
@@ -61802,7 +65631,7 @@ WildEmitter.mixin(WildEmitter);
 
                                                 batchNewMessage.push(history[serverResult[key].index]);
 
-                                                // fireEvent('messageEvents', {
+                                                // chatEvents.fireEvent('messageEvents', {
                                                 //     type: 'MESSAGE_NEW',
                                                 //     cache: true,
                                                 //     result: {
@@ -61813,7 +65642,7 @@ WildEmitter.mixin(WildEmitter);
                                         }
 
                                         if (batchEditMessage.length) {
-                                            fireEvent('messageEvents', {
+                                            chatEvents.fireEvent('messageEvents', {
                                                 type: 'MESSAGE_EDIT_BATCH',
                                                 cache: true,
                                                 result: batchEditMessage
@@ -61821,7 +65650,7 @@ WildEmitter.mixin(WildEmitter);
                                         }
 
                                         if (batchNewMessage.length) {
-                                            fireEvent('messageEvents', {
+                                            chatEvents.fireEvent('messageEvents', {
                                                 type: 'MESSAGE_NEW_BATCH',
                                                 cache: true,
                                                 result: batchNewMessage
@@ -61836,7 +65665,7 @@ WildEmitter.mixin(WildEmitter);
                         });
                     });
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Thread ID is required for Getting history!'
                     });
@@ -61875,7 +65704,7 @@ WildEmitter.mixin(WildEmitter);
 
                 if (params) {
                     if (!params.userGroupHash || params.userGroupHash.length === 0 || typeof (params.userGroupHash) !== 'string') {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6304,
                             message: CHAT_ERRORS[6304]
                         });
@@ -61888,7 +65717,7 @@ WildEmitter.mixin(WildEmitter);
                         threadId = parseInt(params.threadId);
                         updateThreadInfoData.subjectId = threadId;
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 999,
                             message: 'Thread ID is required for Updating thread info!'
                         });
@@ -61939,18 +65768,18 @@ WildEmitter.mixin(WildEmitter);
                                 callbacks: callback
                             }, function () {
                                 if (imageMimeTypes.indexOf(fileType) >= 0 || imageExtentions.indexOf(fileExtension) >= 0) {
-                                    uploadImageToPodspaceUserGroup(fileUploadParams, function (result) {
+                                    uploadImageToPodspaceUserGroupNew(fileUploadParams, function (result) {
                                         if (!result.hasError) {
                                             metadata['name'] = result.result.name;
-                                            metadata['fileHash'] = result.result.hashCode;
+                                            metadata['fileHash'] = result.result.hash;
                                             metadata['file']['name'] = result.result.name;
-                                            metadata['file']['fileHash'] = result.result.hashCode;
-                                            metadata['file']['hashCode'] = result.result.hashCode;
+                                            metadata['file']['fileHash'] = result.result.hash;
+                                            metadata['file']['hashCode'] = result.result.hash;
                                             metadata['file']['parentHash'] = result.result.parentHash;
                                             metadata['file']['size'] = result.result.size;
                                             metadata['file']['actualHeight'] = result.result.actualHeight;
                                             metadata['file']['actualWidth'] = result.result.actualWidth;
-                                            metadata['file']['link'] = `https://podspace.pod.ir/nzh/drive/downloadImage?hash=${result.result.hashCode}`;
+                                            metadata['file']['link'] = `${SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS}/api/images/${result.result.hash}?checkUserGroupAccess=true`;
                                             transferFromUploadQToSendQ(parseInt(params.threadId), fileUniqueId, JSON.stringify(metadata), function () {
                                                 chatSendQueueHandler();
                                             });
@@ -61959,7 +65788,7 @@ WildEmitter.mixin(WildEmitter);
                                         }
                                     });
                                 } else {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: 999,
                                         message: 'Thread picture can be a image type only!'
                                     });
@@ -61969,7 +65798,7 @@ WildEmitter.mixin(WildEmitter);
                     } else if (typeof params.image == 'string' && params.image.length > 5) {
                         threadInfoContent.metadata = JSON.stringify(Object.assign(threadInfoContent.metadata, {fileHash: params.image}));
 
-                        getImageDownloadLinkFromPodspace({
+                        getImageDownloadLinkFromPodspaceNew({
                             hashCode: params.image
                         }, function (result) {
                             if (!result.hasError) {
@@ -61977,7 +65806,7 @@ WildEmitter.mixin(WildEmitter);
                             }
                         });
 
-                        return sendMessage({
+                        return chatMessaging.sendMessage({
                             chatMessageVOType: chatMessageVOTypes.UPDATE_THREAD_INFO,
                             typeCode: params.typeCode,
                             subjectId: threadId,
@@ -61996,7 +65825,7 @@ WildEmitter.mixin(WildEmitter);
                             delete threadInfoContent.metadata;
                         }
 
-                        return sendMessage({
+                        return chatMessaging.sendMessage({
                             chatMessageVOType: chatMessageVOTypes.UPDATE_THREAD_INFO,
                             typeCode: params.typeCode,
                             subjectId: threadId,
@@ -62047,7 +65876,7 @@ WildEmitter.mixin(WildEmitter);
                         updateChatProfileData.content.metadata = params.metadata;
                     }
                 }
-                return sendMessage(updateChatProfileData, {
+                return chatMessaging.sendMessage(updateChatProfileData, {
                     onResult: function (result) {
                         callback && callback(result);
                     }
@@ -62074,7 +65903,7 @@ WildEmitter.mixin(WildEmitter);
                     subjectId: params.threadId,
                     token: token
                 };
-                return sendMessage(updateChatProfileData, {
+                return chatMessaging.sendMessage(updateChatProfileData, {
                     onResult: function (result) {
                         callback && callback(result);
                     }
@@ -62142,14 +65971,14 @@ WildEmitter.mixin(WildEmitter);
                                     thenAble = db.participants.where('threadId')
                                         .equals(parseInt(params.threadId))
                                         .and(function (participant) {
-                                            return participant.owner === userInfo.id;
+                                            return participant.owner === chatMessaging.userInfo.id;
                                         });
                                 } else {
                                     if (whereClause.hasOwnProperty('name')) {
                                         thenAble = db.participants.where('threadId')
                                             .equals(parseInt(params.threadId))
                                             .and(function (participant) {
-                                                return participant.owner === userInfo.id;
+                                                return participant.owner === chatMessaging.userInfo.id;
                                             })
                                             .filter(function (contact) {
                                                 var reg = new RegExp(whereClause.name);
@@ -62168,7 +65997,7 @@ WildEmitter.mixin(WildEmitter);
                                         db.participants.where('threadId')
                                             .equals(parseInt(params.threadId))
                                             .and(function (participant) {
-                                                return participant.owner === userInfo.id;
+                                                return participant.owner === chatMessaging.userInfo.id;
                                             })
                                             .count()
                                             .then(function (participantsCount) {
@@ -62180,7 +66009,7 @@ WildEmitter.mixin(WildEmitter);
                                                         cacheData.push(formatDataToMakeParticipant(
                                                             JSON.parse(chatDecrypt(participants[i].data, cacheSecret, participants[i].salt)), participants[i].threadId));
                                                     } catch (error) {
-                                                        fireEvent('error', {
+                                                        chatEvents.fireEvent('error', {
                                                             code: error.code,
                                                             message: error.message,
                                                             error: error
@@ -62209,7 +66038,7 @@ WildEmitter.mixin(WildEmitter);
                                             });
                                     })
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -62217,14 +66046,14 @@ WildEmitter.mixin(WildEmitter);
                                     });
                             })
                             .catch(function (error) {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: error.code,
                                     message: error.message,
                                     error: error
                                 });
                             });
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6601,
                             message: CHAT_ERRORS[6601],
                             error: null
@@ -62232,7 +66061,7 @@ WildEmitter.mixin(WildEmitter);
                     }
                 }
 
-                return sendMessage(sendMessageParams, {
+                return chatMessaging.sendMessage(sendMessageParams, {
                     onResult: function (result) {
                         var returnData = {
                             hasError: result.hasError,
@@ -62267,7 +66096,7 @@ WildEmitter.mixin(WildEmitter);
                                                 salt = Utility.generateUUID();
 
                                             tempData.id = parseInt(resultData.participants[i].id);
-                                            tempData.owner = parseInt(userInfo.id);
+                                            tempData.owner = parseInt(chatMessaging.userInfo.id);
                                             tempData.threadId = parseInt(resultData.participants[i].threadId);
                                             tempData.notSeenDuration = resultData.participants[i].notSeenDuration;
                                             tempData.admin = resultData.participants[i].admin;
@@ -62281,7 +66110,7 @@ WildEmitter.mixin(WildEmitter);
 
                                             cacheData.push(tempData);
                                         } catch (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -62291,14 +66120,14 @@ WildEmitter.mixin(WildEmitter);
 
                                     db.participants.bulkPut(cacheData)
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
                                             });
                                         });
                                 } else {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: 6601,
                                         message: CHAT_ERRORS[6601],
                                         error: null
@@ -62315,7 +66144,7 @@ WildEmitter.mixin(WildEmitter);
                         callback = undefined;
 
                         if (!returnData.hasError && returnCache) {
-                            fireEvent('threadEvents', {
+                            chatEvents.fireEvent('threadEvents', {
                                 type: 'THREAD_PARTICIPANTS_LIST_CHANGE',
                                 threadId: params.threadId,
                                 result: returnData.result
@@ -62337,7 +66166,7 @@ WildEmitter.mixin(WildEmitter);
              * @return {object} Instant sendMessage result
              */
             deliver = function (params) {
-                return sendMessage({
+                return chatMessaging.sendMessage({
                     chatMessageVOType: chatMessageVOTypes.DELIVERY,
                     typeCode: params.typeCode,
                     content: params.messageId,
@@ -62357,7 +66186,7 @@ WildEmitter.mixin(WildEmitter);
              * @return {object} Instant sendMessage result
              */
             seen = function (params) {
-                return sendMessage({
+                return chatMessaging.sendMessage({
                     chatMessageVOType: chatMessageVOTypes.SEEN,
                     typeCode: params.typeCode,
                     content: params.messageId,
@@ -62492,6 +66321,8 @@ WildEmitter.mixin(WildEmitter);
             },
 
             /**
+             * Deprecated
+             *
              * Get File From PodSpace
              *
              * This functions gets an uploaded file from Pod Space File Server.
@@ -62565,8 +66396,84 @@ WildEmitter.mixin(WildEmitter);
                     };
                 }
             },
+            /**
+             * Get File From PodSpace New
+             *
+             * This functions gets an uploaded file from Pod Space File Server.
+             *
+             * @since 3.9.9
+             * @access private
+             *
+             * @param {string}  hashCode        HashCode of uploaded file
+             *
+             * @return {object} File Object
+             */
+            getFileFromPodspaceNew = function (params, callback) {
+                var downloadUniqueId = Utility.generateUUID(),
+                    getFileData = {};
+                if (params) {
+                    if (params.hashCode && typeof params.hashCode == 'string') {
+                        getFileData.hash = params.hashCode;
+                    } else {
+                        callback({
+                            hasError: true,
+                            error: 'Enter a file hash to get'
+                        });
+                        return;
+                    }
+
+                    if(params.checkUserGroupAccess) {
+                        getFileData.checkUserGroupAccess = true;
+                    }
+                }
+
+                if (params.responseType === 'link') {
+                    var returnLink = SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_DOWNLOAD_FILE_NEW.replace('{fileHash}', params.hashCode) + `?checkUserGroupAccess=true`;
+                    callback({
+                        hasError: false,
+                        type: 'link',
+                        result: returnLink
+                    });
+                } else {
+                    httpRequest({
+                        url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_DOWNLOAD_FILE_NEW.replace('{fileHash}', params.hashCode) + `?checkUserGroupAccess=true`,
+                        method: 'GET',
+                        responseType: 'blob',
+                        uniqueId: downloadUniqueId,
+                        headers: {
+                            'Authorization': 'Bearer ' + token
+                        },
+                        //data: getFileData
+                    }, function (result) {
+                        if (!result.hasError) {
+                            callback({
+                                hasError: result.hasError,
+                                result: result.result.response,
+                                type: 'blob'
+                            });
+                        } else {
+                            callback({
+                                hasError: true
+                            });
+                        }
+                    });
+
+                    return {
+                        uniqueId: downloadUniqueId,
+                        cancel: function () {
+                            cancelFileDownload({
+                                uniqueId: downloadUniqueId
+                            }, function () {
+                                consoleLogging && console.log(`"${downloadUniqueId}" - File download has been canceled!`);
+                            });
+                        }
+                    };
+                }
+            },
 
             /**
+             * Deprecated
+             *
              * Get Image From PodSpace
              *
              * This functions gets an uploaded image from Pod Space File Server.
@@ -62685,8 +66592,131 @@ WildEmitter.mixin(WildEmitter);
                     }
                 }
             },
+            /**
+             * Get Image From PodSpace New
+             *
+             * This functions gets an uploaded image from Pod Space File Server.
+             *
+             * @since 3.9.9
+             * @access private
+             *
+             * @param {string}  hashCode        HashCode of uploaded file
+             * @param {string}  size            (1: 100×75, 2: 200×150, 3: 400×300)
+             * @param {string}  quality         Image quality betwenn 0.0 anf 1.0
+             *
+             * @return {object} File Object
+             */
+            getImageFromPodspaceNew = function (params, callback) {
+                var downloadUniqueId = Utility.generateUUID(),
+                    getImageData = {
+                        size: params.size,
+                        quality: params.quality,
+                        crop: params.crop
+                    };
+                if (params) {
+                    if (params.hashCode && typeof params.hashCode == 'string') {
+                        getImageData.hash = params.hashCode;
+                    } else {
+                        callback({
+                            hasError: true,
+                            error: 'Enter a file hash to get'
+                        });
+                        return;
+                    }
+
+                    if (params.responseType === 'link') {
+                        var returnLink = SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS
+                            + SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE_NEW.replace('{fileHash}', params.hashCode) + `?checkUserGroupAccess=true&size=${params.size}&quality=${params.quality}&crop=${params.crop}`;
+                            //+ SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE + `?hash=${params.hashCode}&_token_=${token}&_token_issuer_=1&size=${params.size}&quality=${params.quality}&crop=${params.crop}`;
+
+                        callback({
+                            hasError: false,
+                            type: 'link',
+                            result: returnLink
+                        });
+                    } else if (params.responseType === 'base64') {
+                        httpRequest({
+                            url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS
+                                + SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE_NEW.replace('{fileHash}', params.hashCode) + `?checkUserGroupAccess=true&size=${params.size}&quality=${params.quality}&crop=${params.crop}`,
+                            method: 'GET',
+                            uniqueId: downloadUniqueId,
+                            responseType: 'blob',
+                            headers: {
+                                'Authorization': 'Bearer ' + token
+                            },
+                            //data: getImageData
+                        }, function (result) {
+                            if (!result.hasError) {
+                                var fr = new FileReader();
+
+                                fr.onloadend = function () {
+                                    callback({
+                                        hasError: result.hasError,
+                                        type: 'base64',
+                                        result: fr.result
+                                    });
+                                }
+
+                                fr.readAsDataURL(result.result.response);
+                            } else {
+                                callback({
+                                    hasError: true
+                                });
+                            }
+                        });
+
+                        return {
+                            uniqueId: downloadUniqueId,
+                            cancel: function () {
+                                cancelFileDownload({
+                                    uniqueId: downloadUniqueId
+                                }, function () {
+                                    consoleLogging && console.log(`"${downloadUniqueId}" - Image download has been canceled!`);
+                                });
+                            }
+                        };
+                    } else {
+                        httpRequest({
+                            url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS
+                                + SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE_NEW.replace('{fileHash}', params.hashCode) + `?checkUserGroupAccess=true&size=${params.size}&quality=${params.quality}&crop=${params.crop}`,
+                            method: 'GET',
+                            responseType: 'blob',
+                            uniqueId: downloadUniqueId,
+                            headers: {
+                                'Authorization': 'Bearer ' + token
+                            },
+                            //data: getImageData
+                        }, function (result) {
+                            if (!result.hasError) {
+                                callback({
+                                    hasError: result.hasError,
+                                    type: 'blob',
+                                    result: result.result.response
+                                });
+                            } else {
+                                callback({
+                                    hasError: true
+                                });
+                            }
+                        });
+
+                        return {
+                            uniqueId: downloadUniqueId,
+                            cancel: function () {
+                                cancelFileDownload({
+                                    uniqueId: downloadUniqueId
+                                }, function () {
+                                    consoleLogging && console.log(`"${downloadUniqueId}" - Image download has been canceled!`);
+                                });
+                            }
+                        };
+                    }
+                }
+            },
 
             /**
+             * Deprecated
+             *
              * Get Image Download Link From PodSpace
              *
              * This functions gets an uploaded image download link from Pod Space File Server.
@@ -62702,6 +66732,36 @@ WildEmitter.mixin(WildEmitter);
                 if (params) {
                     if (params.hashCode && typeof params.hashCode == 'string') {
                         var downloadUrl = SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE + '?hash=' + params.hashCode;
+                        callback && callback({
+                            hasError: false,
+                            downloadUrl: downloadUrl
+                        });
+                        return downloadUrl;
+                    } else {
+                        callback && callback({
+                            hasError: true,
+                            error: 'Enter a image hash to get download link!'
+                        });
+                    }
+                }
+            },
+            /**
+             * Get Image Download Link From PodSpace
+             *
+             * This functions gets an uploaded image download link from Pod Space File Server.
+             *
+             * @since 9.1.3
+             * @access private
+             *
+             * @param {string}  hashCode        HashCode of uploaded file
+             *
+             * @return {string} Image Link
+             */
+            getImageDownloadLinkFromPodspaceNew = function (params, callback) {
+                if (params) {
+                    if (params.hashCode && typeof params.hashCode == 'string') {
+                        var downloadUrl = SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS
+                            + SERVICES_PATH.PODSPACE_DOWNLOAD_IMAGE_NEW.replace('{fileHash}', params.hashCode)// + '?hash=' + params.hashCode;
                         callback && callback({
                             hasError: false,
                             downloadUrl: downloadUrl
@@ -62852,7 +66912,7 @@ WildEmitter.mixin(WildEmitter);
                 return {
                     uniqueId: uploadUniqueId,
                     threadId: uploadThreadId,
-                    participant: userInfo,
+                    participant: chatMessaging.userInfo,
                     content: {
                         caption: params.content,
                         file: {
@@ -62922,7 +66982,7 @@ WildEmitter.mixin(WildEmitter);
                         uploadFileData.uniqueId = uploadUniqueId;
                     }
                     if (typeof params.userGroupHash == 'string') {
-                        userGroupHash = params.userGroupHash;
+                        //userGroupHash = params.userGroupHash;
                         uploadFileData.userGroupHash = params.userGroupHash;
                     } else {
                         callback({
@@ -62944,6 +67004,222 @@ WildEmitter.mixin(WildEmitter);
                     headers: {
                         '_token_': token,
                         '_token_issuer_': 1
+                    },
+                    data: uploadFileData,
+                    uniqueId: uploadUniqueId
+                }, function (result) {
+                    if (!result.hasError) {
+                        try {
+                            var response = (typeof result.result.responseText == 'string')
+                                ? JSON.parse(result.result.responseText)
+                                : result.result.responseText;
+                            callback({
+                                hasError: response.hasError,
+                                result: response.result
+                            });
+                        } catch (e) {
+                            callback({
+                                hasError: true,
+                                errorCode: 999,
+                                errorMessage: 'Problem in Parsing result'
+                            });
+                        }
+                    } else {
+                        callback({
+                            hasError: true,
+                            errorCode: result.errorCode,
+                            errorMessage: result.errorMessage
+                        });
+                    }
+                });
+                return {
+                    uniqueId: uploadUniqueId,
+                    threadId: uploadThreadId,
+                    participant: chatMessaging.userInfo,
+                    content: {
+                        caption: params.content,
+                        file: {
+                            uniqueId: uploadUniqueId,
+                            fileName: fileName,
+                            fileSize: fileSize,
+                            fileObject: params.file
+                        }
+                    }
+                };
+            },
+
+            uploadFileToPodspaceNew = function (params, callback) {
+                var fileName,
+                    fileType,
+                    fileSize,
+                    fileExtension,
+                    uploadUniqueId,
+                    uploadThreadId;
+
+                fileName = params.file.name;
+                fileType = params.file.type;
+                fileSize = params.file.size;
+                fileExtension = params.file.name.split('.')
+                    .pop();
+
+
+                var uploadFileData = {};
+
+                if (params) {
+                    if (typeof params.file !== 'undefined') {
+                        uploadFileData.file = params.file;
+                    }
+
+                    if (params.randomFileName) {
+                        uploadFileData.fileName = Utility.generateUUID() + '.' + fileExtension;
+                    } else {
+                        uploadFileData.fileName = fileName;
+                    }
+
+                    uploadFileData.fileSize = fileSize;
+
+                    if (parseInt(params.threadId) > 0) {
+                        uploadThreadId = params.threadId;
+                        uploadFileData.threadId = params.threadId;
+                    } else {
+                        uploadThreadId = 0;
+                        uploadFileData.threadId = 0;
+                    }
+
+                    if (typeof params.uniqueId == 'string') {
+                        uploadUniqueId = params.uniqueId;
+                        uploadFileData.uniqueId = params.uniqueId;
+                    } else {
+                        uploadUniqueId = Utility.generateUUID();
+                        uploadFileData.uniqueId = uploadUniqueId;
+                    }
+
+                    if (typeof params.originalFileName == 'string') {
+                        uploadFileData.originalFileName = params.originalFileName;
+                    } else {
+                        uploadFileData.originalFileName = fileName;
+                    }
+                }
+
+                httpRequest({
+                    url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_UPLOAD_FILE_NEW,
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    data: uploadFileData,
+                    uniqueId: uploadUniqueId
+                }, function (result) {
+                    if (!result.hasError) {
+                        try {
+                            var response = (typeof result.result.responseText == 'string')
+                                ? JSON.parse(result.result.responseText)
+                                : result.result.responseText;
+                            callback({
+                                hasError: response.hasError,
+                                result: response.result
+                            });
+                        } catch (e) {
+                            callback({
+                                hasError: true,
+                                errorCode: 999,
+                                errorMessage: 'Problem in Parsing result'
+                            });
+                        }
+                    } else {
+                        callback({
+                            hasError: true,
+                            errorCode: result.errorCode,
+                            errorMessage: result.errorMessage
+                        });
+                    }
+                });
+
+                return {
+                    uniqueId: uploadUniqueId,
+                    threadId: uploadThreadId,
+                    participant: userInfo,
+                    content: {
+                        caption: params.content,
+                        file: {
+                            uniqueId: uploadUniqueId,
+                            fileName: fileName,
+                            fileSize: fileSize,
+                            fileObject: params.file
+                        }
+                    }
+                };
+            },
+
+            /**
+             * Upload File To Pod Space
+             *
+             * Upload files to Pod Space Server
+             *
+             * @since 3.9.9
+             * @access private
+             *
+             * @param {file}    file            FILE: the file
+             * @param {string}  userGroupHash   Unique identifier of threads on podspace
+             * @param {string}  token           User Token
+             *
+             * @link
+                *
+                * @return {object} Uploaded File Object
+             */
+            uploadFileToPodspaceUserGroupNew = function (params, callback) {
+                var fileName,
+                    //fileType,
+                    fileSize,
+                    //fileExtension,
+                    uploadUniqueId,
+                    uploadThreadId;
+
+                fileName = params.file.name;
+                //fileType = params.file.type;
+                fileSize = params.file.size;
+                //fileExtension = params.file.name.split('.').pop();
+
+                var uploadFileData = {};
+                if (params) {
+                    if (typeof params.file !== 'undefined') {
+                        uploadFileData.file = params.file;
+                    }
+                    if (parseInt(params.threadId) > 0) {
+                        uploadThreadId = params.threadId;
+                        uploadFileData.threadId = params.threadId;
+                    } else {
+                        uploadThreadId = 0;
+                        uploadFileData.threadId = 0;
+                    }
+                    if (typeof params.uniqueId == 'string') {
+                        uploadUniqueId = params.uniqueId;
+                        uploadFileData.uniqueId = params.uniqueId;
+                    } else {
+                        uploadUniqueId = Utility.generateUUID();
+                        uploadFileData.uniqueId = uploadUniqueId;
+                    }
+                    if (typeof params.userGroupHash == 'string') {
+                        uploadFileData.userGroupHash = params.userGroupHash;
+                    } else {
+                        callback({
+                            hasError: true,
+                            errorCode: 999,
+                            errorMessage: 'You need to enter a userGroupHash to be able to upload on PodSpace!'
+                        });
+                        return;
+                    }
+                    if (typeof params.originalFileName == 'string') {
+                        uploadFileData.originalFileName = params.originalFileName;
+                    } else {
+                        uploadFileData.originalFileName = fileName;
+                    }
+                }
+                httpRequest({
+                    url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_UPLOAD_FILE_TO_USERGROUP_NEW.replace('{userGroupHash}', uploadFileData.userGroupHash),
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
                     },
                     data: uploadFileData,
                     uniqueId: uploadUniqueId
@@ -63081,7 +67357,7 @@ WildEmitter.mixin(WildEmitter);
                 return {
                     uniqueId: uploadUniqueId,
                     threadId: uploadThreadId,
-                    participant: userInfo,
+                    participant: chatMessaging.userInfo,
                     content: {
                         file: {
                             uniqueId: uploadUniqueId,
@@ -63227,7 +67503,7 @@ WildEmitter.mixin(WildEmitter);
                     return {
                         uniqueId: uploadUniqueId,
                         threadId: uploadThreadId,
-                        participant: userInfo,
+                        participant: chatMessaging.userInfo,
                         content: {
                             caption: params.content,
                             file: {
@@ -63295,7 +67571,7 @@ WildEmitter.mixin(WildEmitter);
                 };
                 reader.readAsDataURL(params.image);
 
-                continueImageUpload = function (params) {
+                var continueImageUpload = function (params) {
                     if (imageMimeTypes.indexOf(fileType) >= 0 || imageExtentions.indexOf(fileExtension) >= 0) {
                         var uploadImageData = {};
                         if (params) {
@@ -63385,7 +67661,7 @@ WildEmitter.mixin(WildEmitter);
                         return {
                             uniqueId: uploadUniqueId,
                             threadId: uploadThreadId,
-                            participant: userInfo,
+                            participant: chatMessaging.userInfo,
                             content: {
                                 caption: params.content,
                                 file: {
@@ -63406,7 +67682,144 @@ WildEmitter.mixin(WildEmitter);
                 }
             },
 
+            uploadImageToPodspaceNew = function (params, callback) {
+                var fileName,
+                    fileType,
+                    fileSize,
+                    fileExtension,
+                    uploadUniqueId,
+                    uploadThreadId;
+
+                fileName = params.image.name;
+                fileType = params.image.type;
+                fileSize = params.image.size;
+                fileExtension = params.image.name.split('.')
+                    .pop();
+
+                if (imageMimeTypes.indexOf(fileType) >= 0 || imageExtentions.indexOf(fileExtension) >= 0) {
+                    var uploadImageData = {};
+
+                    if (params) {
+                        if (typeof params.image !== 'undefined') {
+                            uploadImageData.image = params.image;
+                            uploadImageData.file = params.image;
+                        }
+
+                        if (params.randomFileName) {
+                            uploadImageData.fileName = Utility.generateUUID() + '.' + fileExtension;
+                        } else {
+                            uploadImageData.fileName = fileName;
+                        }
+
+                        uploadImageData.fileSize = fileSize;
+
+                        if (parseInt(params.threadId) > 0) {
+                            uploadThreadId = params.threadId;
+                            uploadImageData.threadId = params.threadId;
+                        } else {
+                            uploadThreadId = 0;
+                            uploadImageData.threadId = 0;
+                        }
+
+                        if (typeof params.uniqueId == 'string') {
+                            uploadUniqueId = params.uniqueId;
+                            uploadImageData.uniqueId = params.uniqueId;
+                        } else {
+                            uploadUniqueId = Utility.generateUUID();
+                            uploadImageData.uniqueId = uploadUniqueId;
+                        }
+
+                        if (typeof params.originalFileName == 'string') {
+                            uploadImageData.originalFileName = params.originalFileName;
+                        } else {
+                            uploadImageData.originalFileName = fileName;
+                        }
+
+                        if (parseInt(params.xC) > 0) {
+                            uploadImageData.xC = params.xC;
+                        }
+
+                        if (parseInt(params.yC) > 0) {
+                            uploadImageData.yC = params.yC;
+                        }
+
+                        if (parseInt(params.hC) > 0) {
+                            uploadImageData.hC = params.hC;
+                        }
+
+                        if (parseInt(params.wC) > 0) {
+                            uploadImageData.wC = params.wC;
+                        }
+                    }
+
+                    httpRequest({
+                        url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_UPLOAD_IMAGE_NEW,
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                        },
+                        data: uploadImageData,
+                        uniqueId: uploadUniqueId
+                    }, function (result) {
+                        if (!result.hasError) {
+                            try {
+                                var response = (typeof result.result.responseText == 'string')
+                                    ? JSON.parse(result.result.responseText)
+                                    : result.result.responseText;
+                                if (!response.hasError) {
+                                    callback({
+                                        hasError: response.hasError,
+                                        result: response.result
+                                    });
+                                } else {
+                                    callback({
+                                        hasError: true,
+                                        errorCode: response.errorCode,
+                                        errorMessage: response.message
+                                    });
+                                }
+                            } catch (e) {
+                                callback({
+                                    hasError: true,
+                                    errorCode: 6300,
+                                    errorMessage: CHAT_ERRORS[6300]
+                                });
+                            }
+                        } else {
+                            callback({
+                                hasError: true,
+                                errorCode: result.errorCode,
+                                errorMessage: result.errorMessage
+                            });
+                        }
+                    });
+
+                    return {
+                        uniqueId: uploadUniqueId,
+                        threadId: uploadThreadId,
+                        participant: userInfo,
+                        content: {
+                            caption: params.content,
+                            file: {
+                                uniqueId: uploadUniqueId,
+                                fileName: fileName,
+                                fileSize: fileSize,
+                                fileObject: params.file
+                            }
+                        }
+                    };
+                } else {
+                    callback({
+                        hasError: true,
+                        errorCode: 6301,
+                        errorMessage: CHAT_ERRORS[6301]
+                    });
+                }
+            },
+
             /**
+             * Deprecated
+             *
              * Upload Image To Pod Space
              *
              * Upload images to Pod Space Image Server
@@ -63540,6 +67953,175 @@ WildEmitter.mixin(WildEmitter);
                         return {
                             uniqueId: uploadUniqueId,
                             threadId: uploadThreadId,
+                            participant: chatMessaging.userInfo,
+                            content: {
+                                caption: params.content,
+                                file: {
+                                    uniqueId: uploadUniqueId,
+                                    fileName: fileName,
+                                    fileSize: fileSize,
+                                    fileObject: params.file
+                                }
+                            }
+                        };
+                    } else {
+                        callback({
+                            hasError: true,
+                            errorCode: 6301,
+                            errorMessage: CHAT_ERRORS[6301]
+                        });
+                    }
+                }
+
+                fileName = params.image.name;
+                fileType = params.image.type;
+                fileSize = params.image.size;
+                fileExtension = params.image.name.split('.')
+                    .pop();
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var image = new Image();
+                    image.onload = function () {
+                        fileWidth = this.width;
+                        fileHeight = this.height;
+                        continueImageUpload(params);
+                    };
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(params.image);
+            },
+            /**
+             * Upload Image To Podspace User Group
+             *
+             * Upload images to Pod Space Image Server
+             *
+             * @since 3.9.9
+             * @access private
+             *
+             * @param {string}  fileName        A name for the file
+             * @param {file}    image           FILE: the image file  (if its an image file)
+             * @param {float}   xC              Crop Start point x    (if its an image file)
+             * @param {float}   yC              Crop Start point Y    (if its an image file)
+             * @param {float}   hC              Crop size Height      (if its an image file)
+             * @param {float}   wC              Crop size Weight      (if its an image file)
+             * @param {string}  userGroupHash   Unique identifier of threads on podspace
+             * @param {string}  token           User Token
+             * @param {string}  _token_issuer_  Token Issuer
+             *
+             * @link https://podspace.pod.ir/apidocs/?srv=/userGroup/uploadImage/
+             *
+             * @return {object} Uploaded Image Object
+             */
+            uploadImageToPodspaceUserGroupNew = function (params, callback) {
+                var fileName,
+                    fileType,
+                    fileSize,
+                    fileWidth = 0,
+                    fileHeight = 0,
+                    fileExtension,
+                    uploadUniqueId,
+                    uploadThreadId;
+                var continueImageUpload = function (params) {
+                    if (imageMimeTypes.indexOf(fileType) >= 0 || imageExtentions.indexOf(fileExtension) >= 0) {
+                        var uploadImageData = {};
+                        if (params) {
+                            if (typeof params.image !== 'undefined') {
+                                uploadImageData.file = params.image;
+                            } else {
+                                callback({
+                                    hasError: true,
+                                    errorCode: 999,
+                                    errorMessage: 'You need to send a image file!'
+                                });
+                                return;
+                            }
+                            if (typeof params.userGroupHash == 'string') {
+                                uploadImageData.userGroupHash = params.userGroupHash;
+                            } else {
+                                callback({
+                                    hasError: true,
+                                    errorCode: 999,
+                                    errorMessage: 'You need to enter a userGroupHash to be able to upload on PodSpace!'
+                                });
+                                return;
+                            }
+                            if (params.randomFileName) {
+                                uploadImageData.fileName = Utility.generateUUID() + '.' + fileExtension;
+                            } else {
+                                uploadImageData.filename = fileName;
+                            }
+                            uploadImageData.fileSize = fileSize;
+                            if (parseInt(params.threadId) > 0) {
+                                uploadThreadId = params.threadId;
+                                uploadImageData.threadId = params.threadId;
+                            } else {
+                                uploadThreadId = 0;
+                                uploadImageData.threadId = 0;
+                            }
+                            if (typeof params.uniqueId == 'string') {
+                                uploadUniqueId = params.uniqueId;
+                                uploadImageData.uniqueId = params.uniqueId;
+                            } else {
+                                uploadUniqueId = Utility.generateUUID();
+                                uploadImageData.uniqueId = uploadUniqueId;
+                            }
+                            if (typeof params.originalFileName == 'string') {
+                                uploadImageData.originalFileName = params.originalFileName;
+                            } else {
+                                uploadImageData.originalFileName = fileName;
+                            }
+                            uploadImageData.x = parseInt(params.xC) || 0;
+                            uploadImageData.y = parseInt(params.yC) || 0;
+                            uploadImageData.height = parseInt(params.hC) || fileHeight;
+                            uploadImageData.weight = parseInt(params.wC) || fileWidth;
+                        }
+                        httpRequest({
+                            url: SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS + SERVICES_PATH.PODSPACE_UPLOAD_IMAGE_TO_USERGROUP_NEW.replace('{userGroupHash}', uploadImageData.userGroupHash),
+                            method: 'POST',
+                            headers: {
+                                'Authorization': 'Bearer ' + token,
+                            },
+                            data: uploadImageData,
+                            uniqueId: uploadUniqueId
+                        }, function (result) {
+                            if (!result.hasError) {
+                                try {
+                                    var response = (typeof result.result.responseText == 'string')
+                                        ? JSON.parse(result.result.responseText)
+                                        : result.result.responseText;
+                                    if (response.status < 400) {
+                                        response.result.actualHeight = fileHeight;
+                                        response.result.actualWidth = fileWidth;
+                                        callback({
+                                            hasError: response.hasError,
+                                            result: response.result
+                                        });
+                                    } else {
+                                        callback({
+                                            hasError: true,
+                                            errorCode: response.errorCode,
+                                            errorMessage: response.message
+                                        });
+                                    }
+                                } catch (e) {
+                                    consoleLogging && console.log(e)
+                                    callback({
+                                        hasError: true,
+                                        errorCode: 6300,
+                                        errorMessage: CHAT_ERRORS[6300]
+                                    });
+                                }
+                            } else {
+                                callback({
+                                    hasError: true,
+                                    errorCode: result.errorCode,
+                                    errorMessage: result.errorMessage
+                                });
+                            }
+                        });
+                        return {
+                            uniqueId: uploadUniqueId,
+                            threadId: uploadThreadId,
                             participant: userInfo,
                             content: {
                                 caption: params.content,
@@ -63584,7 +68166,7 @@ WildEmitter.mixin(WildEmitter);
                     fileUniqueId = (typeof params.fileUniqueId == 'string' && params.fileUniqueId.length > 0) ? params.fileUniqueId : Utility.generateUUID();
                 if (params) {
                     if (!params.userGroupHash || params.userGroupHash.length === 0 || typeof (params.userGroupHash) !== 'string') {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6304,
                             message: CHAT_ERRORS[6304]
                         });
@@ -63614,30 +68196,30 @@ WildEmitter.mixin(WildEmitter);
                             callbacks: callbacks
                         }, function () {
                             if (imageMimeTypes.indexOf(fileType) >= 0 || imageExtentions.indexOf(fileExtension) >= 0) {
-                                uploadImageToPodspaceUserGroup(fileUploadParams, function (result) {
+                                uploadImageToPodspaceUserGroupNew(fileUploadParams, function (result) {
                                     if (!result.hasError) {
                                         // Send onFileUpload callback result
                                         if (typeof callbacks === 'object' && callbacks.hasOwnProperty('onFileUpload')) {
                                             callbacks.onFileUpload && callbacks.onFileUpload({
                                                 name: result.result.name,
-                                                hashCode: result.result.hashCode,
+                                                hashCode: result.result.hash,
                                                 parentHash: result.result.parentHash,
                                                 size: result.result.size,
                                                 actualHeight: result.result.actualHeight,
                                                 actualWidth: result.result.actualWidth,
-                                                link: `https://podspace.pod.ir/nzh/drive/downloadImage?hash=${result.result.hashCode}`
+                                                link: `${SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS}/api/images/${result.result.hash}?checkUserGroupAccess=true`
                                             });
                                         }
                                         metadata['name'] = result.result.name;
-                                        metadata['fileHash'] = result.result.hashCode;
+                                        metadata['fileHash'] = result.result.hash;
                                         metadata['file']['name'] = result.result.name;
-                                        metadata['file']['fileHash'] = result.result.hashCode;
-                                        metadata['file']['hashCode'] = result.result.hashCode;
+                                        metadata['file']['fileHash'] = result.result.hash;
+                                        metadata['file']['hashCode'] = result.result.hash;
                                         metadata['file']['parentHash'] = result.result.parentHash;
                                         metadata['file']['size'] = result.result.size;
                                         metadata['file']['actualHeight'] = result.result.actualHeight;
                                         metadata['file']['actualWidth'] = result.result.actualWidth;
-                                        metadata['file']['link'] = `https://podspace.pod.ir/nzh/drive/downloadImage?hash=${result.result.hashCode}`;
+                                        metadata['file']['link'] = `${SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS}/api/images/${result.result.hash}?checkUserGroupAccess=true`;
                                         transferFromUploadQToSendQ(parseInt(params.threadId), fileUniqueId, JSON.stringify(metadata), function () {
                                             chatSendQueueHandler();
                                         });
@@ -63646,13 +68228,13 @@ WildEmitter.mixin(WildEmitter);
                                     }
                                 });
                             } else {
-                                uploadFileToPodspace(fileUploadParams, function (result) {
+                                uploadFileToPodspaceUserGroupNew(fileUploadParams, function (result) {
                                     if (!result.hasError) {
-                                        metadata['fileHash'] = result.result.hashCode;
+                                        metadata['fileHash'] = result.result.hash;
                                         metadata['name'] = result.result.name;
                                         metadata['file']['name'] = result.result.name;
-                                        metadata['file']['fileHash'] = result.result.hashCode;
-                                        metadata['file']['hashCode'] = result.result.hashCode;
+                                        metadata['file']['fileHash'] = result.result.hash;
+                                        metadata['file']['hashCode'] = result.result.hash;
                                         metadata['file']['parentHash'] = result.result.parentHash;
                                         metadata['file']['size'] = result.result.size;
                                         transferFromUploadQToSendQ(parseInt(params.threadId), fileUniqueId, JSON.stringify(metadata), function () {
@@ -63666,56 +68248,6 @@ WildEmitter.mixin(WildEmitter);
                         });
                     });
                 }
-            },
-
-            /**
-             * Fire Event
-             *
-             * Fires given Event with given parameters
-             *
-             * @access private
-             *
-             * @param {string}  eventName       name of event to be fired
-             * @param {object}  param           params to be sent to the event function
-             *
-             * @return {undefined}
-             */
-            fireEvent = function (eventName, param) {
-                if (eventName === "chatReady") {
-                    if (typeof navigator === "undefined") {
-                        consoleLogging && console.log("\x1b[90m    ☰ \x1b[0m\x1b[90m%s\x1b[0m", "Chat is Ready 😉");
-                    } else {
-                        consoleLogging && console.log("%c   Chat is Ready 😉", 'border-left: solid #666 10px; color: #666;');
-                    }
-                }
-
-                if (eventName === "error" || (eventName === "callEvents" && param.type === "CALL_ERROR")) {
-                    try {
-                        throw new PodChatErrorException(param);
-                    } catch (err) {
-                        if (!!Sentry) {
-                            Sentry.setExtra('errorMessage', err.message);
-                            Sentry.setExtra('errorCode', err.code);
-                            Sentry.setExtra('uniqueId', err.uniqueId);
-                            Sentry.setExtra('token', err.token);
-                            Sentry.captureException(err.error, {
-                                logger: eventName
-                            });
-                        }
-                    }
-                }
-
-                for (var id in eventCallbacks[eventName]) {
-                    eventCallbacks[eventName][id](param);
-                }
-            },
-
-            PodChatErrorException = function (error) {
-                this.code = error.error.code;
-                this.message = error.error.message;
-                this.uniqueId = error.uniqueId;
-                this.token = token;
-                this.error = JSON.stringify(error.error);
             },
 
             /**
@@ -63776,35 +68308,35 @@ WildEmitter.mixin(WildEmitter);
                     cacheDeletingInProgress = true;
                     db.threads
                         .where('owner')
-                        .equals(parseInt(userInfo.id))
+                        .equals(parseInt(chatMessaging.userInfo.id))
                         .delete()
                         .then(function () {
                             consoleLogging && console.log('Threads table deleted');
 
                             db.contacts
                                 .where('owner')
-                                .equals(parseInt(userInfo.id))
+                                .equals(parseInt(chatMessaging.userInfo.id))
                                 .delete()
                                 .then(function () {
                                     consoleLogging && console.log('Contacts table deleted');
 
                                     db.messages
                                         .where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .delete()
                                         .then(function () {
                                             consoleLogging && console.log('Messages table deleted');
 
                                             db.participants
                                                 .where('owner')
-                                                .equals(parseInt(userInfo.id))
+                                                .equals(parseInt(chatMessaging.userInfo.id))
                                                 .delete()
                                                 .then(function () {
                                                     consoleLogging && console.log('Participants table deleted');
 
                                                     db.messageGaps
                                                         .where('owner')
-                                                        .equals(parseInt(userInfo.id))
+                                                        .equals(parseInt(chatMessaging.userInfo.id))
                                                         .delete()
                                                         .then(function () {
                                                             consoleLogging && console.log('MessageGaps table deleted');
@@ -63816,7 +68348,7 @@ WildEmitter.mixin(WildEmitter);
                                 });
                         })
                         .catch(function (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
@@ -63924,7 +68456,7 @@ WildEmitter.mixin(WildEmitter);
                         queueDb.waitQ.where('threadId')
                             .equals(threadId)
                             .and(function (item) {
-                                return item.owner === parseInt(userInfo.id);
+                                return item.owner === parseInt(chatMessaging.userInfo.id);
                             })
                             .toArray()
                             .then(function (waitQueueOnCache) {
@@ -63934,8 +68466,8 @@ WildEmitter.mixin(WildEmitter);
                                     uniqueIds.push(waitQueueOnCache[i].uniqueId);
                                 }
 
-                                if (uniqueIds.length && chatState) {
-                                    sendMessage({
+                                if (uniqueIds.length && chatMessaging.chatState) {
+                                    chatMessaging.sendMessage({
                                         chatMessageVOType: chatMessageVOTypes.GET_HISTORY,
                                         content: {
                                             uniqueIds: uniqueIds
@@ -63987,7 +68519,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             })
                             .catch(function (error) {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: error.code,
                                     message: error.message,
                                     error: error
@@ -64005,7 +68537,7 @@ WildEmitter.mixin(WildEmitter);
                         }
 
                         if (uniqueIds.length) {
-                            sendMessage({
+                            chatMessaging.sendMessage({
                                 chatMessageVOType: chatMessageVOTypes.GET_HISTORY,
                                 content: {
                                     uniqueIds: uniqueIds
@@ -64094,14 +68626,14 @@ WildEmitter.mixin(WildEmitter);
                     queueDb.waitQ.where('uniqueId')
                         .equals(item.uniqueId)
                         .and(function (item) {
-                            return item.owner === parseInt(userInfo.id);
+                            return item.owner === parseInt(chatMessaging.userInfo.id);
                         })
                         .delete()
                         .then(function () {
                             callback && callback();
                         })
                         .catch(function (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
@@ -64141,14 +68673,14 @@ WildEmitter.mixin(WildEmitter);
                     queueDb.waitQ.where('threadId')
                         .equals(threadId)
                         .and(function (item) {
-                            return item.owner === parseInt(userInfo.id);
+                            return item.owner === parseInt(chatMessaging.userInfo.id);
                         })
                         .delete()
                         .then(function () {
                             callback && callback();
                         })
                         .catch(function (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
@@ -64211,14 +68743,14 @@ WildEmitter.mixin(WildEmitter);
                                 .put({
                                     threadId: parseInt(item.subjectId),
                                     uniqueId: waitQueueUniqueId,
-                                    owner: parseInt(userInfo.id),
+                                    owner: parseInt(chatMessaging.userInfo.id),
                                     message: Utility.crypt(item, cacheSecret)
                                 })
                                 .then(function () {
                                     callback && callback();
                                 })
                                 .catch(function (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: error.code,
                                         message: error.message,
                                         error: error
@@ -64239,7 +68771,7 @@ WildEmitter.mixin(WildEmitter);
                     queueDb.waitQ.where('uniqueId')
                         .equals(uniqueId)
                         .and(function (item) {
-                            return item.owner === parseInt(userInfo.id);
+                            return item.owner === parseInt(chatMessaging.userInfo.id);
                         })
                         .toArray()
                         .then(function (messages) {
@@ -64247,13 +68779,13 @@ WildEmitter.mixin(WildEmitter);
                             if (decryptedEnqueuedMessage.uniqueId === uniqueId) {
                                 var message = formatDataToMakeMessage(messages[0].threadId, {
                                     uniqueId: decryptedEnqueuedMessage.uniqueId,
-                                    ownerId: userInfo.id,
+                                    ownerId: chatMessaging.userInfo.id,
                                     message: decryptedEnqueuedMessage.content,
                                     metadata: decryptedEnqueuedMessage.metadata,
                                     systemMetadata: decryptedEnqueuedMessage.systemMetadata,
                                     replyInfo: decryptedEnqueuedMessage.replyInfo,
                                     forwardInfo: decryptedEnqueuedMessage.forwardInfo,
-                                    participant: userInfo,
+                                    participant: chatMessaging.userInfo,
                                     time: decryptedEnqueuedMessage.time,
                                     timeNanos: decryptedEnqueuedMessage.timeNanos
                                 });
@@ -64261,7 +68793,7 @@ WildEmitter.mixin(WildEmitter);
                             }
                         })
                         .catch(function (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
@@ -64274,13 +68806,13 @@ WildEmitter.mixin(WildEmitter);
                             var time = new Date().getTime();
                             var message = formatDataToMakeMessage(decryptedEnqueuedMessage.threadId, {
                                 uniqueId: decryptedEnqueuedMessage.uniqueId,
-                                ownerId: userInfo.id,
+                                ownerId: chatMessaging.userInfo.id,
                                 message: decryptedEnqueuedMessage.content,
                                 metadata: decryptedEnqueuedMessage.metadata,
                                 systemMetadata: decryptedEnqueuedMessage.systemMetadata,
                                 replyInfo: decryptedEnqueuedMessage.replyInfo,
                                 forwardInfo: decryptedEnqueuedMessage.forwardInfo,
-                                participant: userInfo,
+                                participant: chatMessaging.userInfo,
                                 time: time,
                                 timeNanos: (time % 1000) * 1000000
                             });
@@ -64397,7 +68929,7 @@ WildEmitter.mixin(WildEmitter);
                         if (db) {
                             db.threads
                                 .where('owner')
-                                .equals(parseInt(userInfo.id))
+                                .equals(parseInt(chatMessaging.userInfo.id))
                                 .count()
                                 .then(function (threadsCount) {
                                     if (threadsCount > 0) {
@@ -64467,7 +68999,7 @@ WildEmitter.mixin(WildEmitter);
                     }
                 }
 
-                return sendMessage(setRoleData, {
+                return chatMessaging.sendMessage(setRoleData, {
                     onResult: function (result) {
                         callback && callback(result);
                     }
@@ -64506,7 +69038,7 @@ WildEmitter.mixin(WildEmitter);
                     }
                 }
 
-                return sendMessage(setAdminData, {
+                return chatMessaging.sendMessage(setAdminData, {
                     onResult: function (result) {
                         callback && callback(result);
                     }
@@ -64514,7 +69046,7 @@ WildEmitter.mixin(WildEmitter);
             },
 
             unPinMessage = function (params, callback) {
-                return sendMessage({
+                return chatMessaging.sendMessage({
                     chatMessageVOType: chatMessageVOTypes.UNPIN_MESSAGE,
                     typeCode: params.typeCode,
                     subjectId: params.messageId,
@@ -64546,7 +69078,7 @@ WildEmitter.mixin(WildEmitter);
                     fileExtension = params.file.name.split('.')
                         .pop();
 
-                    fireEvent('fileUploadEvents', {
+                    chatEvents.fireEvent('fileUploadEvents', {
                         threadId: params.threadId,
                         uniqueId: fileUniqueId,
                         state: 'NOT_STARTED',
@@ -64587,7 +69119,7 @@ WildEmitter.mixin(WildEmitter);
                     chatUploadHandlerResult.originalFileName = fileName;
                     callbacks && callbacks(chatUploadHandlerResult, metadata, fileType, fileExtension);
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 6302,
                         message: CHAT_ERRORS[6302]
                     });
@@ -64595,7 +69127,7 @@ WildEmitter.mixin(WildEmitter);
                 return {
                     uniqueId: fileUniqueId,
                     threadId: params.threadId,
-                    participant: userInfo,
+                    participant: chatMessaging.userInfo,
                     content: {
                         caption: params.content,
                         file: {
@@ -64647,74 +69179,6 @@ WildEmitter.mixin(WildEmitter);
                 });
             },
 
-            callReceived = function (params, callback) {
-                var receiveCallData = {
-                    chatMessageVOType: chatMessageVOTypes.RECIVE_CALL_REQUEST,
-                    typeCode: params.typeCode,
-                    pushMsgType: 3,
-                    token: token
-                };
-
-                if (params) {
-                    if (typeof +params.callId === 'number' && params.callId > 0) {
-                        receiveCallData.subjectId = +params.callId;
-                    } else {
-                        fireEvent('error', {
-                            code: 999,
-                            message: 'Invalid call id!'
-                        });
-                        return;
-                    }
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'No params have been sent to ReceiveCall()'
-                    });
-                    return;
-                }
-
-                return sendMessage(receiveCallData, {
-                    onResult: function (result) {
-                        callback && callback(result);
-                    }
-                });
-            },
-
-            endCall = function (params, callback) {
-                var endCallData = {
-                    chatMessageVOType: chatMessageVOTypes.END_CALL_REQUEST,
-                    typeCode: params.typeCode,
-                    pushMsgType: 3,
-                    token: token
-                };
-
-                if (params) {
-                    if (typeof +params.callId === 'number' && params.callId > 0) {
-                        endCallData.subjectId = +params.callId;
-                    } else {
-                        fireEvent('error', {
-                            code: 999,
-                            message: 'Invalid call id!'
-                        });
-                        return;
-                    }
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'No params have been sent to End the call!'
-                    });
-                    return;
-                }
-
-                callStop();
-
-                return sendMessage(endCallData, {
-                    onResult: function (result) {
-                        callback && callback(result);
-                    }
-                });
-            },
-
             mapReverse = function (params, callback) {
                 var data = {};
 
@@ -64754,7 +69218,7 @@ WildEmitter.mixin(WildEmitter);
                         callback && callback(returnData);
 
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: result.errorCode,
                             message: result.errorMessage,
                             error: result
@@ -64806,7 +69270,7 @@ WildEmitter.mixin(WildEmitter);
                         callback && callback(returnData);
 
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: result.errorCode,
                             message: result.errorMessage,
                             error: result
@@ -64868,7 +69332,7 @@ WildEmitter.mixin(WildEmitter);
                         callback && callback(returnData);
 
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: result.errorCode,
                             message: result.errorMessage,
                             error: result
@@ -64912,7 +69376,7 @@ WildEmitter.mixin(WildEmitter);
                             data.center = params.center.lat + ',' + parseFloat(params.center.lng);
                         } else {
                             hasError = true;
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 6700,
                                 message: CHAT_ERRORS[6700],
                                 error: undefined
@@ -64920,7 +69384,7 @@ WildEmitter.mixin(WildEmitter);
                         }
                     } else {
                         hasError = true;
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6700,
                             message: CHAT_ERRORS[6700],
                             error: undefined
@@ -64988,750 +69452,25 @@ WildEmitter.mixin(WildEmitter);
                 }
 
                 getImageFromLinkObjects[uniqueId].src = url;
-            },
-
-            /*
-             * Call Functionalities
-             */
-            startCallWebRTCFunctions = function (params, callback) {
-                if (callDivId) {
-                    var callParentDiv,
-                        callVideo = (typeof params.video === 'boolean') ? params.video : true,
-                        callMute = (typeof params.mute === 'boolean') ? params.mute : false,
-                        sendingTopic = params.sendingTopic,
-                        receiveTopic = params.receiveTopic;
-
-                    callTopics['sendVideoTopic'] = 'Vi-' + sendingTopic;
-                    callTopics['sendAudioTopic'] = 'Vo-' + sendingTopic;
-                    callTopics['receiveVideoTopic'] = 'Vi-' + receiveTopic;
-                    callTopics['receiveAudioTopic'] = 'Vo-' + receiveTopic;
-
-                    callParentDiv = document.getElementById(callDivId);
-
-                    // Local Video Tag
-                    if (callVideo && !uiRemoteMedias[callTopics['sendVideoTopic']]) {
-                        uiRemoteMedias[callTopics['sendVideoTopic']] = document.createElement('video');
-                        uiRemoteMedias[callTopics['sendVideoTopic']].setAttribute('id', 'uiRemoteVideo-' + callTopics['sendVideoTopic']);
-                        uiRemoteMedias[callTopics['sendVideoTopic']].setAttribute('class', callVideoTagClassName);
-                        uiRemoteMedias[callTopics['sendVideoTopic']].setAttribute('playsinline', '');
-                        uiRemoteMedias[callTopics['sendVideoTopic']].setAttribute('muted', '');
-                        uiRemoteMedias[callTopics['sendVideoTopic']].setAttribute('width', callVideoMinWidth + 'px');
-                        uiRemoteMedias[callTopics['sendVideoTopic']].setAttribute('height', callVideoMinHeight + 'px');
-                    }
-
-                    // Local Audio Tag
-                    if (!uiRemoteMedias[callTopics['sendAudioTopic']]) {
-                        uiRemoteMedias[callTopics['sendAudioTopic']] = document.createElement('audio');
-                        uiRemoteMedias[callTopics['sendAudioTopic']].setAttribute('id', 'uiRemoteAudio-' + callTopics['sendAudioTopic']);
-                        uiRemoteMedias[callTopics['sendAudioTopic']].setAttribute('class', callAudioTagClassName);
-                        uiRemoteMedias[callTopics['sendAudioTopic']].setAttribute('autoplay', '');
-                        uiRemoteMedias[callTopics['sendAudioTopic']].setAttribute('muted', '');
-                        uiRemoteMedias[callTopics['sendAudioTopic']].setAttribute('controls', '');
-                    }
-
-                    // Remote Video Tag
-                    if (callVideo && !uiRemoteMedias[callTopics['receiveVideoTopic']]) {
-                        uiRemoteMedias[callTopics['receiveVideoTopic']] = document.createElement('video');
-                        uiRemoteMedias[callTopics['receiveVideoTopic']].setAttribute('id', 'uiRemoteVideo-' + callTopics['receiveVideoTopic']);
-                        uiRemoteMedias[callTopics['receiveVideoTopic']].setAttribute('class', callVideoTagClassName);
-                        uiRemoteMedias[callTopics['receiveVideoTopic']].setAttribute('playsinline', '');
-                        uiRemoteMedias[callTopics['receiveVideoTopic']].setAttribute('muted', '');
-                        uiRemoteMedias[callTopics['receiveVideoTopic']].setAttribute('width', callVideoMinWidth + 'px');
-                        uiRemoteMedias[callTopics['receiveVideoTopic']].setAttribute('height', callVideoMinHeight + 'px');
-                    }
-
-                    // Remote Audio Tag
-                    if (!uiRemoteMedias[callTopics['receiveAudioTopic']]) {
-                        uiRemoteMedias[callTopics['receiveAudioTopic']] = document.createElement('audio');
-                        uiRemoteMedias[callTopics['receiveAudioTopic']].setAttribute('id', 'uiRemoteAudio-' + callTopics['receiveAudioTopic']);
-                        uiRemoteMedias[callTopics['receiveAudioTopic']].setAttribute('class', callAudioTagClassName);
-                        uiRemoteMedias[callTopics['receiveAudioTopic']].setAttribute('autoplay', '');
-                        callMute && uiRemoteMedias[callTopics['receiveAudioTopic']].setAttribute('muted', '');
-                        uiRemoteMedias[callTopics['receiveAudioTopic']].setAttribute('controls', '');
-                    }
-
-                    if (callParentDiv) {
-                        callVideo && callParentDiv.appendChild(uiRemoteMedias[callTopics['sendVideoTopic']]);
-                        callParentDiv.appendChild(uiRemoteMedias[callTopics['sendAudioTopic']]);
-                        callVideo && callParentDiv.appendChild(uiRemoteMedias[callTopics['receiveVideoTopic']]);
-                        callParentDiv.appendChild(uiRemoteMedias[callTopics['receiveAudioTopic']]);
-
-                        callback && callback({
-                            'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
-                            'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
-                            'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                            'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]
-                        });
-                    } else {
-                        callback && callback({
-                            'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
-                            'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
-                            'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                            'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]
-                        });
-                    }
-
-                    sendCallMessage({
-                        id: 'STOPALL'
-                    }, function (result) {
-                        handleCallSocketOpen({
-                            brokerAddress: params.brokerAddress,
-                            turnAddress: params.turnAddress,
-                            callVideo: callVideo,
-                            callAudio: !callMute
-                        });
-                    });
-                } else {
-                    consoleLogging && console.log('No Call DIV has been declared!');
-                    return;
-                }
-            },
-
-            handleCallSocketOpen = function (params) {
-                currentCallParams = params;
-
-                sendCallMessage({
-                    id: 'CREATE_SESSION',
-                    brokerAddress: params.brokerAddress,
-                    turnAddress: params.turnAddress.split(',')[0]
-                }, function (res) {
-                    if (res.done === 'TRUE') {
-                        generateAndSendSdpOffers(params);
-                    } else if (res.done === 'SKIP') {
-                        generateAndSendSdpOffers(params);
-                    } else {
-                        consoleLogging && console.log('CREATE_SESSION faced a problem', res);
-                        endCall({
-                            callId: currentCallId
-                        });
-                    }
-                });
-            },
-
-            shouldReconnectCall = function () {
-                if (currentCallParams && Object.keys(currentCallParams).length) {
-                    for (var peer in webpeers) {
-                        if (webpeers[peer]) {
-                            if (webpeers[peer].peerConnection.iceConnectionState != 'connected') {
-                                fireEvent('callEvents', {
-                                    type: 'CALL_STATUS',
-                                    errorCode: 7000,
-                                    errorMessage: `Call Peer (${peer}) is not in connected state, Restarting call in progress ...!`,
-                                    errorInfo: webpeers[peer]
-                                });
-
-                                sendCallMessage({
-                                    id: 'STOPALL'
-                                }, function (result) {
-                                    if (result.done === 'TRUE') {
-                                        handleCallSocketOpen(currentCallParams);
-                                    } else if (result.done === 'SKIP') {
-                                        handleCallSocketOpen(currentCallParams);
-                                    } else {
-                                        consoleLogging && console.log('STOPALL faced a problem', result);
-                                        endCall({
-                                            callId: currentCallId
-                                        });
-                                        callStop();
-                                    }
-                                });
-
-                                break;
-                            }
-                        }
-                    }
-                }
-            },
-
-            generateAndSendSdpOffers = function (params) {
-                var turnServers = [];
-
-                if (!!params.turnAddress && params.turnAddress.length > 0) {
-                    var serversTemp = params.turnAddress.split(',');
-
-                    turnServers = [
-                        {"urls": "stun:" + serversTemp[0]},
-                        {
-                            "urls": "turn:" + serversTemp[1],
-                            "username": "mkhorrami",
-                            "credential": "mkh_123456"
-                        }
-                    ];
-                } else {
-                    turnServers = [
-                        {"urls": "stun:" + callTurnIp + ":3478"},
-                        {
-                            "urls": "turn:" + callTurnIp + ":3478",
-                            "username": "mkhorrami",
-                            "credential": "mkh_123456"
-                        }
-                    ];
-                }
-
-                // Video Topics
-                if (params.callVideo) {
-
-                    const sendVideoOptions = {
-                        localVideo: uiRemoteMedias[callTopics['sendVideoTopic']],
-                        mediaConstraints: {
-                            audio: false,
-                            video: {
-                                width: callVideoMinWidth,
-                                height: callVideoMinHeight,
-                                framerate: 15
-                            }
-                        },
-                        onicecandidate: (candidate) => {
-                            setTimeout(function () {
-                                sendCallMessage({
-                                    id: 'ADD_ICE_CANDIDATE',
-                                    topic: callTopics['sendVideoTopic'],
-                                    candidateDto: candidate
-                                })
-                            }, 500, {candidate: candidate});
-                        },
-                        configuration: {
-                            iceServers: turnServers
-                        }
-                    };
-
-                    const receiveVideoOptions = {
-                        remoteVideo: uiRemoteMedias[callTopics['receiveVideoTopic']],
-                        mediaConstraints: {audio: false, video: true},
-                        onicecandidate: (candidate) => {
-                            setTimeout(function () {
-                                sendCallMessage({
-                                    id: 'ADD_ICE_CANDIDATE',
-                                    topic: callTopics['receiveVideoTopic'],
-                                    candidateDto: candidate
-                                })
-                            }, 500, {candidate: candidate});
-                        },
-                        configuration: {
-                            iceServers: turnServers
-                        }
-                    };
-
-                    webpeers[callTopics['receiveVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveVideoOptions, function (err) {
-                        if (err) {
-                            console.error("[start/webRtcReceiveVideoPeer] Error: " + explainUserMediaError(err));
-                            return;
-                        }
-
-                        webpeers[callTopics['receiveVideoTopic']].generateOffer((err, sdpOffer) => {
-                            if (err) {
-                                console.error("[start/WebRtcVideoPeerReceiveOnly/generateOffer] " + err);
-                                return;
-                            }
-
-                            sendCallMessage({
-                                id: 'RECIVE_SDP_OFFER',
-                                sdpOffer: sdpOffer,
-                                useComedia: true,
-                                useSrtp: false,
-                                topic: callTopics['receiveVideoTopic'],
-                                mediaType: 2
-                            });
-                        });
-                    });
-
-                    setTimeout(function () {
-                        webpeers[callTopics['sendVideoTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendVideoOptions, function (err) {
-                            if (err) {
-                                sendCallSocketError("[start/WebRtcVideoPeerSendOnly] Error: " + explainUserMediaError(err));
-                                callStop();
-                                return;
-                            }
-
-                            startMedia(uiRemoteMedias[callTopics['sendVideoTopic']]);
-
-                            webpeers[callTopics['sendVideoTopic']].generateOffer((err, sdpOffer) => {
-                                if (err) {
-                                    sendCallSocketError("[start/WebRtcVideoPeerSendOnly/generateOffer] Error: " + err);
-                                    callStop();
-                                    return;
-                                }
-
-                                sendCallMessage({
-                                    id: 'SEND_SDP_OFFER',
-                                    topic: callTopics['sendVideoTopic'],
-                                    sdpOffer: sdpOffer,
-                                    mediaType: 2
-                                });
-                            });
-                        });
-                    }, 2000);
-                }
-
-                // Audio Topics
-                if (params.callAudio) {
-                    const sendAudioOptions = {
-                        localVideo: uiRemoteMedias[callTopics['sendAudioTopic']],
-                        mediaConstraints: {audio: true, video: false},
-                        onicecandidate: (candidate) => {
-                            setTimeout(function () {
-                                sendCallMessage({
-                                    id: 'ADD_ICE_CANDIDATE',
-                                    topic: callTopics['sendAudioTopic'],
-                                    candidateDto: candidate,
-                                })
-                            }, 500, {candidate: candidate});
-                        },
-                        configuration: {
-                            iceServers: turnServers
-                        }
-                    };
-
-                    const receiveAudioOptions = {
-                        remoteVideo: uiRemoteMedias[callTopics['receiveAudioTopic']],
-                        mediaConstraints: {audio: true, video: false},
-                        onicecandidate: (candidate) => {
-                            setTimeout(function () {
-                                sendCallMessage({
-                                    id: 'ADD_ICE_CANDIDATE',
-                                    topic: callTopics['receiveAudioTopic'],
-                                    candidateDto: candidate,
-                                })
-                            }, 500, {candidate: candidate});
-                        },
-                        configuration: {
-                            iceServers: turnServers
-                        }
-                    };
-
-                    webpeers[callTopics['receiveAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(receiveAudioOptions, function (err) {
-                        if (err) {
-                            console.error("[start/WebRtcAudioPeerReceiveOnly] Error: " + explainUserMediaError(err));
-                            return;
-                        }
-
-                        webpeers[callTopics['receiveAudioTopic']].generateOffer((err, sdpOffer) => {
-                            if (err) {
-                                console.error("[start/WebRtcAudioPeerReceiveOnly/generateOffer] " + err);
-                                return;
-                            }
-                            sendCallMessage({
-                                id: 'RECIVE_SDP_OFFER',
-                                sdpOffer: sdpOffer,
-                                useComedia: false,
-                                useSrtp: false,
-                                mediaType: 1,
-                                topic: callTopics['receiveAudioTopic']
-                            });
-                        });
-                    });
-
-                    setTimeout(function () {
-                        webpeers[callTopics['sendAudioTopic']] = new KurentoUtils.WebRtcPeer.WebRtcPeerSendonly(sendAudioOptions, function (err) {
-                            if (err) {
-                                sendCallSocketError("[start/WebRtcAudioPeerSendOnly] Error: " + explainUserMediaError(err));
-                                callStop();
-                                return;
-                            }
-
-                            startMedia(uiRemoteMedias[callTopics['sendAudioTopic']]);
-
-                            webpeers[callTopics['sendAudioTopic']].generateOffer((err, sdpOffer) => {
-                                if (err) {
-                                    sendCallSocketError("[start/WebRtcAudioPeerSendOnly/generateOffer] Error: " + err);
-                                    callStop();
-                                    return;
-                                }
-                                sendCallMessage({
-                                    id: 'SEND_SDP_OFFER',
-                                    topic: callTopics['sendAudioTopic'],
-                                    sdpOffer: sdpOffer,
-                                    mediaType: 1
-                                });
-                            });
-                        });
-                    }, 2000);
-                }
-
-                setTimeout(function () {
-                    for (var peer in webpeers) {
-                        if (webpeers[peer]) {
-                            webpeers[peer].peerConnection.oniceconnectionstatechange = function () {
-                                if (webpeers[peer].peerConnection.iceConnectionState == 'disconnected') {
-                                    fireEvent('callEvents', {
-                                        type: 'CALL_STATUS',
-                                        errorCode: 7000,
-                                        errorMessage: `Call Peer (${peer}) is disconnected!`,
-                                        errorInfo: webpeers[peer]
-                                    });
-
-                                    setTimeout(function () {
-                                        restartMedia(callTopics['sendVideoTopic'])
-                                    }, 2000);
-
-                                    setTimeout(function () {
-                                        restartMedia(callTopics['sendVideoTopic'])
-                                    }, 6000);
-
-                                    shouldReconnectCallTimeout && clearTimeout(shouldReconnectCallTimeout);
-                                    shouldReconnectCallTimeout = setTimeout(function () {
-                                        shouldReconnectCall();
-                                    }, 7000);
-                                }
-
-                                if (webpeers[peer].peerConnection.iceConnectionState === "failed") {
-                                    fireEvent('callEvents', {
-                                        type: 'CALL_STATUS',
-                                        errorCode: 7000,
-                                        errorMessage: `Call Peer (${peer}) has failed!`,
-                                        errorInfo: webpeers[peer]
-                                    });
-                                }
-
-                                if (webpeers[peer].peerConnection.iceConnectionState === "connected") {
-                                    fireEvent('callEvents', {
-                                        type: 'CALL_STATUS',
-                                        errorCode: 7000,
-                                        errorMessage: `Call Peer (${peer}) has connected!`,
-                                        errorInfo: webpeers[peer]
-                                    });
-
-                                    setTimeout(function () {
-                                        restartMedia(callTopics['sendVideoTopic'])
-                                    }, 2000);
-
-                                    setTimeout(function () {
-                                        restartMedia(callTopics['sendVideoTopic'])
-                                    }, 6000);
-                                }
-                            }
-                        }
-                    }
-                }, 4000);
-
-                setTimeout(function () {
-                    restartMedia(callTopics['sendVideoTopic'])
-                }, 4000);
-                setTimeout(function () {
-                    restartMedia(callTopics['sendVideoTopic'])
-                }, 8000);
-                setTimeout(function () {
-                    restartMedia(callTopics['sendVideoTopic'])
-                }, 12000);
-                setTimeout(function () {
-                    restartMedia(callTopics['sendVideoTopic'])
-                }, 20000);
-            },
-
-            sendCallSocketError = function (message) {
-                fireEvent('callEvents', {
-                    type: 'CALL_ERROR',
-                    code: 7000,
-                    message: message
-                });
-
-                sendCallMessage({
-                    id: 'ERROR',
-                    message: message,
-                });
-            },
-
-            explainUserMediaError = function (err) {
-                fireEvent('callEvents', {
-                    type: 'CALL_ERROR',
-                    code: 7000,
-                    message: err
-                });
-
-                const n = err.name;
-                if (n === 'NotFoundError' || n === 'DevicesNotFoundError') {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "Missing webcam for required tracks"
-                    });
-                    return "Missing webcam for required tracks";
-                } else if (n === 'NotReadableError' || n === 'TrackStartError') {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "Webcam is already in use"
-                    });
-                    return "Webcam is already in use";
-                } else if (n === 'OverconstrainedError' || n === 'ConstraintNotSatisfiedError') {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "Webcam doesn't provide required tracks"
-                    });
-                    return "Webcam doesn't provide required tracks";
-                } else if (n === 'NotAllowedError' || n === 'PermissionDeniedError') {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "Webcam permission has been denied by the user"
-                    });
-                    return "Webcam permission has been denied by the user";
-                } else if (n === 'TypeError') {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "No media tracks have been requested"
-                    });
-                    return "No media tracks have been requested";
-                } else {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "Unknown error: " + err
-                    });
-                    return "Unknown error: " + err;
-                }
-            },
-
-            setCallServerName = function (serverName) {
-                if (!!serverName) {
-                    callServerName = serverName;
-                }
-            },
-
-            startMedia = function (media) {
-                media.play().catch((err) => {
-                    if (err.name === 'NotAllowedError') {
-                        fireEvent('callEvents', {
-                            type: 'CALL_ERROR',
-                            code: 7000,
-                            message: "[start] Browser doesn't allow playing media: " + err
-                        });
-                    } else {
-                        fireEvent('callEvents', {
-                            type: 'CALL_ERROR',
-                            code: 7000,
-                            message: "[start] Error in media.play(): " + err
-                        });
-                    }
-                });
-            },
-
-            restartMedia = function (videoTopicParam) {
-                if (currentCallParams && Object.keys(currentCallParams).length) {
-                    consoleLogging && console.log('Sending Key Frame ...');
-
-                    var videoTopic = !!videoTopicParam ? videoTopicParam : callTopics['sendVideoTopic'];
-                    let videoElement = document.getElementById(`uiRemoteVideo-${videoTopic}`);
-
-                    if (videoElement) {
-                        let videoTrack = videoElement.srcObject.getTracks()[0];
-
-                        if (navigator && !!navigator.userAgent.match(/firefox/gi)) {
-                            videoTrack.enable = false;
-                            let newWidth = callVideoMinWidth - (Math.ceil(Math.random() * 50) + 20);
-                            let newHeight = callVideoMinHeight - (Math.ceil(Math.random() * 50) + 20);
-
-                            videoTrack.applyConstraints({
-                                width: {
-                                    min: newWidth,
-                                    ideal: 1280
-                                },
-                                height: {
-                                    min: newHeight,
-                                    ideal: 720
-                                },
-                                advanced: [
-                                    {
-                                        width: newWidth,
-                                        height: newHeight
-                                    },
-                                    {
-                                        aspectRatio: 1.333
-                                    }
-                                ]
-                            }).then((res) => {
-                                videoTrack.enabled = true;
-                                setTimeout(() => {
-                                    videoTrack.applyConstraints({
-                                        "width": callVideoMinWidth,
-                                        "height": callVideoMinHeight
-                                    });
-                                }, 500);
-                            }).catch(e => consoleLogging && console.log(e));
-                        } else {
-                            videoTrack.applyConstraints({
-                                "width": callVideoMinWidth - (Math.ceil(Math.random() * 5) + 5)
-                            }).then((res) => {
-                                setTimeout(function () {
-                                    videoTrack.applyConstraints({
-                                        "width": callVideoMinWidth
-                                    });
-                                }, 500);
-                            }).catch(e => consoleLogging && console.log(e));
-                        }
-                    }
-                }
-            },
-
-            handleProcessSdpAnswer = function (jsonMessage) {
-                let sampleWebRtc = webpeers[jsonMessage.topic];
-
-                if (sampleWebRtc == null) {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "[handleProcessSdpAnswer] Skip, no WebRTC Peer",
-                        error: webpeers[jsonMessage.topic]
-                    });
-                    return;
-                }
-
-                sampleWebRtc.processAnswer(jsonMessage.sdpAnswer, (err) => {
-                    if (err) {
-                        sendCallSocketError("[handleProcessSdpAnswer] Error: " + err);
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_ERROR',
-                            code: 7000,
-                            message: "[handleProcessSdpAnswer] Error: " + err
-                        });
-
-                        return;
-                    }
-                    startMedia(uiRemoteMedias[jsonMessage.topic]);
-                });
-            },
-
-            handleAddIceCandidate = function (jsonMessage) {
-                let sampleWebRtc = webpeers[jsonMessage.topic];
-                if (sampleWebRtc == null) {
-                    fireEvent('callEvents', {
-                        type: 'CALL_ERROR',
-                        code: 7000,
-                        message: "[handleAddIceCandidate] Skip, no WebRTC Peer",
-                        error: JSON.stringify(webpeers[jsonMessage.topic])
-                    });
-                    return;
-                }
-
-                sampleWebRtc.addIceCandidate(jsonMessage.candidate, (err) => {
-                    if (err) {
-                        console.error("[handleAddIceCandidate] " + err);
-
-                        fireEvent('callEvents', {
-                            type: 'CALL_ERROR',
-                            code: 7000,
-                            message: "[handleAddIceCandidate] " + err,
-                            error: JSON.stringify(jsonMessage.candidate)
-                        });
-
-                        return;
-                    }
-                });
-            },
-
-            handlePartnerFreeze = function (jsonMessage) {
-                if (!!jsonMessage && !!jsonMessage.topic && jsonMessage.topic.substring(0, 2) === 'Vi') {
-                    restartMedia(jsonMessage.topic);
-                    setTimeout(function () {
-                        restartMedia(jsonMessage.topic)
-                    }, 4000);
-                    setTimeout(function () {
-                        restartMedia(jsonMessage.topic)
-                    }, 8000);
-                }
-            },
-
-            handleError = function (jsonMessage, sendingTopic, receiveTopic) {
-                const errMessage = jsonMessage.message;
-
-                fireEvent('callEvents', {
-                    type: 'CALL_ERROR',
-                    code: 7000,
-                    essage: "Kurento error: " + errMessage
-                });
-            },
-
-            callStop = function () {
-                consoleLogging && console.log('Call is stopping ...');
-
-                for (var media in uiRemoteMedias) {
-                    removeStreamFromWebRTC(media);
-                }
-
-                for (var i in webpeers) {
-                    if (webpeers[i]) {
-                        webpeers[i].dispose();
-                        webpeers[i] = null;
-                    }
-                }
-
-                sendCallMessage({
-                    id: 'CLOSE'
-                });
-
-                currentCallParams = {};
-                currentCallId = null;
-            },
-
-            removeStreamFromWebRTC = function (RTCStream) {
-                var callParentDiv = document.getElementById(callDivId);
-
-                if (uiRemoteMedias.hasOwnProperty(RTCStream)) {
-                    const stream = uiRemoteMedias[RTCStream].srcObject;
-                    if (!!stream) {
-                        const tracks = stream.getTracks();
-
-                        if (!!tracks) {
-                            tracks.forEach(function (track) {
-                                track.stop();
-                            });
-                        }
-
-                        uiRemoteMedias[RTCStream].srcObject = null;
-                    }
-
-                    uiRemoteMedias[RTCStream].remove();
-                    delete (uiRemoteMedias[RTCStream]);
-                }
-            },
-
-            removeFromCallUI = function (topic) {
-                var videoElement = 'Vi-' + topic;
-                var audioElement = 'Vo-' + topic;
-
-                if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(videoElement)) {
-                    removeStreamFromWebRTC(videoElement);
-                }
-
-                if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(audioElement)) {
-                    removeStreamFromWebRTC(audioElement);
-                }
             };
 
         /******************************************************
          *             P U B L I C   M E T H O D S            *
          ******************************************************/
 
-        this.on = function (eventName, callback) {
-            if (eventCallbacks[eventName]) {
-                var id = Utility.generateUUID();
-                eventCallbacks[eventName][id] = callback;
-                return id;
-            }
-        };
-
-        this.off = function (eventName, eventId) {
-            if (eventCallbacks[eventName]) {
-                if (eventCallbacks[eventName].hasOwnProperty(eventId)) {
-                    delete eventCallbacks[eventName][eventId];
-                    return eventId;
-                }
-            }
-        }
+        this.on = chatEvents.on;
+        this.off = chatEvents.off;
 
         this.getPeerId = function () {
             return peerId;
         };
 
         this.getCurrentUser = function () {
-            return userInfo;
+            return chatMessaging.userInfo;
         };
 
         this.getUserInfo = function (callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.USER_INFO,
                 typeCode: generalTypeCode
             }, {
@@ -65795,7 +69534,7 @@ WildEmitter.mixin(WildEmitter);
         };
 
         this.getAllUnreadMessagesCount = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.ALL_UNREAD_MESSAGE_COUNT,
                 typeCode: params.typeCode,
                 content: JSON.stringify({
@@ -65892,11 +69631,11 @@ WildEmitter.mixin(WildEmitter);
 
                             if (Object.keys(whereClause).length === 0) {
                                 thenAble = db.contacts.where('owner')
-                                    .equals(parseInt(userInfo.id));
+                                    .equals(parseInt(chatMessaging.userInfo.id));
                             } else {
                                 if (whereClause.hasOwnProperty('query')) {
                                     thenAble = db.contacts.where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .filter(function (contact) {
                                             var reg = new RegExp(whereClause.query);
                                             return reg.test(chatDecrypt(contact.firstName, cacheSecret, contact.salt) + ' '
@@ -65912,7 +69651,7 @@ WildEmitter.mixin(WildEmitter);
                                 .toArray()
                                 .then(function (contacts) {
                                     db.contacts.where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .count()
                                         .then(function (contactsCount) {
                                             var cacheData = [];
@@ -65921,7 +69660,7 @@ WildEmitter.mixin(WildEmitter);
                                                 try {
                                                     cacheData.push(formatDataToMakeContact(JSON.parse(chatDecrypt(contacts[i].data, cacheSecret, contacts[i].salt))));
                                                 } catch (error) {
-                                                    fireEvent('error', {
+                                                    chatEvents.fireEvent('error', {
                                                         code: error.code,
                                                         message: error.message,
                                                         error: error
@@ -65950,7 +69689,7 @@ WildEmitter.mixin(WildEmitter);
                                         });
                                 })
                                 .catch(function (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: error.code,
                                         message: error.message,
                                         error: error
@@ -65958,14 +69697,14 @@ WildEmitter.mixin(WildEmitter);
                                 });
                         })
                         .catch(function (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
                             });
                         });
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 6601,
                         message: CHAT_ERRORS[6601],
                         error: null
@@ -65976,7 +69715,7 @@ WildEmitter.mixin(WildEmitter);
             /**
              * Retrieve Contacts from server
              */
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -66018,7 +69757,7 @@ WildEmitter.mixin(WildEmitter);
                                         var tempData = {},
                                             salt = Utility.generateUUID();
                                         tempData.id = resultData.contacts[i].id;
-                                        tempData.owner = userInfo.id;
+                                        tempData.owner = chatMessaging.userInfo.id;
                                         tempData.uniqueId = resultData.contacts[i].uniqueId;
                                         tempData.userId = Utility.crypt(resultData.contacts[i].userId, cacheSecret, salt);
                                         tempData.cellphoneNumber = Utility.crypt(resultData.contacts[i].cellphoneNumber, cacheSecret, salt);
@@ -66031,7 +69770,7 @@ WildEmitter.mixin(WildEmitter);
 
                                         cacheData.push(tempData);
                                     } catch (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -66041,14 +69780,14 @@ WildEmitter.mixin(WildEmitter);
 
                                 db.contacts.bulkPut(cacheData)
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -66065,7 +69804,7 @@ WildEmitter.mixin(WildEmitter);
                     callback = undefined;
 
                     if (!returnData.hasError && returnCache) {
-                        fireEvent('contactEvents', {
+                        chatEvents.fireEvent('contactEvents', {
                             type: 'CONTACTS_LIST_CHANGE',
                             result: returnData.result
                         });
@@ -66137,7 +69876,7 @@ WildEmitter.mixin(WildEmitter);
                 }
             }
 
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -66181,7 +69920,7 @@ WildEmitter.mixin(WildEmitter);
                 }
             }
 
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -66234,7 +69973,7 @@ WildEmitter.mixin(WildEmitter);
                 }
             }
 
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -66372,7 +70111,7 @@ WildEmitter.mixin(WildEmitter);
                 content: content
             };
 
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -66463,7 +70202,7 @@ WildEmitter.mixin(WildEmitter);
                 content: content
             };
 
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -66516,7 +70255,7 @@ WildEmitter.mixin(WildEmitter);
             return {
                 uniqueId: uniqueId,
                 threadId: params.threadId,
-                participant: userInfo,
+                participant: chatMessaging.userInfo,
                 content: params.content
             };
         };
@@ -66524,7 +70263,7 @@ WildEmitter.mixin(WildEmitter);
         this.sendBotMessage = function (params, callbacks) {
             var metadata = {};
 
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.BOT_MESSAGE,
                 typeCode: params.typeCode,
                 subjectId: params.messageId,
@@ -66598,7 +70337,7 @@ WildEmitter.mixin(WildEmitter);
                 typeCode: params.typeCode,
                 content: content
             };
-            return sendMessage(sendMessageParams, {
+            return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -66655,7 +70394,7 @@ WildEmitter.mixin(WildEmitter);
                         data.center = params.mapCenter.lat + ',' + parseFloat(params.mapCenter.lng);
                     } else {
                         hasError = true;
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 6700,
                             message: CHAT_ERRORS[6700],
                             error: undefined
@@ -66663,7 +70402,7 @@ WildEmitter.mixin(WildEmitter);
                     }
                 } else {
                     hasError = true;
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 6700,
                         message: CHAT_ERRORS[6700],
                         error: undefined
@@ -66707,7 +70446,7 @@ WildEmitter.mixin(WildEmitter);
             return {
                 uniqueId: fileUniqueId,
                 threadId: params.threadId,
-                participant: userInfo,
+                participant: chatMessaging.userInfo,
                 cancel: function () {
                     if (typeof getImageFromLinkObjects !== 'undefined' && getImageFromLinkObjects.hasOwnProperty(fileUniqueId)) {
                         getImageFromLinkObjects[fileUniqueId].onload = function () {
@@ -66730,7 +70469,7 @@ WildEmitter.mixin(WildEmitter);
                 queueDb.waitQ.where('uniqueId')
                     .equals(uniqueId)
                     .and(function (item) {
-                        return item.owner === parseInt(userInfo.id);
+                        return item.owner === parseInt(chatMessaging.userInfo.id);
                     })
                     .toArray()
                     .then(function (messages) {
@@ -66744,7 +70483,7 @@ WildEmitter.mixin(WildEmitter);
                         }
                     })
                     .catch(function (error) {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: error.code,
                             message: error.message,
                             error: error
@@ -66785,7 +70524,7 @@ WildEmitter.mixin(WildEmitter);
                 }
             }
 
-            return sendMessage(clearHistoryParams, {
+            return chatMessaging.sendMessage(clearHistoryParams, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -66807,18 +70546,18 @@ WildEmitter.mixin(WildEmitter);
                                 db.messages.where('threadId')
                                     .equals(parseInt(result.result))
                                     .and(function (message) {
-                                        return message.owner === userInfo.id;
+                                        return message.owner === chatMessaging.userInfo.id;
                                     })
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -66836,20 +70575,24 @@ WildEmitter.mixin(WildEmitter);
 
         this.getFile = getFile;
 
-        this.getFileFromPodspace = getFileFromPodspace;
+        this.getFileFromPodspace = getFileFromPodspaceNew;//getFileFromPodspace;
 
-        this.getImageFromPodspace = getImageFromPodspace;
+        this.getImageFromPodspace = getImageFromPodspaceNew;//getImageFromPodspace;
 
         this.uploadFile = uploadFile;
 
         this.uploadImage = uploadImage;
+
+        this.uploadFileToPodspace = uploadFileToPodspaceNew;
+
+        this.uploadImageToPodspace = uploadImageToPodspaceNew;
 
         this.cancelFileUpload = cancelFileUpload;
 
         this.cancelFileDownload = cancelFileDownload;
 
         this.editMessage = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.EDIT_MESSAGE,
                 typeCode: params.typeCode,
                 messageType: params.messageType,
@@ -66886,7 +70629,7 @@ WildEmitter.mixin(WildEmitter);
                                     var tempData = {},
                                         salt = Utility.generateUUID();
                                     tempData.id = parseInt(resultData.editedMessage.id);
-                                    tempData.owner = parseInt(userInfo.id);
+                                    tempData.owner = parseInt(chatMessaging.userInfo.id);
                                     tempData.threadId = parseInt(resultData.editedMessage.threadId);
                                     tempData.time = resultData.editedMessage.time;
                                     tempData.message = Utility.crypt(resultData.editedMessage.message, cacheSecret, salt);
@@ -66898,21 +70641,21 @@ WildEmitter.mixin(WildEmitter);
                                      */
                                     db.messages.put(tempData)
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
                                             });
                                         });
                                 } catch (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: error.code,
                                         message: error.message,
                                         error: error
                                     });
                                 }
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -66927,7 +70670,7 @@ WildEmitter.mixin(WildEmitter);
         };
 
         this.deleteMessage = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.DELETE_MESSAGE,
                 typeCode: params.typeCode,
                 subjectId: params.messageId,
@@ -66967,14 +70710,14 @@ WildEmitter.mixin(WildEmitter);
                                     .equals(parseInt(result.result))
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: 6602,
                                             message: CHAT_ERRORS[6602],
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -66997,7 +70740,7 @@ WildEmitter.mixin(WildEmitter);
                 var uniqueId = Utility.generateUUID();
                 uniqueIdsList.push(uniqueId);
 
-                messagesCallbacks[uniqueId] = function (result) {
+                chatMessaging.messagesCallbacks[uniqueId] = function (result) {
                     var returnData = {
                         hasError: result.hasError,
                         cache: false,
@@ -67027,14 +70770,14 @@ WildEmitter.mixin(WildEmitter);
                                     .equals(parseInt(result.result))
                                     .delete()
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: 6602,
                                             message: CHAT_ERRORS[6602],
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -67048,7 +70791,7 @@ WildEmitter.mixin(WildEmitter);
                 };
             }
 
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.DELETE_MESSAGE,
                 typeCode: params.typeCode,
                 content: {
@@ -67090,7 +70833,7 @@ WildEmitter.mixin(WildEmitter);
             return {
                 uniqueId: uniqueId,
                 threadId: params.threadId,
-                participant: userInfo,
+                participant: chatMessaging.userInfo,
                 content: params.content
             };
         };
@@ -67100,7 +70843,7 @@ WildEmitter.mixin(WildEmitter);
                 fileUploadParams = {},
                 fileUniqueId = Utility.generateUUID();
             if (!params.userGroupHash || params.userGroupHash.length === 0 || typeof (params.userGroupHash) !== 'string') {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 6304,
                     message: CHAT_ERRORS[6304]
                 });
@@ -67130,18 +70873,18 @@ WildEmitter.mixin(WildEmitter);
                     callbacks: callbacks
                 }, function () {
                     if (imageMimeTypes.indexOf(fileType) >= 0 || imageExtentions.indexOf(fileExtension) >= 0) {
-                        uploadImageToPodspaceUserGroup(fileUploadParams, function (result) {
+                        uploadImageToPodspaceUserGroupNew(fileUploadParams, function (result) {
                             if (!result.hasError) {
                                 metadata['name'] = result.result.name;
-                                metadata['fileHash'] = result.result.hashCode;
+                                metadata['fileHash'] = result.result.hash;
                                 metadata['file']['name'] = result.result.name;
-                                metadata['file']['fileHash'] = result.result.hashCode;
-                                metadata['file']['hashCode'] = result.result.hashCode;
+                                metadata['file']['fileHash'] = result.result.hash;
+                                metadata['file']['hashCode'] = result.result.hash;
                                 metadata['file']['actualHeight'] = result.result.actualHeight;
                                 metadata['file']['actualWidth'] = result.result.actualWidth;
                                 metadata['file']['parentHash'] = result.result.parentHash;
                                 metadata['file']['size'] = result.result.size;
-                                metadata['file']['link'] = `https://podspace.pod.ir/nzh/drive/downloadImage?hash=${result.result.hashCode}`;
+                                metadata['file']['link'] = `${SERVICE_ADDRESSES.PODSPACE_FILESERVER_ADDRESS}/api/images/${result.result.hash}?checkUserGroupAccess=true`;
                                 transferFromUploadQToSendQ(parseInt(params.threadId), fileUniqueId, JSON.stringify(metadata), function () {
                                     chatSendQueueHandler();
                                 });
@@ -67150,13 +70893,13 @@ WildEmitter.mixin(WildEmitter);
                             }
                         });
                     } else {
-                        uploadFileToPodspace(fileUploadParams, function (result) {
+                        uploadFileToPodspaceNew(fileUploadParams, function (result) {
                             if (!result.hasError) {
-                                metadata['fileHash'] = result.result.hashCode;
+                                metadata['fileHash'] = result.result.hash;
                                 metadata['name'] = result.result.name;
                                 metadata['file']['name'] = result.result.name;
-                                metadata['file']['fileHash'] = result.result.hashCode;
-                                metadata['file']['hashCode'] = result.result.hashCode;
+                                metadata['file']['fileHash'] = result.result.hash;
+                                metadata['file']['hashCode'] = result.result.hash;
                                 metadata['file']['parentHash'] = result.result.parentHash;
                                 metadata['file']['size'] = result.result.size;
                                 transferFromUploadQToSendQ(parseInt(params.threadId), fileUniqueId, JSON.stringify(metadata), function () {
@@ -67177,31 +70920,31 @@ WildEmitter.mixin(WildEmitter);
                 uniqueIdsList = [];
 
             for (var i in messageIdsList) {
-                if (!threadCallbacks[threadId]) {
-                    threadCallbacks[threadId] = {};
+                if (!chatMessaging.threadCallbacks[threadId]) {
+                    chatMessaging.threadCallbacks[threadId] = {};
                 }
 
                 var uniqueId = Utility.generateUUID();
                 uniqueIdsList.push(uniqueId);
 
-                threadCallbacks[threadId][uniqueId] = {};
+                chatMessaging.threadCallbacks[threadId][uniqueId] = {};
 
-                sendMessageCallbacks[uniqueId] = {};
+                chatMessaging.sendMessageCallbacks[uniqueId] = {};
 
                 if (callbacks.onSent) {
-                    sendMessageCallbacks[uniqueId].onSent = callbacks.onSent;
-                    threadCallbacks[threadId][uniqueId].onSent = false;
-                    threadCallbacks[threadId][uniqueId].uniqueId = uniqueId;
+                    chatMessaging.sendMessageCallbacks[uniqueId].onSent = callbacks.onSent;
+                    chatMessaging.threadCallbacks[threadId][uniqueId].onSent = false;
+                    chatMessaging.threadCallbacks[threadId][uniqueId].uniqueId = uniqueId;
                 }
 
                 if (callbacks.onSeen) {
-                    sendMessageCallbacks[uniqueId].onSeen = callbacks.onSeen;
-                    threadCallbacks[threadId][uniqueId].onSeen = false;
+                    chatMessaging.sendMessageCallbacks[uniqueId].onSeen = callbacks.onSeen;
+                    chatMessaging.threadCallbacks[threadId][uniqueId].onSeen = false;
                 }
 
                 if (callbacks.onDeliver) {
-                    sendMessageCallbacks[uniqueId].onDeliver = callbacks.onDeliver;
-                    threadCallbacks[threadId][uniqueId].onDeliver = false;
+                    chatMessaging.sendMessageCallbacks[uniqueId].onDeliver = callbacks.onDeliver;
+                    chatMessaging.threadCallbacks[threadId][uniqueId].onDeliver = false;
                 }
             }
 
@@ -67270,7 +71013,7 @@ WildEmitter.mixin(WildEmitter);
                 }
             }
 
-            return sendMessage(deliveryListData, {
+            return chatMessaging.sendMessage(deliveryListData, {
                 onResult: function (result) {
                     if (typeof result.result == 'object') {
                         for (var i = 0; i < result.result.length; i++) {
@@ -67298,7 +71041,7 @@ WildEmitter.mixin(WildEmitter);
                 }
             }
 
-            return sendMessage(seenListData, {
+            return chatMessaging.sendMessage(seenListData, {
                 onResult: function (result) {
                     if (typeof result.result == 'object') {
                         for (var i = 0; i < result.result.length; i++) {
@@ -67315,7 +71058,7 @@ WildEmitter.mixin(WildEmitter);
         this.updateChatProfile = updateChatProfile;
 
         this.muteThread = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.MUTE_THREAD,
                 typeCode: params.typeCode,
                 subjectId: params.threadId,
@@ -67330,7 +71073,7 @@ WildEmitter.mixin(WildEmitter);
         };
 
         this.unMuteThread = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.UNMUTE_THREAD,
                 typeCode: params.typeCode,
                 subjectId: params.threadId,
@@ -67345,7 +71088,7 @@ WildEmitter.mixin(WildEmitter);
         };
 
         this.closeThread = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.CLOSE_THREAD,
                 typeCode: params.typeCode,
                 subjectId: params.threadId,
@@ -67372,7 +71115,7 @@ WildEmitter.mixin(WildEmitter);
                     joinThreadData.content = params.uniqueName;
                 }
             }
-            return sendMessage(joinThreadData, {
+            return chatMessaging.sendMessage(joinThreadData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -67392,7 +71135,7 @@ WildEmitter.mixin(WildEmitter);
                     isNameAvailableData.content = params.uniqueName;
                 }
             }
-            return sendMessage(isNameAvailableData, {
+            return chatMessaging.sendMessage(isNameAvailableData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -67413,7 +71156,7 @@ WildEmitter.mixin(WildEmitter);
                 if (parseInt(params.threadId) > 0) {
                     sendData.subjectId = +params.threadId;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: `No Thread Id has been sent!`
                     });
@@ -67421,11 +71164,11 @@ WildEmitter.mixin(WildEmitter);
                 }
 
                 if (typeof params.threadType === 'string' && createThreadTypes.hasOwnProperty(params.threadType.toUpperCase())) {
-                    if (params.threadType.toUpperCase() === 'PUBLIC_GROUP') {
+                    if (params.threadType.toUpperCase() === 'PUBLIC_GROUP' || params.threadType.toUpperCase() === 'PUBLIC_CHANNEL') {
                         if (typeof params.uniqueName === 'string' && params.uniqueName.length > 0) {
                             sendData.content.uniqueName = params.uniqueName;
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 999,
                                 message: `Public Threads need a unique name! One must enter a unique name for this thread.`
                             });
@@ -67435,7 +71178,7 @@ WildEmitter.mixin(WildEmitter);
 
                     sendData.content.type = createThreadTypes[params.threadType.toUpperCase()];
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: `No thread type has been declared! Possible inputs are (${Object.keys(createThreadTypes).join(',')})`
                     });
@@ -67443,14 +71186,14 @@ WildEmitter.mixin(WildEmitter);
                 }
 
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Change thread Privacy!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -67458,7 +71201,7 @@ WildEmitter.mixin(WildEmitter);
         };
 
         this.pinThread = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.PIN_THREAD,
                 typeCode: params.typeCode,
                 subjectId: params.threadId,
@@ -67473,7 +71216,7 @@ WildEmitter.mixin(WildEmitter);
         };
 
         this.unPinThread = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.UNPIN_THREAD,
                 typeCode: params.typeCode,
                 subjectId: params.threadId,
@@ -67498,14 +71241,14 @@ WildEmitter.mixin(WildEmitter);
                     sendData.subjectId = +params.threadId;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Delete Thread!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -67523,7 +71266,7 @@ WildEmitter.mixin(WildEmitter);
         };
 
         this.pinMessage = function (params, callback) {
-            return sendMessage({
+            return chatMessaging.sendMessage({
                 chatMessageVOType: chatMessageVOTypes.PIN_MESSAGE,
                 typeCode: params.typeCode,
                 subjectId: params.messageId,
@@ -67556,7 +71299,7 @@ WildEmitter.mixin(WildEmitter);
                 }
             }
 
-            return sendMessage(spamData, {
+            return chatMessaging.sendMessage(spamData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -67588,7 +71331,7 @@ WildEmitter.mixin(WildEmitter);
                 }
             }
 
-            return sendMessage(blockData, {
+            return chatMessaging.sendMessage(blockData, {
                 onResult: function (result) {
                     if (typeof result.result == 'object') {
                         result.result = formatDataToMakeBlockedUser(result.result);
@@ -67626,7 +71369,7 @@ WildEmitter.mixin(WildEmitter);
                 }
             }
 
-            return sendMessage(unblockData, {
+            return chatMessaging.sendMessage(unblockData, {
                 onResult: function (result) {
                     if (typeof result.result == 'object') {
                         result.result = formatDataToMakeBlockedUser(result.result);
@@ -67664,7 +71407,7 @@ WildEmitter.mixin(WildEmitter);
                 timeout: params.timeout
             };
 
-            return sendMessage(getBlockedData, {
+            return chatMessaging.sendMessage(getBlockedData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -67717,7 +71460,7 @@ WildEmitter.mixin(WildEmitter);
                 timeout: params.timeout
             };
 
-            return sendMessage(getNotSeenDurationData, {
+            return chatMessaging.sendMessage(getNotSeenDurationData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -67827,7 +71570,7 @@ WildEmitter.mixin(WildEmitter);
                                         var tempData = {},
                                             salt = Utility.generateUUID();
                                         tempData.id = resultData.contacts[i].id;
-                                        tempData.owner = userInfo.id;
+                                        tempData.owner = chatMessaging.userInfo.id;
                                         tempData.uniqueId = resultData.contacts[i].uniqueId;
                                         tempData.userId = Utility.crypt(resultData.contacts[i].userId, cacheSecret, salt);
                                         tempData.cellphoneNumber = Utility.crypt(resultData.contacts[i].cellphoneNumber, cacheSecret, salt);
@@ -67840,7 +71583,7 @@ WildEmitter.mixin(WildEmitter);
 
                                         cacheData.push(tempData);
                                     } catch (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -67850,14 +71593,14 @@ WildEmitter.mixin(WildEmitter);
 
                                 db.contacts.bulkPut(cacheData)
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -67870,7 +71613,7 @@ WildEmitter.mixin(WildEmitter);
                     callback && callback(returnData);
 
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: result.errorCode,
                         message: result.errorMessage,
                         error: result
@@ -67886,7 +71629,7 @@ WildEmitter.mixin(WildEmitter);
                 if (parseInt(params.id) > 0) {
                     data.id = parseInt(params.id);
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'ID is required for Updating Contact!',
                         error: undefined
@@ -67896,7 +71639,7 @@ WildEmitter.mixin(WildEmitter);
                 if (typeof params.firstName === 'string') {
                     data.firstName = params.firstName;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'firstName is required for Updating Contact!'
                     });
@@ -67905,7 +71648,7 @@ WildEmitter.mixin(WildEmitter);
                 if (typeof params.lastName === 'string') {
                     data.lastName = params.lastName;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'lastName is required for Updating Contact!'
                     });
@@ -67914,7 +71657,7 @@ WildEmitter.mixin(WildEmitter);
                 if (typeof params.cellphoneNumber === 'string') {
                     data.cellphoneNumber = params.cellphoneNumber;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'cellphoneNumber is required for Updating Contact!'
                     });
@@ -67923,7 +71666,7 @@ WildEmitter.mixin(WildEmitter);
                 if (typeof params.email === 'string') {
                     data.email = params.email;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'email is required for Updating Contact!'
                     });
@@ -67984,7 +71727,7 @@ WildEmitter.mixin(WildEmitter);
                                         var tempData = {},
                                             salt = Utility.generateUUID();
                                         tempData.id = resultData.contacts[i].id;
-                                        tempData.owner = userInfo.id;
+                                        tempData.owner = chatMessaging.userInfo.id;
                                         tempData.uniqueId = resultData.contacts[i].uniqueId;
                                         tempData.userId = Utility.crypt(resultData.contacts[i].userId, cacheSecret, salt);
                                         tempData.cellphoneNumber = Utility.crypt(resultData.contacts[i].cellphoneNumber, cacheSecret, salt);
@@ -67997,7 +71740,7 @@ WildEmitter.mixin(WildEmitter);
 
                                         cacheData.push(tempData);
                                     } catch (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -68007,14 +71750,14 @@ WildEmitter.mixin(WildEmitter);
 
                                 db.contacts.bulkPut(cacheData)
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -68027,7 +71770,7 @@ WildEmitter.mixin(WildEmitter);
                     callback && callback(returnData);
 
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: result.errorCode,
                         message: result.errorMessage,
                         error: result
@@ -68043,7 +71786,7 @@ WildEmitter.mixin(WildEmitter);
                 if (parseInt(params.id) > 0) {
                     data.id = parseInt(params.id);
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'ID is required for Deleting Contact!',
                         error: undefined
@@ -68085,14 +71828,14 @@ WildEmitter.mixin(WildEmitter);
                                 .equals(parseInt(params.id))
                                 .delete()
                                 .catch(function (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: 6602,
                                         message: CHAT_ERRORS[6602],
                                         error: error
                                     });
                                 });
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 6601,
                                 message: CHAT_ERRORS[6601],
                                 error: null
@@ -68103,7 +71846,7 @@ WildEmitter.mixin(WildEmitter);
                     callback && callback(returnData);
 
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: result.errorCode,
                         message: result.errorMessage,
                         error: result
@@ -68199,24 +71942,24 @@ WildEmitter.mixin(WildEmitter);
 
                             if (Object.keys(whereClause).length === 0) {
                                 thenAble = db.contacts.where('owner')
-                                    .equals(parseInt(userInfo.id));
+                                    .equals(parseInt(chatMessaging.userInfo.id));
                             } else {
                                 if (whereClause.hasOwnProperty('id')) {
                                     thenAble = db.contacts.where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .and(function (contact) {
                                             return contact.id === whereClause.id;
                                         });
                                 } else if (whereClause.hasOwnProperty('uniqueId')) {
                                     thenAble = db.contacts.where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .and(function (contact) {
                                             return contact.uniqueId === whereClause.uniqueId;
                                         });
                                 } else {
                                     if (whereClause.hasOwnProperty('firstName')) {
                                         thenAble = db.contacts.where('owner')
-                                            .equals(parseInt(userInfo.id))
+                                            .equals(parseInt(chatMessaging.userInfo.id))
                                             .filter(function (contact) {
                                                 var reg = new RegExp(whereClause.firstName);
                                                 return reg.test(chatDecrypt(contact.firstName, cacheSecret, contact.salt));
@@ -68225,7 +71968,7 @@ WildEmitter.mixin(WildEmitter);
 
                                     if (whereClause.hasOwnProperty('lastName')) {
                                         thenAble = db.contacts.where('owner')
-                                            .equals(parseInt(userInfo.id))
+                                            .equals(parseInt(chatMessaging.userInfo.id))
                                             .filter(function (contact) {
                                                 var reg = new RegExp(whereClause.lastName);
                                                 return reg.test(chatDecrypt(contact.lastName, cacheSecret, contact.salt));
@@ -68234,7 +71977,7 @@ WildEmitter.mixin(WildEmitter);
 
                                     if (whereClause.hasOwnProperty('email')) {
                                         thenAble = db.contacts.where('owner')
-                                            .equals(parseInt(userInfo.id))
+                                            .equals(parseInt(chatMessaging.userInfo.id))
                                             .filter(function (contact) {
                                                 var reg = new RegExp(whereClause.email);
                                                 return reg.test(chatDecrypt(contact.email, cacheSecret, contact.salt));
@@ -68243,7 +71986,7 @@ WildEmitter.mixin(WildEmitter);
 
                                     if (whereClause.hasOwnProperty('q')) {
                                         thenAble = db.contacts.where('owner')
-                                            .equals(parseInt(userInfo.id))
+                                            .equals(parseInt(chatMessaging.userInfo.id))
                                             .filter(function (contact) {
                                                 var reg = new RegExp(whereClause.q);
                                                 return reg.test(chatDecrypt(contact.firstName, cacheSecret, contact.salt) + ' ' +
@@ -68259,7 +72002,7 @@ WildEmitter.mixin(WildEmitter);
                                 .toArray()
                                 .then(function (contacts) {
                                     db.contacts.where('owner')
-                                        .equals(parseInt(userInfo.id))
+                                        .equals(parseInt(chatMessaging.userInfo.id))
                                         .count()
                                         .then(function (contactsCount) {
                                             var cacheData = [];
@@ -68268,7 +72011,7 @@ WildEmitter.mixin(WildEmitter);
                                                 try {
                                                     cacheData.push(formatDataToMakeContact(JSON.parse(chatDecrypt(contacts[i].data, cacheSecret, ontacts[i].salt))));
                                                 } catch (error) {
-                                                    fireEvent('error', {
+                                                    chatEvents.fireEvent('error', {
                                                         code: error.code,
                                                         message: error.message,
                                                         error: error
@@ -68296,7 +72039,7 @@ WildEmitter.mixin(WildEmitter);
                                             }
                                         })
                                         .catch(function (error) {
-                                            fireEvent('error', {
+                                            chatEvents.fireEvent('error', {
                                                 code: error.code,
                                                 message: error.message,
                                                 error: error
@@ -68304,7 +72047,7 @@ WildEmitter.mixin(WildEmitter);
                                         });
                                 })
                                 .catch(function (error) {
-                                    fireEvent('error', {
+                                    chatEvents.fireEvent('error', {
                                         code: error.code,
                                         message: error.message,
                                         error: error
@@ -68312,14 +72055,14 @@ WildEmitter.mixin(WildEmitter);
                                 });
                         })
                         .catch(function (error) {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: error.code,
                                 message: error.message,
                                 error: error
                             });
                         });
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 6601,
                         message: CHAT_ERRORS[6601],
                         error: null
@@ -68372,7 +72115,7 @@ WildEmitter.mixin(WildEmitter);
                                             salt = Utility.generateUUID();
 
                                         tempData.id = resultData.contacts[i].id;
-                                        tempData.owner = userInfo.id;
+                                        tempData.owner = chatMessaging.userInfo.id;
                                         tempData.uniqueId = resultData.contacts[i].uniqueId;
                                         tempData.userId = Utility.crypt(resultData.contacts[i].userId, cacheSecret, salt);
                                         tempData.cellphoneNumber = Utility.crypt(resultData.contacts[i].cellphoneNumber, cacheSecret, salt);
@@ -68385,7 +72128,7 @@ WildEmitter.mixin(WildEmitter);
 
                                         cacheData.push(tempData);
                                     } catch (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
@@ -68395,14 +72138,14 @@ WildEmitter.mixin(WildEmitter);
 
                                 db.contacts.bulkPut(cacheData)
                                     .catch(function (error) {
-                                        fireEvent('error', {
+                                        chatEvents.fireEvent('error', {
                                             code: error.code,
                                             message: error.message,
                                             error: error
                                         });
                                     });
                             } else {
-                                fireEvent('error', {
+                                chatEvents.fireEvent('error', {
                                     code: 6601,
                                     message: CHAT_ERRORS[6601],
                                     error: null
@@ -68419,13 +72162,13 @@ WildEmitter.mixin(WildEmitter);
                     callback = undefined;
 
                     if (!returnData.hasError && returnCache) {
-                        fireEvent('contactEvents', {
+                        chatEvents.fireEvent('contactEvents', {
                             type: 'CONTACTS_SEARCH_RESULT_CHANGE',
                             result: returnData.result
                         });
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: result.errorCode,
                         message: result.errorMessage,
                         error: result
@@ -68447,27 +72190,27 @@ WildEmitter.mixin(WildEmitter);
                     if (params.botName.substr(-3) === "BOT") {
                         createBotData.content = params.botName;
                     } else {
-                        fireEvent('error', {
+                        chatEvents.fireEvent('error', {
                             code: 999,
                             message: 'Bot name should end in "BOT", ex. "testBOT"'
                         });
                         return;
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Insert a bot name to create one!'
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'Insert a bot name to create one!'
                 });
                 return;
             }
-            return sendMessage(createBotData, {
+            return chatMessaging.sendMessage(createBotData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -68484,14 +72227,14 @@ WildEmitter.mixin(WildEmitter);
             }, commandList = [];
             if (params) {
                 if (typeof params.botName !== 'string' || params.botName.length === 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You need to insert a botName!'
                     });
                     return;
                 }
                 if (!Array.isArray(params.commandList) || !params.commandList.length) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Bot Commands List has to be an array of strings.'
                     });
@@ -68506,13 +72249,13 @@ WildEmitter.mixin(WildEmitter);
                     commandList: commandList
                 };
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to create bot commands'
                 });
                 return;
             }
-            return sendMessage(defineBotCommandData, {
+            return chatMessaging.sendMessage(defineBotCommandData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -68530,7 +72273,7 @@ WildEmitter.mixin(WildEmitter);
 
             if (params) {
                 if (typeof params.botName !== 'string' || params.botName.length === 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You need to insert a botName!'
                     });
@@ -68538,7 +72281,7 @@ WildEmitter.mixin(WildEmitter);
                 }
 
                 if (!Array.isArray(params.commandList) || !params.commandList.length) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Bot Commands List has to be an array of strings.'
                     });
@@ -68555,14 +72298,14 @@ WildEmitter.mixin(WildEmitter);
                 };
 
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to remove bot commands'
                 });
                 return;
             }
 
-            return sendMessage(defineBotCommandData, {
+            return chatMessaging.sendMessage(defineBotCommandData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -68579,14 +72322,14 @@ WildEmitter.mixin(WildEmitter);
             };
             if (params) {
                 if (typeof +params.threadId !== 'number' || params.threadId < 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Enter a valid Thread Id for Bot to start in!'
                     });
                     return;
                 }
                 if (typeof params.botName !== 'string' || params.botName.length === 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You need to insert a botName!'
                     });
@@ -68597,13 +72340,13 @@ WildEmitter.mixin(WildEmitter);
                     botName: params.botName.trim()
                 });
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to create bot commands'
                 });
                 return;
             }
-            return sendMessage(startBotData, {
+            return chatMessaging.sendMessage(startBotData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -68620,14 +72363,14 @@ WildEmitter.mixin(WildEmitter);
             };
             if (params) {
                 if (typeof +params.threadId !== 'number' || params.threadId < 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Enter a valid Thread Id for Bot to stop on!'
                     });
                     return;
                 }
                 if (typeof params.botName !== 'string' || params.botName.length === 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You need to insert a botName!'
                     });
@@ -68638,13 +72381,13 @@ WildEmitter.mixin(WildEmitter);
                     botName: params.botName.trim()
                 });
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to create bot commands'
                 });
                 return;
             }
-            return sendMessage(stopBotData, {
+            return chatMessaging.sendMessage(stopBotData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -68662,7 +72405,7 @@ WildEmitter.mixin(WildEmitter);
 
             if (params) {
                 if (typeof params.botName !== 'string' || params.botName.length === 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You need to insert a botName!'
                     });
@@ -68674,14 +72417,14 @@ WildEmitter.mixin(WildEmitter);
                 });
 
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to get bot commands'
                 });
                 return;
             }
 
-            return sendMessage(getBotCommandsListData, {
+            return chatMessaging.sendMessage(getBotCommandsListData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -68699,7 +72442,7 @@ WildEmitter.mixin(WildEmitter);
 
             if (params) {
                 if (typeof +params.threadId !== 'number' || params.threadId < 0) {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Enter a valid Thread Id to get all Bots List!'
                     });
@@ -68709,14 +72452,14 @@ WildEmitter.mixin(WildEmitter);
                 getThreadBotsData.subjectId = +params.threadId;
 
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to get thread\' bots list!'
                 });
                 return;
             }
 
-            return sendMessage(getThreadBotsData, {
+            return chatMessaging.sendMessage(getThreadBotsData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -68736,21 +72479,21 @@ WildEmitter.mixin(WildEmitter);
                 if (typeof params.tagName === 'string' && params.tagName.length > 0) {
                     createTagData.content.name = params.tagName;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: `No tag name has been declared!`
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Create New Tag!'
                 });
                 return;
             }
 
-            return sendMessage(createTagData, {
+            return chatMessaging.sendMessage(createTagData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -68770,7 +72513,7 @@ WildEmitter.mixin(WildEmitter);
                 if (parseInt(params.tagId) > 0) {
                     sendData.subjectId = +params.tagId;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: `No Tag Id has been sent!`
                     });
@@ -68780,21 +72523,21 @@ WildEmitter.mixin(WildEmitter);
                 if (typeof params.tagName === 'string' && params.tagName.length > 0) {
                     sendData.content.name = params.tagName;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: `No tag name has been declared!`
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Edit Tag!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -68814,21 +72557,21 @@ WildEmitter.mixin(WildEmitter);
                 if (parseInt(params.tagId) > 0) {
                     sendData.subjectId = +params.tagId;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: `No Tag Id has been sent!`
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Delete Tag!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -68844,7 +72587,7 @@ WildEmitter.mixin(WildEmitter);
                 token: token
             };
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -68867,14 +72610,14 @@ WildEmitter.mixin(WildEmitter);
                     sendData.content = params.threadIds;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Add Tag PArticipants!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -68907,14 +72650,14 @@ WildEmitter.mixin(WildEmitter);
                     sendData.content = params.threadIds;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Remove Tag Participants!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -68961,7 +72704,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 999,
                                 message: 'You should send an array of Assistant Objects each containing of contactType, roleTypes and assistant itself!'
                             });
@@ -68969,21 +72712,21 @@ WildEmitter.mixin(WildEmitter);
                         }
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You should send an array of Assistant Objects each containing of contactType, roleTypes and assistant itself!'
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Create Assistants!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -69023,7 +72766,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 999,
                                 message: 'You should send an array of Assistant Objects each containing of an assistant!'
                             });
@@ -69031,21 +72774,21 @@ WildEmitter.mixin(WildEmitter);
                         }
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You should send an array of Assistant Objects each containing of an assistant!'
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Deactivate Assistants!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -69085,7 +72828,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 999,
                                 message: 'You should send an array of Assistant Objects each containing of an assistant!'
                             });
@@ -69093,21 +72836,21 @@ WildEmitter.mixin(WildEmitter);
                         }
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You should send an array of Assistant Objects each containing of an assistant!'
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Block Assistants!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -69147,7 +72890,7 @@ WildEmitter.mixin(WildEmitter);
                                 }
                             });
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 999,
                                 message: 'You should send an array of Assistant Objects each containing of an assistant!'
                             });
@@ -69155,21 +72898,21 @@ WildEmitter.mixin(WildEmitter);
                         }
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You should send an array of Assistant Objects each containing of an assistant!'
                     });
                     return;
                 }
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Unblock Assistants!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -69199,7 +72942,7 @@ WildEmitter.mixin(WildEmitter);
                 if (typeof params.contactType === 'string' && params.contactType.length) {
                     sendData.content.contactType = params.contactType;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Enter a ContactType to get all related Assistants!'
                     });
@@ -69209,14 +72952,14 @@ WildEmitter.mixin(WildEmitter);
                 sendData.content.count = !!params.count ? +params.count : 50;
                 sendData.content.offset = !!params.offset ? +params.offset : 0;
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to get Assistants list!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -69236,7 +72979,7 @@ WildEmitter.mixin(WildEmitter);
                 if (typeof params.contactType === 'string' && params.contactType.length) {
                     sendData.content.contactType = params.contactType;
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Enter a ContactType to get all Blocked Assistants!'
                     });
@@ -69246,14 +72989,14 @@ WildEmitter.mixin(WildEmitter);
                 sendData.content.count = !!params.count ? +params.count : 50;
                 sendData.content.offset = !!params.offset ? +params.offset : 0;
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to get Blocked Assistants list!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -69282,7 +73025,7 @@ WildEmitter.mixin(WildEmitter);
                 sendData.content.actionType = assistantActionTypes[params.actionType.toUpperCase()];
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -69334,859 +73077,210 @@ WildEmitter.mixin(WildEmitter);
             removeRoleFromUser(params, callback);
         };
 
-        this.startCall = function (params, callback) {
-            var startCallData = {
-                chatMessageVOType: chatMessageVOTypes.CALL_REQUEST,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            }, content = {
-                creatorClientDto: {}
-            };
-
-            if (params) {
-                if (typeof params.type === 'string' && callTypes.hasOwnProperty(params.type.toUpperCase())) {
-                    content.type = callTypes[params.type.toUpperCase()];
-                } else {
-                    content.type = 0x0; // Defaults to AUDIO Call
-                }
-
-                //TODO: Check for mute
-                content.creatorClientDto.mute = (params.mute && typeof params.mute === 'boolean') ? params.mute : false;
-                content.mute = (params.mute && typeof params.mute === 'boolean') ? params.mute : false;
-
-                if (params.clientType
-                    && typeof params.clientType === 'string'
-                    && callClientTypes[params.clientType.toUpperCase()] > 0) {
-                    content.creatorClientDto.clientType = callClientTypes[params.clientType.toUpperCase()];
-                } else {
-                    content.creatorClientDto.clientType = callClientType.WEB;
-                }
-
-                if (typeof +params.threadId === 'number' && +params.threadId > 0) {
-                    content.threadId = +params.threadId;
-                } else {
-                    if (Array.isArray(params.invitees)) {
-                        content.invitees = [];
-                        for (var i = 0; i < params.invitees.length; i++) {
-                            var tempInvitee = formatDataToMakeInvitee(params.invitees[i]);
-                            if (tempInvitee) {
-                                content.invitees.push(tempInvitee);
-                            }
-                        }
-                    } else {
-                        fireEvent('error', {
-                            code: 999,
-                            message: 'Invitees list is empty! Send an array of invitees to start a call with, Or send a Thread Id to start a call with current participants'
-                        });
-                        return;
-                    }
-                }
-
-                startCallData.content = JSON.stringify(content);
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to start call!'
-                });
-                return;
-            }
-
-            return sendMessage(startCallData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.startGroupCall = function (params, callback) {
-            var startCallData = {
-                chatMessageVOType: chatMessageVOTypes.GROUP_CALL_REQUEST,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            }, content = {
-                creatorClientDto: {}
-            };
-
-            if (params) {
-                if (typeof params.type === 'string' && callTypes.hasOwnProperty(params.type.toUpperCase())) {
-                    content.type = callTypes[params.type.toUpperCase()];
-                } else {
-                    content.type = 0x0; // Defaults to AUDIO Call
-                }
-
-                content.creatorClientDto.mute = (typeof params.mute === 'boolean') ? params.mute : false;
-
-                if (params.clientType && typeof params.clientType === 'string' && callClientTypes[params.clientType.toUpperCase()] > 0) {
-                    content.creatorClientDto.clientType = callClientTypes[params.clientType.toUpperCase()];
-                } else {
-                    content.creatorClientDto.clientType = callClientType.WEB;
-                }
-
-                if (typeof +params.threadId === 'number' && params.threadId > 0) {
-                    content.threadId = +params.threadId;
-                } else {
-                    if (Array.isArray(params.invitees)) {
-                        content.invitees = [];
-                        for (var i = 0; i < params.invitees.length; i++) {
-                            var tempInvitee = formatDataToMakeInvitee(params.invitees[i]);
-                            if (tempInvitee) {
-                                content.invitees.push(tempInvitee);
-                            }
-                        }
-                    } else {
-                        fireEvent('error', {
-                            code: 999,
-                            message: 'Invitees list is empty! Send an array of invitees to start a call with, Or send a Thread Id to start a call with current participants'
-                        });
-                        return;
-                    }
-                }
-
-                startCallData.content = JSON.stringify(content);
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to start call!'
-                });
-                return;
-            }
-
-            return sendMessage(startCallData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.callReceived = callReceived;
-
-        this.terminateCall = function (params, callback) {
-            var terminateCallData = {
-                chatMessageVOType: chatMessageVOTypes.TERMINATE_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            }, content = {};
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    terminateCallData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid call id!'
-                    });
-                    return;
-                }
-
-                terminateCallData.content = JSON.stringify(content);
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to terminate the call!'
-                });
-                return;
-            }
-
-            return sendMessage(terminateCallData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.acceptCall = function (params, callback) {
-            var acceptCallData = {
-                chatMessageVOType: chatMessageVOTypes.ACCEPT_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            }, content = {};
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    acceptCallData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid call id!'
-                    });
-                    return;
-                }
-
-                content.mute = (typeof params.mute === 'boolean') ? params.mute : false;
-
-                content.video = (typeof params.video === 'boolean') ? params.video : false;
-
-                content.videoCall = content.video;
-
-                if (params.clientType && typeof params.clientType === 'string' && callClientTypes[params.clientType.toUpperCase()] > 0) {
-                    content.clientType = callClientTypes[params.clientType.toUpperCase()];
-                } else {
-                    content.clientType = callClientType.WEB;
-                }
-
-                acceptCallData.content = JSON.stringify(content);
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to accept the call!'
-                });
-                return;
-            }
-
-            return sendMessage(acceptCallData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.rejectCall = this.cancelCall = function (params, callback) {
-            var rejectCallData = {
-                chatMessageVOType: chatMessageVOTypes.REJECT_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    rejectCallData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to reject the call!'
-                });
-                return;
-            }
-
-            return sendMessage(rejectCallData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.endCall = endCall;
-
-        this.startRecordingCall = function (params, callback) {
-            var recordCallData = {
-                chatMessageVOType: chatMessageVOTypes.RECORD_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    recordCallData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid Call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to Record call!'
-                });
-                return;
-            }
-
-            return sendMessage(recordCallData, {
-                onResult: function (result) {
-                    restartMedia(callTopics['sendVideoTopic']);
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.stopRecordingCall = function (params, callback) {
-            var stopRecordingCallData = {
-                chatMessageVOType: chatMessageVOTypes.END_RECORD_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    stopRecordingCallData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid Call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to Stop Recording the call!'
-                });
-                return;
-            }
-
-            return sendMessage(stopRecordingCallData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.startScreenShare = function (params, callback) {
-            var sendData = {
-                chatMessageVOType: chatMessageVOTypes.START_SCREEN_SHARE,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    sendData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid Call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to Share Screen!'
-                });
-                return;
-            }
-
-            return sendMessage(sendData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.endScreenShare = function (params, callback) {
-            var sendData = {
-                chatMessageVOType: chatMessageVOTypes.END_SCREEN_SHARE,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    sendData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid Call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to End Screen Sharing!'
-                });
-                return;
-            }
-
-            return sendMessage(sendData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.getCallsList = function (params, callback) {
-            var getCallListData = {
-                chatMessageVOType: chatMessageVOTypes.GET_CALLS,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            }, content = {};
-
-            if (params) {
-                if (typeof params.count === 'number' && params.count >= 0) {
-                    content.count = +params.count;
-                } else {
-                    content.count = 50;
-                }
-
-                if (typeof params.offset === 'number' && params.offset >= 0) {
-                    content.offset = +params.offset;
-                } else {
-                    content.offset = 0;
-                }
-
-                if (typeof params.creatorCoreUserId === 'number' && params.creatorCoreUserId > 0) {
-                    content.creatorCoreUserId = +params.creatorCoreUserId;
-                }
-
-                if (typeof params.creatorSsoId === 'number' && params.creatorSsoId > 0) {
-                    content.creatorSsoId = +params.creatorSsoId;
-                }
-
-                if (typeof params.name === 'string') {
-                    content.name = params.name;
-                }
-
-                if (typeof params.type === 'string' && callTypes.hasOwnProperty(params.type.toUpperCase())) {
-                    content.type = callTypes[params.type.toUpperCase()];
-                }
-
-                if (Array.isArray(params.callIds)) {
-                    content.callIds = params.callIds;
-                }
-
-                if (typeof params.contactType === 'string') {
-                    content.contactType = params.contactType;
-                }
-
-                if (typeof params.uniqueId === 'string') {
-                    content.uniqueId = params.uniqueId;
-                }
-
-                getCallListData.content = JSON.stringify(content);
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to End the call!'
-                });
-                return;
-            }
-
-            return sendMessage(getCallListData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.deleteFromCallList = function (params, callback) {
-            var sendData = {
-                chatMessageVOType: chatMessageVOTypes.DELETE_FROM_CALL_HISTORY,
-                typeCode: params.typeCode,
-                content: []
-            };
-
-            if (params) {
-                if (typeof params.contactType === 'string' && params.contactType.length) {
-                    sendData.content.contactType = params.contactType;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'You should enter a contactType!'
-                    });
-                    return;
-                }
-
-                if (Array.isArray(params.callIds)) {
-                    sendData.content = params.callIds;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to Delete a call from Call History!'
-                });
-                return;
-            }
-
-            return sendMessage(sendData, {
-                onResult: function (result) {
-                    var returnData = {
-                        hasError: result.hasError,
-                        cache: false,
-                        errorMessage: result.errorMessage,
-                        errorCode: result.errorCode
-                    };
-                    if (!returnData.hasError) {
-                        var messageContent = result.result;
-                        returnData.result = messageContent;
-                    }
-                    callback && callback(returnData);
-                }
-            });
-        };
-
-        this.getCallParticipants = function (params, callback) {
-            var sendMessageParams = {
-                chatMessageVOType: chatMessageVOTypes.ACTIVE_CALL_PARTICIPANTS,
-                typeCode: params.typeCode,
-                content: {}
-            };
-
-            if (params) {
-                if (isNaN(params.callId)) {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Call Id should be a valid number!'
-                    });
-                    return;
-                } else {
-                    var callId = +params.callId;
-                    sendMessageParams.subjectId = callId;
-
-                    var offset = (parseInt(params.offset) > 0)
-                        ? parseInt(params.offset)
-                        : 0,
-                        count = (parseInt(params.count) > 0)
-                            ? parseInt(params.count)
-                            : config.getHistoryCount;
-
-                    sendMessageParams.content.count = count;
-                    sendMessageParams.content.offset = offset;
-
-                    return sendMessage(sendMessageParams, {
-                        onResult: function (result) {
-                            var returnData = {
-                                hasError: result.hasError,
-                                cache: false,
-                                errorMessage: result.errorMessage,
-                                errorCode: result.errorCode
-                            };
-
-                            if (!returnData.hasError) {
-                                var messageContent = result.result,
-                                    messageLength = messageContent.length,
-                                    resultData = {
-                                        participants: reformatCallParticipants(messageContent),
-                                        contentCount: result.contentCount,
-                                        hasNext: (sendMessageParams.content.offset + sendMessageParams.content.count < result.contentCount && messageLength > 0),
-                                        nextOffset: sendMessageParams.content.offset * 1 + messageLength * 1
-                                    };
-
-                                returnData.result = resultData;
+        function requestExportChat(stackArr, wantedCount, stepCount, offset, sendData) {
+            sendData.content.offset = offset;
+            sendData.content.count = stepCount;
+            return new Promise(function(resolve, reject){
+                return chatMessaging.sendMessage(sendData, {
+                    onResult: function (result) {
+                        var returnData = {
+                            hasError: result.hasError,
+                            cache: false,
+                            errorMessage: result.errorMessage,
+                            errorCode: result.errorCode
+                        };
+
+                        if (!returnData.hasError) {
+                            for(var i in result.result) {
+                                stackArr.push(result.result[i]);
                             }
 
-                            callback && callback(returnData);
-                            /**
-                             * Delete callback so if server pushes response before
-                             * cache, cache won't send data again
-                             */
-                            callback = undefined;
-
-                            if (!returnData.hasError) {
-                                fireEvent('callEvents', {
-                                    type: 'CALL_PARTICIPANTS_LIST_CHANGE',
-                                    threadId: callId,
-                                    result: returnData.result
+                            consoleLogging && console.log("[SDK][exportChat] a step passed...");
+                            wantedCount = wantedCount > result.contentCount ? result.contentCount : wantedCount;
+                            setTimeout(function () {
+                                chatEvents.fireEvent('threadEvents', {
+                                    type: 'EXPORT_CHAT',
+                                    subType: 'IN_PROGRESS',
+                                    threadId: sendData.subjectId,
+                                    percent: Math.floor((stackArr.length / wantedCount) * 100)
                                 });
-                            }
+
+                                if(stackArr.length < wantedCount) {
+                                    stepCount = wantedCount - stackArr.length < stepCount ? wantedCount - stackArr.length : stepCount;
+                                    resolve(requestExportChat(stackArr, wantedCount, stepCount, stackArr.length, sendData));
+                                } else {
+                                    resolve(stackArr);
+                                }
+                            });
+                            /*returnData.result = result;*/
+                            /*var messageContent = result.result,
+                                messageLength = messageContent.length,
+                                resultData = {
+                                    participants: formatDataToMakeAssistantHistoryList(messageContent),
+                                    contentCount: result.contentCount,
+                                    hasNext: (sendData.content.offset + sendData.content.count < result.contentCount && messageLength > 0),
+                                    nextOffset: sendData.content.offset * 1 + messageLength * 1
+                                };
+
+                            returnData.result = resultData;*/
+                        } else {
+                            consoleLogging && console.log("[SDK][exportChat] Problem in one step... . Rerunning the request.", wantedCount, stepCount, stackArr.length, sendData, result);
+                            resolve(requestExportChat(stackArr, wantedCount, stepCount, stackArr.length, sendData))
                         }
-                    });
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to Get Call Participants!'
+                    }
                 });
-                return;
-            }
-        };
-
-        this.addCallParticipants = function (params, callback) {
-            /**
-             * + AddCallParticipantsRequest     {object}
-             *    - subjectId                   {int}
-             *    + content                     {list} List of CONTACT IDs or inviteeVO Objects
-             *    - uniqueId                    {string}
-             */
-
-            var sendMessageParams = {
-                chatMessageVOType: chatMessageVOTypes.ADD_CALL_PARTICIPANT,
-                typeCode: params.typeCode,
-                content: []
-            };
-
-            if (params) {
-                if (typeof params.callId === 'number' && params.callId > 0) {
-                    sendMessageParams.subjectId = params.callId;
-                }
-
-                if (Array.isArray(params.contactIds)) {
-                    sendMessageParams.content = params.contactIds;
-                }
-
-                if (Array.isArray(params.usernames)) {
-                    sendMessageParams.content = [];
-                    for (var i = 0; i < params.usernames.length; i++) {
-                        sendMessageParams.content.push({
-                            id: params.usernames[i],
-                            idType: inviteeVOidTypes.TO_BE_USER_USERNAME
-                        });
-                    }
-                }
-
-                if (Array.isArray(params.coreUserids)) {
-                    sendMessageParams.content = [];
-                    for (var i = 0; i < params.coreUserids.length; i++) {
-                        sendMessageParams.content.push({
-                            id: params.coreUserids[i],
-                            idType: inviteeVOidTypes.TO_BE_CORE_USER_ID
-                        });
-                    }
-                }
-            }
-
-            return sendMessage(sendMessageParams, {
-                onResult: function (result) {
-                    var returnData = {
-                        hasError: result.hasError,
-                        cache: false,
-                        errorMessage: result.errorMessage,
-                        errorCode: result.errorCode
-                    };
-                    if (!returnData.hasError) {
-                        // TODO : What is the result?!
-                        var messageContent = result.result;
-                        returnData.result = messageContent;
-                    }
-                    callback && callback(returnData);
-                }
-            });
-        };
-
-        this.removeCallParticipants = function (params, callback) {
-            /**
-             * + removeCallParticipantsRequest     {object}
-             *    - subjectId                   {int}
-             *    + content                     {list} List of Participants UserIds
-             */
-
-            var sendMessageParams = {
-                chatMessageVOType: chatMessageVOTypes.REMOVE_CALL_PARTICIPANT,
-                typeCode: params.typeCode,
-                content: []
-            };
-
-            if (params) {
-                if (typeof params.callId === 'number' && params.callId > 0) {
-                    sendMessageParams.subjectId = params.callId;
-                }
-
-                if (Array.isArray(params.userIds)) {
-                    sendMessageParams.content = params.userIds;
-                }
-            }
-
-            return sendMessage(sendMessageParams, {
-                onResult: function (result) {
-                    var returnData = {
-                        hasError: result.hasError,
-                        cache: false,
-                        errorMessage: result.errorMessage,
-                        errorCode: result.errorCode
-                    };
-                    if (!returnData.hasError) {
-                        // TODO : What is the result?!
-                        var messageContent = result.result;
-                        returnData.result = messageContent;
-                    }
-                    callback && callback(returnData);
-                }
-            });
-        };
-
-        this.muteCallParticipants = function (params, callback) {
-            /**
-             * + muteCallParticipantsRequest     {object}
-             *    - subjectId                   {int}
-             *    + content                     {list} List of Participants UserIds
-             */
-
-            var sendMessageParams = {
-                chatMessageVOType: chatMessageVOTypes.MUTE_CALL_PARTICIPANT,
-                typeCode: params.typeCode,
-                content: []
-            };
-
-            if (params) {
-                if (typeof params.callId === 'number' && params.callId > 0) {
-                    sendMessageParams.subjectId = params.callId;
-                }
-
-                if (Array.isArray(params.userIds)) {
-                    sendMessageParams.content = params.userIds;
-                }
-            }
-
-            return sendMessage(sendMessageParams, {
-                onResult: function (result) {
-                    var returnData = {
-                        hasError: result.hasError,
-                        cache: false,
-                        errorMessage: result.errorMessage,
-                        errorCode: result.errorCode
-                    };
-                    if (!returnData.hasError) {
-                        // TODO : What is the result?!
-                        var messageContent = result.result;
-                        returnData.result = messageContent;
-                    }
-                    callback && callback(returnData);
-                }
-            });
-        };
-
-        this.unMuteCallParticipants = function (params, callback) {
-            /**
-             * + unMuteCallParticipantsRequest     {object}
-             *    - subjectId                   {int}
-             *    + content                     {list} List of Participants UserIds
-             */
-
-            var sendMessageParams = {
-                chatMessageVOType: chatMessageVOTypes.UNMUTE_CALL_PARTICIPANT,
-                typeCode: params.typeCode,
-                content: []
-            };
-
-            if (params) {
-                if (typeof params.callId === 'number' && params.callId > 0) {
-                    sendMessageParams.subjectId = params.callId;
-                }
-
-                if (Array.isArray(params.userIds)) {
-                    sendMessageParams.content = params.userIds;
-                }
-            }
-
-            return sendMessage(sendMessageParams, {
-                onResult: function (result) {
-                    var returnData = {
-                        hasError: result.hasError,
-                        cache: false,
-                        errorMessage: result.errorMessage,
-                        errorCode: result.errorCode
-                    };
-                    if (!returnData.hasError) {
-                        // TODO : What is the result?!
-                        var messageContent = result.result;
-                        returnData.result = messageContent;
-                    }
-                    callback && callback(returnData);
-                }
-            });
-        };
-
-        this.turnOnVideoCall = function (params, callback) {
-            var turnOnVideoData = {
-                chatMessageVOType: chatMessageVOTypes.TURN_ON_VIDEO_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    turnOnVideoData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to turn on the video call!'
-                });
-                return;
-            }
-
-            return sendMessage(turnOnVideoData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.turnOffVideoCall = function (params, callback) {
-            var turnOffVideoData = {
-                chatMessageVOType: chatMessageVOTypes.TURN_OFF_VIDEO_CALL,
-                typeCode: params.typeCode,
-                pushMsgType: 3,
-                token: token
-            };
-
-            if (params) {
-                if (typeof +params.callId === 'number' && params.callId > 0) {
-                    turnOffVideoData.subjectId = +params.callId;
-                } else {
-                    fireEvent('error', {
-                        code: 999,
-                        message: 'Invalid call id!'
-                    });
-                    return;
-                }
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to turn off the video call!'
-                });
-                return;
-            }
-
-            return sendMessage(turnOffVideoData, {
-                onResult: function (result) {
-                    callback && callback(result);
-                }
-            });
-        };
-
-        this.resizeCallVideo = function (params, callback) {
-            if (params) {
-                if (!!params.width && +params.width > 0) {
-                    callVideoMinWidth = +params.width;
-                }
-
-                if (!!params.height && +params.height > 0) {
-                    callVideoMinHeight = +params.height;
-                }
-
-                webpeers[callTopics['sendVideoTopic']].getLocalStream().getTracks()[0].applyConstraints({
-                    "width": callVideoMinWidth,
-                    "height": callVideoMinHeight
-                })
-                    .then((res) => {
-                        uiRemoteMedias[callTopics['sendVideoTopic']].style.width = callVideoMinWidth + 'px';
-                        uiRemoteMedias[callTopics['sendVideoTopic']].style.height = callVideoMinHeight + 'px';
-                        callback && callback();
-                    })
-                    .catch((e) => {
-                        fireEvent('error', {
-                            code: 999,
-                            message: e
-                        });
-                    });
-            } else {
-                fireEvent('error', {
-                    code: 999,
-                    message: 'No params have been sent to resize the video call! Send an object like {width: 640, height: 480}'
-                });
-                return;
-            }
+            })
         }
 
-        this.restartMedia = restartMedia;
+        this.exportChat = function (params, callback) {
+            var stackArr = [], wantedCount = 10000, stepCount = 500, offset = 0;
+            var sendData = {
+                chatMessageVOType: chatMessageVOTypes.EXPORT_CHAT,
+                typeCode: params.typeCode,
+                content: {
+                    offset: +params.offset > 0 ? +params.offset : offset,
+                    count: +params.count > 0 ? +params.count : wantedCount,//config.getHistoryCount,
+                },
+                subjectId: params.threadId
+            };
 
-        this.callStop = callStop;
+            if (+params.fromTime > 0 && +params.fromTime < 9999999999999) {
+                sendData.content.fromTime = +params.fromTime;
+            }
+
+            if (+params.toTime > 0 && +params.toTime < 9999999999999) {
+                sendData.content.toTime = +params.toTime;
+            }
+
+            if(+params.wantedCount > 0) {
+                wantedCount = params.wantedCount;
+            }
+
+            if(+params.stepCount > 0) {
+                stepCount = params.stepCount;
+            }
+
+            if(+params.offset > 0) {
+                offset = params.offset;
+            }
+
+            if (params.messageType && typeof params.messageType.toUpperCase() !== 'undefined' && chatMessageTypes[params.messageType.toUpperCase()] > 0) {
+                sendData.content.messageType = chatMessageTypes[params.messageType.toUpperCase()];
+            }
+
+            if(wantedCount < stepCount)
+                stepCount = wantedCount;
+
+            consoleLogging && console.log("[SDK][exportChat] Starting...");
+            requestExportChat(stackArr, wantedCount, stepCount, offset, sendData).then(function (result) {
+                consoleLogging && console.log("[SDK][exportChat] Export done..., Now converting...");
+
+                var exportedFilename = 'export-' + params.threadId + '.csv',
+                    responseType = params.responseType !== null ? params.responseType : "blob",
+                    autoStartDownload = params.autoStartDownload !== null ? params.autoStartDownload : true
+
+                var blob = new Blob([Utility.convertToCSV(result)], { type: 'text/csv;charset=utf-8;' });
+                chatEvents.fireEvent('threadEvents', {
+                    type: 'EXPORT_CHAT',
+                    subType: 'DONE',
+                    threadId: sendData.subjectId,
+                    result: blob
+                });
+
+                /*if (navigator.msSaveBlob) { // IE 10+
+                    if(params.autoStartDownload) {
+                        navigator.msSaveBlob(blob, exportedFilename);
+                    }
+                    callback && callback({
+                        hasError: false,
+                        type: 'blob',
+                        result: blob
+                    });
+                } else {*/
+                if(responseType === 'link') {
+                    var link = document.createElement("a"),
+                        url = URL.createObjectURL(blob);
+                    //if (link.download !== undefined) { // feature detection
+                        // Browsers that support HTML5 download attribute
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", exportedFilename);
+                    if(autoStartDownload) {
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                    //}
+                    callback && callback({
+                        hasError: false,
+                        type: 'link',
+                        result: link
+                    });
+                } else {
+                    callback && callback({
+                        hasError: false,
+                        type: 'blob',
+                        result: blob
+                    });
+                }
+                //}
+                callback = undefined;
+            });
+        }
+
+        this.startCall = callModule.startCall;
+
+        this.startGroupCall = callModule.startGroupCall;
+
+        this.callReceived = callModule.callReceived;
+
+        this.terminateCall = callModule.terminateCall;
+
+        this.acceptCall = callModule.acceptCall;
+
+        this.rejectCall = this.cancelCall = callModule.rejectCall
+
+        this.endCall = callModule.endCall;
+
+        this.startRecordingCall = callModule.startRecordingCall;
+
+        this.stopRecordingCall = callModule.stopRecordingCall;
+
+        this.startScreenShare = callModule.startScreenShare;
+
+        this.endScreenShare = callModule.endScreenShare;
+
+        this.getCallsList = callModule.getCallsList;
+
+        this.deleteFromCallList = callModule.deleteFromCallList;
+
+        this.getCallParticipants = callModule.getCallParticipants;
+
+        this.addCallParticipants = callModule.addCallParticipants;
+
+        this.removeCallParticipants = callModule.removeCallParticipants;
+
+        this.muteCallParticipants = callModule.muteCallParticipants;
+
+        this.unMuteCallParticipants = callModule.unMuteCallParticipants;
+
+        this.turnOnVideoCall = callModule.turnOnVideoCall;
+
+        this.turnOffVideoCall = callModule.turnOffVideoCall;
+
+        this.pauseCamera = callModule.pauseCamera;
+
+        this.resumeCamera = callModule.resumeCamera;
+
+        this.pauseMice = callModule.pauseMice;
+
+        this.resumeMice = callModule.resumeMice;
+
+        this.resizeCallVideo = callModule.resizeCallVideo;
+
+        this.restartMedia = callModule.restartMedia;
+
+        this.callStop = callModule.callStop;
 
         this.getMutualGroups = function (params, callback) {
             var count = +params.count ? +params.count : 50,
@@ -70212,7 +73306,7 @@ WildEmitter.mixin(WildEmitter);
                         idType: +inviteeVOidTypes[params.user.idType]
                     };
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'You should send an user object like {id: 92, idType: "TO_BE_USER_CONTACT_ID"}'
                     });
@@ -70220,14 +73314,14 @@ WildEmitter.mixin(WildEmitter);
                 }
 
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to Get Mutual Groups!'
                 });
                 return;
             }
 
-            return sendMessage(sendData, {
+            return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
                     var returnData = {
                         hasError: result.hasError,
@@ -70289,7 +73383,7 @@ WildEmitter.mixin(WildEmitter);
                         if (typeof params.threadId === 'number' && params.threadId > 0) {
                             content.locationId = +params.threadId;
                         } else {
-                            fireEvent('error', {
+                            chatEvents.fireEvent('error', {
                                 code: 999,
                                 message: 'You set the location to be a thread, you have to send a valid ThreadId'
                             });
@@ -70297,7 +73391,7 @@ WildEmitter.mixin(WildEmitter);
                         }
                     }
                 } else {
-                    fireEvent('error', {
+                    chatEvents.fireEvent('error', {
                         code: 999,
                         message: 'Send a valid location type (CHAT / THREAD / CONTACTS)'
                     });
@@ -70306,14 +73400,14 @@ WildEmitter.mixin(WildEmitter);
 
                 locationPingData.content = JSON.stringify(content);
             } else {
-                fireEvent('error', {
+                chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to LocationPing!'
                 });
                 return;
             }
 
-            return sendMessage(locationPingData, {
+            return chatMessaging.sendMessage(locationPingData, {
                 onResult: function (result) {
                     callback && callback(result);
                 }
@@ -70337,6 +73431,9 @@ WildEmitter.mixin(WildEmitter);
         this.setToken = function (newToken) {
             if (typeof newToken !== 'undefined') {
                 token = newToken;
+                callModule.updateToken(token);
+                chatMessaging.updateToken(token);
+                chatEvents.updateToken(token);
             }
         };
 
@@ -70345,16 +73442,68 @@ WildEmitter.mixin(WildEmitter);
         this.logout = function () {
             clearChatServerCaches();
 
-            // Delete all event callbacks
-            for (var i in eventCallbacks) {
-                delete eventCallbacks[i];
-            }
-            messagesCallbacks = {};
-            sendMessageCallbacks = {};
-            threadCallbacks = {};
+            chatEvents.clearEventCallbacks();
+
+            chatMessaging.messagesCallbacks = {};
+            chatMessaging.sendMessageCallbacks = {};
+            chatMessaging.threadCallbacks = {};
 
             asyncClient.logout();
         };
+
+        /**
+         * Test connectivity with kotern
+         *
+         * @param turnIp
+         * @param port
+         * @param useUDP
+         * @param username
+         * @param password
+         * @param timeout
+         * @return {Promise<boolean>}
+         */
+        this.checkTURNServer =  function (turnIp, port, useUDP = false, username = 'mkhorrami', password = 'mkh_123456', timeout) {
+            let url = 'turn:' + turnIp + ':' + port + '?transport=' + (useUDP ? 'udp' : 'tcp');
+            const turnConfig = {
+                urls: url,
+                username: username,
+                credential: password
+            }
+
+            if(navigator.userAgent.indexOf('firefox') !== -1 && navigator.userAgent.indexOf('92.0.5') !== -1) {
+                alert('Browser version is not suitable for video call. Upgrade or use another browser.');
+            }
+
+            console.log('turnConfig: ', turnConfig);
+            return new Promise(function (resolve, reject) {
+
+                let promiseResolved;
+                setTimeout(function () {
+                    if (promiseResolved) return;
+                    resolve(false);
+                    promiseResolved = true;
+                }, timeout || 5000);
+
+                promiseResolved = false;
+                let myPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection //compatibility for firefox and chrome
+                    , pc = new myPeerConnection({iceServers: [turnConfig]}),
+                    noop = function () {
+                    };
+                pc.createDataChannel(""); //create a bogus data channel
+                pc.createOffer(function (sdp) {
+                    if (sdp.sdp.indexOf('typ relay') > -1) { // sometimes sdp contains the ice candidates...
+                        promiseResolved = true;
+                        resolve(true);
+                    }
+                    pc.setLocalDescription(sdp, noop, noop);
+                }, noop); // create offer and set local description
+                pc.onicecandidate = function (ice) { //listen for candidate events
+                    if (promiseResolved || !ice || !ice.candidate || !ice.candidate.candidate || !(ice.candidate.candidate.indexOf('typ relay') > -1)) return;
+                    promiseResolved = true;
+                    resolve(true);
+                };
+            });
+        }
 
         init();
     }
@@ -70369,7 +73518,440 @@ WildEmitter.mixin(WildEmitter);
     }
 })();
 
-},{"./utility/utility.js":330,"@sentry/browser":194,"dexie":288,"kurento-utils":297,"podasync-ws-only":300,"webrtc-adapter":317}],330:[function(require,module,exports){
+},{"./call.module.js":330,"./events.module.js":332,"./messaging.module.js":333,"./utility/utility.js":334,"@sentry/browser":194,"dexie":288,"podasync-ws-only":301}],332:[function(require,module,exports){
+(function () {
+    /**
+     * Global Variables
+     */
+
+    function ChatEvents(params) {
+        //if (typeof (require) !== 'undefined' && typeof (exports) !== 'undefined') {} else {}
+
+        var Sentry = params.Sentry,
+            Utility = params.Utility,
+            consoleLogging = params.consoleLogging,
+            token = params.token,
+            eventCallbacks = {
+                connect: {},
+                disconnect: {},
+                reconnect: {},
+                messageEvents: {},
+                threadEvents: {},
+                contactEvents: {},
+                botEvents: {},
+                userEvents: {},
+                callEvents: {},
+                fileUploadEvents: {},
+                systemEvents: {},
+                chatReady: {},
+                error: {},
+                chatState: {}
+            };
+
+        var PodChatErrorException = function (error) {
+            this.code = error.error ? error.error.code : error.code;
+            this.message = error.error ? error.error.message : error.message;
+            this.uniqueId = error.uniqueId ? error.uniqueId : '';
+            this.token = token;
+            this.error =  JSON.stringify((error.error ? error.error : error));
+        };
+
+        this.updateToken = function (newToken) {
+            token = newToken;
+        }
+
+        /**
+         * Fire Event
+         *
+         * Fires given Event with given parameters
+         *
+         * @access private
+         *
+         * @param {string}  eventName       name of event to be fired
+         * @param {object}  param           params to be sent to the event function
+         *
+         * @return {undefined}
+         */
+        this.fireEvent = function (eventName, param) {
+            if (eventName === "chatReady") {
+                if (typeof navigator === "undefined") {
+                    consoleLogging && console.log("\x1b[90m    ☰ \x1b[0m\x1b[90m%s\x1b[0m", "Chat is Ready 😉");
+                } else {
+                    consoleLogging && console.log("%c   Chat is Ready 😉", 'border-left: solid #666 10px; color: #666;');
+                }
+            }
+
+            if (eventName === "error" || (eventName === "callEvents" && param.type === "CALL_ERROR")) {
+                try {
+                    throw new PodChatErrorException(param);
+                } catch (err) {
+                    if (!!Sentry) {
+                        Sentry.setExtra('errorMessage', err.message);
+                        Sentry.setExtra('errorCode', err.code);
+                        Sentry.setExtra('uniqueId', err.uniqueId);
+                        Sentry.setExtra('token', err.token);
+                        Sentry.setTag('Error code:', (err.code ? err.code : ''))
+                        Sentry.captureException(err.error, {
+                            logger: eventName
+                        });
+                    }
+                }
+            }
+
+            for (var id in eventCallbacks[eventName]) {
+                if(eventCallbacks[eventName] && eventCallbacks[eventName][id])
+                    eventCallbacks[eventName][id](param);
+            }
+        };
+
+        this.on = function (eventName, callback) {
+            if (eventCallbacks[eventName]) {
+                var id = Utility.generateUUID();
+                eventCallbacks[eventName][id] = callback;
+                return id;
+            }
+        };
+
+        this.off = function (eventName, eventId) {
+            if (eventCallbacks[eventName]) {
+                if (eventCallbacks[eventName].hasOwnProperty(eventId)) {
+                    delete eventCallbacks[eventName][eventId];
+                    return eventId;
+                }
+            }
+        }
+
+        this.clearEventCallbacks = function () {
+            // Delete all event callbacks
+            for (var i in eventCallbacks) {
+                delete eventCallbacks[i];
+            }
+        }
+    }
+
+    if (typeof module !== 'undefined' && typeof module.exports != 'undefined') {
+        module.exports = ChatEvents;
+    } else {
+        if (!window.POD) {
+            window.POD = {};
+        }
+        window.POD.ChatEvents = ChatEvents;
+    }
+})();
+
+},{}],333:[function(require,module,exports){
+(function () {
+    /**
+     * Global Variables
+     */
+    var DOMPurify;
+
+    /**
+     * Communicates with chat server
+     * @param params
+     * @constructor
+     */
+    function ChatMessaging(params) {
+        if (typeof (require) !== 'undefined' && typeof (exports) !== 'undefined') {
+            DOMPurify = require('dompurify');
+        } else {
+            DOMPurify = window.DOMPurify;
+        }
+
+        var currentModuleInstance = this,
+            asyncClient = params.asyncClient,
+            Sentry = params.Sentry,
+            Utility = params.Utility,
+            consoleLogging = params.consoleLogging,
+            generalTypeCode = params.generalTypeCode,
+            chatMessageVOTypes = params.chatMessageVOTypes,
+            chatPingMessageInterval = params.chatPingMessageInterval,
+            asyncRequestTimeout = params.asyncRequestTimeout,
+            messageTtl = params.messageTtl,
+            serverName = params.serverName,
+            msgPriority = params.msgPriority,
+            token = params.token;
+
+        this.threadCallbacks = {};
+        this.sendMessageCallbacks = {};
+        this.messagesCallbacks = {};
+        this.asyncRequestTimeouts = {};
+        this.sendPingTimeout = null;
+        this.chatState = false;
+        this.userInfo = null;
+
+        this.asyncInitialized = function (client) {
+            asyncClient = client
+        }
+
+        this.updateToken = function (newToken) {
+            token = newToken;
+        }
+
+        /**
+         * Send Message
+         *
+         * All socket messages go through this function
+         *
+         * @access private
+         *
+         * @param {string}    token           SSO Token of current user
+         * @param {string}    tokenIssuer     Issuer of token (default : 1)
+         * @param {int}       type            Type of message (object : chatMessageVOTypes)
+         * @param {string}    typeCode        Type of contact who is going to receive the message
+         * @param {int}       messageType     Type of Message, in order to filter messages
+         * @param {long}      subjectId       Id of chat thread
+         * @param {string}    uniqueId        Tracker id for client
+         * @param {string}    content         Content of message
+         * @param {long}      time            Time of message, filled by chat server
+         * @param {string}    medadata        Metadata for message (Will use when needed)
+         * @param {string}    systemMedadata  Metadata for message (To be Set by client)
+         * @param {long}      repliedTo       Id of message to reply to (Should be filled by client)
+         * @param {function}  callback        The callback function to run after
+         *
+         * @return {object} Instant Function Return
+         */
+        this.sendMessage = function (params, callbacks, recursiveCallback) {
+            /**
+             * + ChatMessage        {object}
+             *    - token           {string}
+             *    - tokenIssuer     {string}
+             *    - type            {int}
+             *    - typeCode        {string}
+             *    - messageType     {int}
+             *    - subjectId       {int}
+             *    - uniqueId        {string}
+             *    - content         {string}
+             *    - time            {int}
+             *    - medadata        {string}
+             *    - systemMedadata  {string}
+             *    - repliedTo       {int}
+             */
+            var threadId = null;
+
+            var asyncPriority = (params.asyncPriority > 0)
+                ? params.asyncPriority
+                : msgPriority;
+
+            var messageVO = {
+                type: params.chatMessageVOType,
+                token: token,
+                tokenIssuer: 1
+            };
+
+            if (params.typeCode) {
+                messageVO.typeCode = params.typeCode;
+            } else if (generalTypeCode) {
+                messageVO.typeCode = generalTypeCode;
+            }
+
+            if (params.messageType) {
+                messageVO.messageType = params.messageType;
+            }
+
+            if (params.subjectId) {
+                threadId = params.subjectId;
+                messageVO.subjectId = params.subjectId;
+            }
+
+            if (params.content) {
+                if (typeof params.content == 'object') {
+                    messageVO.content = JSON.stringify(params.content);
+                } else {
+                    messageVO.content = params.content;
+                    if(DOMPurify.isSupported) {
+                        messageVO.content = DOMPurify.sanitize(messageVO.content, {ALLOWED_TAGS: []});
+                    }
+                }
+            }
+
+            if (params.metadata) {
+                messageVO.metadata = params.metadata;
+            }
+
+            if (params.systemMetadata) {
+                messageVO.systemMetadata = params.systemMetadata;
+            }
+
+            if (params.repliedTo) {
+                messageVO.repliedTo = params.repliedTo;
+            }
+
+            var uniqueId;
+
+            if (typeof params.uniqueId != 'undefined') {
+                uniqueId = params.uniqueId;
+            } else if (params.chatMessageVOType !== chatMessageVOTypes.PING) {
+                uniqueId = Utility.generateUUID();
+            }
+
+            if (Array.isArray(uniqueId)) {
+                messageVO.uniqueId = JSON.stringify(uniqueId);
+            } else {
+                messageVO.uniqueId = uniqueId;
+            }
+
+            if (typeof callbacks == 'object') {
+                if (callbacks.onSeen || callbacks.onDeliver || callbacks.onSent) {
+                    if (!currentModuleInstance.threadCallbacks[threadId]) {
+                        currentModuleInstance.threadCallbacks[threadId] = {};
+                    }
+
+                    currentModuleInstance.threadCallbacks[threadId][uniqueId] = {};
+
+                    currentModuleInstance.sendMessageCallbacks[uniqueId] = {};
+
+                    if (callbacks.onSent) {
+                        currentModuleInstance.sendMessageCallbacks[uniqueId].onSent = callbacks.onSent;
+                        currentModuleInstance.threadCallbacks[threadId][uniqueId].onSent = false;
+                        currentModuleInstance.threadCallbacks[threadId][uniqueId].uniqueId = uniqueId;
+                    }
+
+                    if (callbacks.onSeen) {
+                        currentModuleInstance.sendMessageCallbacks[uniqueId].onSeen = callbacks.onSeen;
+                        currentModuleInstance.threadCallbacks[threadId][uniqueId].onSeen = false;
+                    }
+
+                    if (callbacks.onDeliver) {
+                        currentModuleInstance.sendMessageCallbacks[uniqueId].onDeliver = callbacks.onDeliver;
+                        currentModuleInstance.threadCallbacks[threadId][uniqueId].onDeliver = false;
+                    }
+
+                } else if (callbacks.onResult) {
+                    currentModuleInstance.messagesCallbacks[uniqueId] = callbacks.onResult;
+                }
+            } else if (typeof callbacks == 'function') {
+                currentModuleInstance.messagesCallbacks[uniqueId] = callbacks;
+            }
+
+            /**
+             * Message to send through async SDK
+             *
+             * + MessageWrapperVO  {object}
+             *    - type           {int}       Type of ASYNC message based on content
+             *    + content        {string}
+             *       -peerName     {string}    Name of receiver Peer
+             *       -receivers[]  {int}      Array of receiver peer ids (if you use this, peerName will be ignored)
+             *       -priority     {int}       Priority of message 1-10, lower has more priority
+             *       -messageId    {int}      Id of message on your side, not required
+             *       -ttl          {int}      Time to live for message in milliseconds
+             *       -content      {string}    Chat Message goes here after stringifying
+             *    - trackId        {int}      Tracker id of message that you receive from DIRANA previously (if you are replying a sync message)
+             */
+
+            var data = {
+                type: (parseInt(params.pushMsgType) > 0)
+                    ? params.pushMsgType
+                    : 3,
+                content: {
+                    peerName: serverName,
+                    priority: asyncPriority,
+                    content: JSON.stringify(messageVO),
+                    ttl: (params.messageTtl > 0)
+                        ? params.messageTtl
+                        : messageTtl
+                }
+            };
+
+            asyncClient.send(data, function (res) {
+                if (!res.hasError && callbacks) {
+                    if (typeof callbacks == 'function') {
+                        callbacks(res);
+                    } else if (typeof callbacks == 'object' && typeof callbacks.onResult == 'function') {
+                        callbacks.onResult(res);
+                    }
+
+                    if (currentModuleInstance.messagesCallbacks[uniqueId]) {
+                        delete currentModuleInstance.messagesCallbacks[uniqueId];
+                    }
+                }
+            });
+
+            if (asyncRequestTimeout > 0) {
+                currentModuleInstance.asyncRequestTimeouts[uniqueId] && clearTimeout(currentModuleInstance.asyncRequestTimeouts[uniqueId]);
+                currentModuleInstance.asyncRequestTimeouts[uniqueId] = setTimeout(function () {
+                    if (typeof callbacks == 'function') {
+                        callbacks({
+                            hasError: true,
+                            errorCode: 408,
+                            errorMessage: 'Async Request Timed Out!'
+                        });
+                    } else if (typeof callbacks == 'object' && typeof callbacks.onResult == 'function') {
+                        callbacks.onResult({
+                            hasError: true,
+                            errorCode: 408,
+                            errorMessage: 'Async Request Timed Out!'
+                        });
+                    }
+
+                    if (currentModuleInstance.messagesCallbacks[uniqueId]) {
+                        delete currentModuleInstance.messagesCallbacks[uniqueId];
+                    }
+                    if (currentModuleInstance.sendMessageCallbacks[uniqueId]) {
+                        delete currentModuleInstance.sendMessageCallbacks[uniqueId];
+                    }
+                    if (!!currentModuleInstance.threadCallbacks[threadId] && currentModuleInstance.threadCallbacks[threadId][uniqueId]) {
+                        currentModuleInstance.threadCallbacks[threadId][uniqueId] = {};
+                        delete currentModuleInstance.threadCallbacks[threadId][uniqueId];
+                    }
+
+                }, asyncRequestTimeout);
+            }
+
+            currentModuleInstance.sendPingTimeout && clearTimeout(currentModuleInstance.sendPingTimeout);
+            currentModuleInstance.sendPingTimeout = setTimeout(function () {
+                currentModuleInstance.ping();
+            }, chatPingMessageInterval);
+
+            recursiveCallback && recursiveCallback();
+
+            return {
+                uniqueId: uniqueId,
+                threadId: threadId,
+                participant: currentModuleInstance.userInfo,
+                content: params.content
+            };
+        }
+
+        /**
+         * Ping
+         *
+         * This Function sends ping message to keep user connected to
+         * chat server and updates its status
+         *
+         * @access private
+         *
+         * @return {undefined}
+         */
+        this.ping = function () {
+            if (currentModuleInstance.chatState && typeof currentModuleInstance.userInfo !== 'undefined') {
+                /**
+                 * Ping messages should be sent ASAP, because
+                 * we don't want to wait for send queue, we send them
+                 * right through async from here
+                 */
+                currentModuleInstance.sendMessage({
+                    chatMessageVOType: chatMessageVOTypes.PING,
+                    pushMsgType: 3
+                });
+            } else {
+                currentModuleInstance.sendPingTimeout && clearTimeout(currentModuleInstance.sendPingTimeout);
+            }
+        };
+
+    }
+
+    if (typeof module !== 'undefined' && typeof module.exports != 'undefined') {
+        module.exports = ChatMessaging;
+    } else {
+        if (!window.POD) {
+            window.POD = {};
+        }
+        window.POD.ChatMessaging = ChatMessaging;
+    }
+})();
+
+},{"dompurify":289}],334:[function(require,module,exports){
 (function (global){(function (){
 (function() {
 
@@ -70394,6 +73976,26 @@ WildEmitter.mixin(WildEmitter);
         this.isNode = function() {
             return (typeof global !== 'undefined' && ({}).toString.call(global) === '[object global]');
         };
+
+        /**
+         * is Valid Json
+         *
+         * This functions checks if a string is valid json or not?
+         *
+         * @access private
+         *
+         * @param {string}  jsonString   Json String to be checked
+         *
+         * @return {boolean}
+         */
+        this.isValidJson = function (jsonString) {
+            try {
+                JSON.parse(jsonString);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        },
 
         /**
          * Generate UUID
@@ -70898,6 +74500,31 @@ WildEmitter.mixin(WildEmitter);
                 console.log("Error happened at Utility.jsonParser function()", e);
             }
         };
+
+        /**
+         * Export given json to csv
+         *
+         * @param objArray
+         * @return {string}
+         */
+        this.convertToCSV = function(objArray) {
+            var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+            var str = '';
+
+            for (var i = 0; i < array.length; i++) {
+                var line = '';
+                for (var index in array[i]) {
+                    if (line != '') line += ','
+
+                    line += index;
+                    line += ": " + (typeof array[i][index] !== 'string' ?  JSON.stringify(array[i][index]).replaceAll(",", ".") : array[i][index]);
+                }
+
+                str += line + '\r\n';
+            }
+
+            return str;
+        }
     }
 
     if (typeof module !== 'undefined' && typeof module.exports != 'undefined') {
