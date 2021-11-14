@@ -30,7 +30,7 @@
     <script type="text/javascript">
         // Developement
         var PodChat = window.POD.Chat;
-        var env = 'main'; // main | sandbox | integration
+        var env = 'sandbox'; // main | sandbox | integration
 
         var params = {
             appId: new Date().getTime(),
@@ -2314,6 +2314,42 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
     </fieldset>
 </form>
 
+<br>
+<hr>
+<br>
+
+<form action="">
+    <fieldset>
+        <legend>Add assistant</legend>
+        <div>
+            <input type="text" id="addAssistantUserName">
+            <input type="text" id="addAssistantIdType" value="TO_BE_USER_USERNAME">
+        </div>
+        <button id="addAssistant">Add</button>
+    </fieldset>
+</form>
+<form action="">
+    <fieldset>
+        <legend>Deactivate assistant</legend>
+        <div>
+            <input type="text" id="deactivateAssistantUserName">
+            <input type="text" id="deactivateAssistantIdType" value="TO_BE_USER_USERNAME">
+        </div>
+        <button id="deactivateAssistant">Deactivate</button>
+    </fieldset>
+</form>
+<br>
+<hr>
+<br>
+
+<form action="">
+    <fieldset>
+        <legend>Get current user roles</legend>
+        <input type="text" id="getCurrentUserRolesThreadId">
+        <button id="getCurrentUserRoles">Get Roels On Thread</button>
+    </fieldset>
+</form>
+
 </body>
 
 <script>
@@ -2994,7 +3030,60 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
         }, result => {
             console.log(result);
         })
+    });
+
+    document.getElementById("addAssistant").addEventListener("click", function (event){
+        event.preventDefault();
+
+        var idType = document.getElementById("addAssistantIdType").value
+            , userId = document.getElementById("addAssistantUserName").value;
+
+        chatAgent.registerAssistant({
+            assistants: [
+                {
+                    contactType: 'default',
+                    roleTypes: ['destinated_recording', "DESTINATED_RECORD", 'read_thread', 'edit_thread', 'add_rule_to_user'],
+                    assistant: {
+                        id: userId,
+                        idType: idType
+                    }
+                }
+            ]
+        }, function (result) {
+            console.log("[HTML][addAssistant][result]", result)
+        });
     })
+
+    document.getElementById("deactivateAssistant").addEventListener("click", function (event){
+        event.preventDefault();
+
+        var idType = document.getElementById("deactivateAssistantIdType").value
+            , userId = document.getElementById("deactivateAssistantUserName").value;
+
+        chatAgent.registerAssistant({
+            assistants: [
+                {
+                    contactType: 'default',
+                    roleTypes: ['destinated_recording', "DESTINATED_RECORD", 'read_thread', 'edit_thread', 'add_rule_to_user'],
+                    assistant: {
+                        id: userId,
+                        idType: idType
+                    }
+                }
+            ]
+        }, function (result) {
+            console.log("[HTML][deactivateAssistant][result]", result)
+        });
+    })
+    document.getElementById("getCurrentUserRoles").addEventListener("click", function (event){
+        event.preventDefault();
+        var threadId = document.getElementById("getCurrentUserRolesThreadId").value
+        chatAgent.getCurrentUserRoles({
+            threadId: threadId
+        }, function(result) {
+            console.log(result);
+        });
+    });
 
 </script>
 
