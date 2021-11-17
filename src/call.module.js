@@ -600,19 +600,7 @@
                         }
                     }*/
 
-                    var uiRemoteElements = [], uiLocalElements;
-                    for(var i in callUsers) {
-                        if(callUsers[i].direction === 'send') {
-                            uiLocalElements = callUsers[i].htmlElements;
-                        } else {
-                            uiRemoteElements['userId'] = callUsers[i].htmlElements;
-                        }
-                    }
-
-                    callback && callback({
-                        uiLocalElements: uiLocalElements,
-                        uiRemoteElements: uiRemoteElements,
-                    });
+                    callback && callback(generateCallUIList());
 
                     /*for(var i in callTopics['receive']) {
                         uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']])
@@ -671,6 +659,39 @@
                     return;
                 }
             },
+
+            generateCallUIList = function () {
+                var callUIElements = {};
+                for(var i in callUsers) {
+                    callUIElements[i] = callUsers[i].htmlElements;
+                }
+                return {
+                    uiElements: callUIElements,
+                };
+            },
+
+            /*handleCallSocketOpen = function (params) {
+                currentCallParams = params;
+
+                sendCallMessage({
+                    id: 'CREATE_SESSION',
+                    brokerAddress: params.brokerAddress,
+                    turnAddress: params.turnAddress.split(',')[0]
+                }, function (res) {
+                    if (res.done === 'TRUE') {
+                        callStopQueue.callStarted = true;
+                        generateAndSendSdpOffers(params, [callTopics['sendVideoTopic'], callTopics['receiveVideoTopic'], callTopics['sendAudioTopic'], callTopics['receiveAudioTopic']]);
+                    } else if (res.done === 'SKIP') {
+                        callStopQueue.callStarted = true;
+                        generateAndSendSdpOffers(params, [callTopics['sendVideoTopic'], callTopics['receiveVideoTopic'], callTopics['sendAudioTopic'], callTopics['receiveAudioTopic']]);
+                    } else {
+                        consoleLogging && console.log('CREATE_SESSION faced a problem', res);
+                        endCall({
+                            callId: currentCallId
+                        });
+                    }
+                });
+            },*/
 
             callStateController = {
                 createSessionInChat: function (params) {
@@ -1078,11 +1099,11 @@
                                 errorMessage: `Call Peer (${topic}) has failed!`,
                                 errorInfo: user.peers[topic]
                             });
-                            setTimeout(function () {
+                            // setTimeout(function () {
                                 if(chatMessaging.chatState) {
                                     callController.shouldReconnectTopic(userId, topic, mediaType, direction);
                                 }
-                            }, 7000);
+                            // }, 7000);
 
                             callController.removeConnectionQualityInterval(userId, topic);
                         }
@@ -1118,13 +1139,14 @@
                             });
                             if(chatMessaging.chatState) {
                                 callController.shouldReconnectTopic(userId, topic, mediaType, direction);
-                            } else {
-                                setTimeout(function () {
-                                    if(chatMessaging.chatState) {
-                                        callController.shouldReconnectTopic(userId, topic, mediaType, direction);
-                                    }
-                                }, 7000);
                             }
+                            // } else {
+                            //     setTimeout(function () {
+                            //         if(chatMessaging.chatState) {
+                            //             callController.shouldReconnectTopic(userId, topic, mediaType, direction);
+                            //         }
+                            //     }, 7000);
+                            // }
                         }
 
                         if (user.peers[topic].peerConnection.iceConnectionState === "connected") {
@@ -1179,10 +1201,10 @@
 
                     for(var i in callUsers) {
                         var videoTopic = callUsers[i].videoTopicName, audioTopic = callUsers[i].audioTopicName;
-                        if(callUsers[i] && callUsers[i].peers[videoTopic] && callUsers[i].peers[videoTopic].peerConnection.connectionState !== 'connected'){
+                        if(callUsers[i] && callUsers[i].peers[videoTopic] && callUsers[i].peers[videoTopic].peerConnection.connectionState === 'failed'){
                             this.shouldReconnectTopic(i, videoTopic, 'video', callUsers[i].direction)
                         }
-                        if(callUsers[i] && callUsers[i].peers[audioTopic] && callUsers[i].peers[videoTopic].peerConnection.connectionState !== 'connected'){
+                        if(callUsers[i] && callUsers[i].peers[audioTopic] && callUsers[i].peers[videoTopic].peerConnection.connectionState === 'failed'){
                             this.shouldReconnectTopic(i, audioTopic, 'audio', callUsers[i].direction)
                         }
                     }
@@ -1225,6 +1247,10 @@
                             callStateController.appendUserToCallDiv('screenShare');
                             callStateController.createTopic('screenShare', screenShare.videoTopicName, "video", direction, shareScreen);
                         });
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_DIVS',
+                            result: generateCallUIList()
+                        });
                     } else {
                         callStateController.removeTopic('screenShare', screenShare.videoTopicName);
                         callStateController.createTopic('screenShare', screenShare.videoTopicName, "video", direction, shareScreen);
@@ -1240,6 +1266,10 @@
                         //removeStreamFromWebRTC(callTopics['screenShare']);
                         callStateController.removeStreamFromWebRTC('screenShare', screenShare.videoTopicName)
                         callStateController.removeTopic('screenShare', screenShare.videoTopicName);
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_DIVS',
+                            result: generateCallUIList()
+                        });
                     }
                 },
                 removeAllCallParticipants: function () {
