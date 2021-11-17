@@ -2748,7 +2748,8 @@
                 chatMessageVOType: chatMessageVOTypes.RECORD_CALL,
                 typeCode: params.typeCode,
                 pushMsgType: 3,
-                token: token
+                token: token,
+                content: {}
             };
 
             if (params) {
