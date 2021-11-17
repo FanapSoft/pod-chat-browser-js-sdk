@@ -589,10 +589,10 @@
                         }
                     }
 
-                    var uiRemoteElements = [];
+                    /*var uiRemoteElements = [];
                     for(var i in callTopics['receive']) {
-                        /*uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']])
-                        callVideo && uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['VideoTopic']])*/
+                        /!*uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']])
+                        callVideo && uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['VideoTopic']])*!/
 
                         uiRemoteElements.push(
                             {
@@ -600,7 +600,7 @@
                                 uiRemoteVideo: callVideo && uiRemoteMedias[callTopics['receive'][i]['VideoTopic']]
                             }
                         )
-                    }
+                    }*/
 
                     if (callParentDiv) {
                         callVideo && callParentDiv.appendChild(uiRemoteMedias[callTopics['sendVideoTopic']]);
@@ -613,23 +613,9 @@
                         for(var i in callTopics['receive']) {
                             callParentDiv.appendChild(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']]);
                         }
-
-                        callback && callback({
-                            'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
-                            'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
-                            uiRemoteElements: uiRemoteElements
-                            /*                            'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                                                        'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*/
-                        });
-                    } else {
-                        callback && callback({
-                            'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
-                            'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
-                            uiRemoteElements: uiRemoteElements
-                            /*'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                            'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*/
-                        });
                     }
+
+                    callback && callback(generateCallUIList());
 
                     callStateController.createSessionInChat(Object.assign(params, {
                         callVideo: callVideo,
@@ -654,6 +640,27 @@
                 }
             },
 
+            generateCallUIList = function () {
+                var uiRemoteElements = [];
+                for(var i in callTopics['receive']) {
+                    /*uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']])
+                    callVideo && uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['VideoTopic']])*/
+
+                    uiRemoteElements.push(
+                        {
+                            uiRemoteAudio: uiRemoteMedias[callTopics['receive'][i]['AudioTopic']],
+                            uiRemoteVideo: currentCallParams.callVideo && uiRemoteMedias[callTopics['receive'][i]['VideoTopic']]
+                        }
+                    )
+                }
+
+                return {
+                    'screenShare': uiRemoteMedias[callTopics['screenShare']],
+                    'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
+                    'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
+                    uiRemoteElements: uiRemoteElements
+                }
+            },
 
             /*handleCallSocketOpen = function (params) {
                 currentCallParams = params;
@@ -1105,6 +1112,10 @@
                         }
                         var callParentDiv = document.getElementById(callDivId);
                         callParentDiv.appendChild(uiRemoteMedias[callTopics['screenShare']]);
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_DIVS',
+                            result: generateCallUIList()
+                        });
                         callStateController.createTopic(callTopics['screenShare'], "video", direction, shareScreen);
                     } else {
                         callStateController.removeTopic(callTopics['screenShare']);
@@ -1116,6 +1127,10 @@
                         // Local Video Tag
                         if (uiRemoteMedias[callTopics['screenShare']]) {
                             removeStreamFromWebRTC(callTopics['screenShare']);
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_DIVS',
+                                result: generateCallUIList()
+                            });
                         }
                         callStateController.removeTopic(callTopics['screenShare']);
                     }
