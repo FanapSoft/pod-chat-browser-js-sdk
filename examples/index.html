@@ -3060,19 +3060,15 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
         var idType = document.getElementById("deactivateAssistantIdType").value
             , userId = document.getElementById("deactivateAssistantUserName").value;
 
-        chatAgent.registerAssistant({
-            assistants: [
-                {
-                    contactType: 'default',
-                    roleTypes: ['destinated_recording', "DESTINATED_RECORD", 'read_thread', 'edit_thread', 'add_rule_to_user'],
-                    assistant: {
-                        id: userId,
-                        idType: idType
-                    }
+        chatAgent.deactivateAssistant({
+            assistants: [{
+                assistant: {
+                    id: userId,
+                    idType: idType
                 }
-            ]
+            }]
         }, function (result) {
-            console.log("[HTML][deactivateAssistant][result]", result)
+            console.log(result);
         });
     })
     document.getElementById("getCurrentUserRoles").addEventListener("click", function (event){
