@@ -934,9 +934,9 @@
                                 // options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
                                 resolve(options);
                             }).catch(function (error) {
-                                console.log(error);
+                                console.error("[SDK][navigator.mediaDevices.getDisplayMedia]", error);
                                 explainUserMediaError(error, 'video', 'screen');
-                                resolve(options);
+                                //resolve(options);
                             });
                         } else {
                             resolve(options);
@@ -2281,6 +2281,7 @@
                 return;
             }
 
+            callRequestController.cameraPaused = (typeof params.cameraPaused === 'boolean') ? params.cameraPaused : false;
             callRequestController.callRequestReceived = true;
             callRequestController.callEstablishedInMySide = true;
 
@@ -2574,14 +2575,14 @@
                 return;
             }
 
-            if(screenShareState.started) {
+            /*if(screenShareState.started) {
                 chatEvents.fireEvent('error', {
                     code: 999,
                     message: "ScreenShare has already started"
                 });
                 console.log("ScreenShare has already started");
                 return
-            }
+            }*/
 
             return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
