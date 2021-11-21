@@ -796,12 +796,29 @@
                     }
                     var user = callUsers[userId]
                     var callParentDiv = document.getElementById(callDivId);
-                    if(user.video)
-                        user.htmlElements.container.appendChild(user.htmlElements[user.videoTopicName])
-                    if(typeof user.mute !== "undefined" && !user.mute)
-                        user.htmlElements.container.appendChild(user.htmlElements[user.audioTopicName])
+                    if(user.video) {
+                        console.log("appendUserToCallDiv1", user, document.getElementById("callParticipantWrapper-" + userId), document.getElementById("uiRemoteVideo-" + user.videoTopicName))
+                        if(!document.getElementById("callParticipantWrapper-" + userId)) {
+                            if (!document.getElementById("uiRemoteVideo-" + user.videoTopicName)) {
+                                user.htmlElements.container.appendChild(user.htmlElements[user.videoTopicName])
+                            }
+                        }
+                        else {
+                            document.getElementById("callParticipantWrapper-" + userId).append(user.htmlElements[user.videoTopicName])
+                        }
+                    }
+                    if(typeof user.mute !== "undefined" && !user.mute){
+                        if(!document.getElementById("callParticipantWrapper-" + userId)) {
+                            if(!document.getElementById("uiRemoteAudio-" + user.videoTopicName)) {
+                                user.htmlElements.container.appendChild(user.htmlElements[user.audioTopicName])
+                            }
+                        } else {
+                            document.getElementById("callParticipantWrapper-" + userId).append(user.htmlElements[user.audioTopicName])
+                        }
+                    }
 
-                    callParentDiv.appendChild(user.htmlElements.container);
+                    if(!document.getElementById("callParticipantWrapper-" + userId))
+                        callParentDiv.appendChild(user.htmlElements.container);
                 },
                 generateHTMLElements: function (userId) {
                     var user = callUsers[userId]
@@ -877,6 +894,9 @@
                     this.createTopic(userId, callUsers[userId].videoTopicName, 'video', callUsers[userId].direction);
                 },
                 createTopic: function (userId, topic, mediaType, direction, shareScreen) {
+                    if(callUsers[userId] && callUsers[userId].peers[topic]) {
+                        return;
+                    }
                     shareScreen = typeof shareScreen !== 'undefined' ? shareScreen : false;
                     this.getSdpOfferOptions(userId, topic, mediaType, direction, shareScreen).then(function (options){
                         callStateController.generateTopicPeer(userId, topic, mediaType, direction, options);
@@ -966,6 +986,10 @@
                     }
                 },
                 checkConnectionQuality: function (userId, topic) {
+                    if(!callUsers[userId] || !callUsers[userId].peers[topic] || !callUsers[userId].peers[topic].peerConnection) {
+                        callStateController.removeConnectionQualityInterval(userId, topic);
+                        return;
+                    }
                     callUsers[userId].peers[topic].peerConnection.getStats(null).then(stats => {
                         //console.log(' watchRTCPeerConnection:: window.setInterval then(stats:', stats)
                         //let statsOutput = "";
@@ -1039,7 +1063,6 @@
                         //document.querySelector(".stats-box").innerHTML = statsOutput;
                     });
                 },
-
                 generateTopicPeer: function (userId, topic, mediaType, direction, options) {
                     var WebRtcFunction = direction === 'send' ? 'WebRtcPeerSendonly' : 'WebRtcPeerRecvonly',
                         callController = this,
@@ -1087,6 +1110,9 @@
                     consoleLogging && console.log("[SDK][watchRTCPeerConnection] called with: ", callUsers, user);
 
                     user.peers[topic].peerConnection.onconnectionstatechange = function () {
+                        if(!user || !user.peers || !user.peers[topic]) {
+                            return; //avoid log errors
+                        }
                         consoleLogging && console.log("[SDK][peerConnection.onconnectionstatechange] ", "peer: ", topic, " peerConnection.connectionState: ", user.peers[topic].peerConnection.connectionState);
                         if (user.peers[topic].peerConnection.connectionState === 'disconnected') {
                             callController.removeConnectionQualityInterval(userId, topic);
@@ -1118,6 +1144,10 @@
                     }
 
                     user.peers[topic].peerConnection.oniceconnectionstatechange = function () {
+                        if(!user || !user.peers || !user.peers[topic]) {
+                            return; //avoid log errors
+                        }
+
                         consoleLogging && console.log("[SDK][oniceconnectionstatechange] ", "peer: ", topic, " peerConnection.connectionState: ", user.peers[topic].peerConnection.iceConnectionState);
                         if (user.peers[topic].peerConnection.iceConnectionState === 'disconnected') {
                             chatEvents.fireEvent('callEvents', {
@@ -1276,20 +1306,28 @@
                     for (var i in callUsers) {
                         var user = callUsers[i];
                         if (user) {
-                            if(user.peers[user.videoTopicName]) {
+                            if(user.videoTopicName && user.peers[user.videoTopicName]) {
+                                callStateController.removeConnectionQualityInterval(i, user.videoTopicName);
+                                callStateController.removeStreamFromWebRTC(i, user.videoTopicName);
                                 callUsers[i].peers[user.videoTopicName].dispose();
                                 delete callUsers[i].peers[user.videoTopicName];
-                                callStateController.removeStreamFromWebRTC(i, user.videoTopicName);
-                                callStateController.removeConnectionQualityInterval(i, user.videoTopicName);
+
                             }
-                            if(user.peers[user.audioTopicName]) {
+                            if(user.audioTopicName && user.peers[user.audioTopicName]) {
+                                callStateController.removeConnectionQualityInterval(i, user.audioTopicName);
+                                callStateController.removeStreamFromWebRTC(i, user.audioTopicName);
+
                                 callUsers[i].peers[user.audioTopicName].dispose();
                                 delete callUsers[i].peers[user.audioTopicName];
-                                callStateController.removeStreamFromWebRTC(i, user.audioTopicName);
-                                callStateController.removeConnectionQualityInterval(i, user.audioTopicName);
                             }
-                            callUsers[i].peers = {};
-                            callUsers[i] = null;
+                            setTimeout(function (){
+                                if(callUsers[i]){
+                                    callUsers[i].peers = {};
+                                    callUsers[i].topicMetaData = {};
+                                    callUsers[i].htmlElements = {};
+                                    callUsers[i] = null;
+                                }
+                            }, 200);
                         }
                     }
                 },
@@ -2028,6 +2066,19 @@
                 case chatMessageVOTypes.MUTE_CALL_PARTICIPANT:
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    } else {
+                        if(Array.isArray(messageContent)){
+                            for(var i in messageContent) {
+                                if(callUsers[messageContent[i].userId]) {
+                                    callUsers[messageContent[i].userId].mute = true;
+
+                                    var user = callUsers[messageContent[i].userId];
+                                    clearInterval(callUsers[messageContent[i].userId].topicMetaData[user.audioTopicName].interval)
+                                    callStateController.removeTopic(messageContent[i].userId, user.audioTopicName);
+                                    callStateController.removeStreamFromWebRTC(messageContent[i].userId, user.audioTopicName);
+                                }
+                            }
+                        }
                     }
 
                     chatEvents.fireEvent('callEvents', {
@@ -2043,6 +2094,22 @@
                 case chatMessageVOTypes.UNMUTE_CALL_PARTICIPANT:
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    } else {
+                        if(Array.isArray(messageContent)) {
+                            for(var i in messageContent) {
+                                if(callUsers[messageContent[i].userId]) {
+                                    callUsers[messageContent[i].userId].mute = false;
+                                    callUsers[messageContent[i].userId].audioTopicName = 'Vo-' + messageContent[i].sendTopic;
+
+                                    var user = callUsers[messageContent[i].userId];
+                                    callStateController.appendUserToCallDiv(messageContent[i].userId, callStateController.generateHTMLElements(messageContent[i].userId));
+                                    setTimeout(function () {
+                                        callStateController.createTopic(messageContent[i].userId, user.audioTopicName, 'audio', 'receive');
+
+                                    })
+                                }
+                            }
+                        }
                     }
 
                     chatEvents.fireEvent('callEvents', {
@@ -2083,6 +2150,22 @@
                 case chatMessageVOTypes.TURN_ON_VIDEO_CALL:
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    } else {
+                        if(Array.isArray(messageContent)) {
+                            for(var i in messageContent) {
+                                if(callUsers[messageContent[i].userId]) {
+                                    callUsers[messageContent[i].userId].video = true;
+                                    callUsers[messageContent[i].userId].videoTopicName = 'Vi-' + messageContent[i].sendTopic;
+
+                                    var user = callUsers[messageContent[i].userId];
+                                    callStateController.appendUserToCallDiv(messageContent[i].userId, callStateController.generateHTMLElements(messageContent[i].userId));
+                                    setTimeout(function () {
+                                        callStateController.createTopic(messageContent[i].userId, user.videoTopicName, 'video', 'receive');
+
+                                    })
+                                }
+                            }
+                        }
                     }
 
                     chatEvents.fireEvent('callEvents', {
@@ -2098,6 +2181,18 @@
                 case chatMessageVOTypes.TURN_OFF_VIDEO_CALL:
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    } else {
+                        if(Array.isArray(messageContent)){
+                            for(var i in messageContent) {
+                                if(callUsers[messageContent[i].userId]) {
+                                    callUsers[messageContent[i].userId].video = false;
+                                    var user = callUsers[messageContent[i].userId];
+                                    clearInterval(callUsers[messageContent[i].userId].topicMetaData[user.videoTopicName].interval)
+                                    callStateController.removeTopic(messageContent[i].userId, user.videoTopicName);
+                                    callStateController.removeStreamFromWebRTC(messageContent[i].userId, user.videoTopicName);
+                                }
+                            }
+                        }
                     }
 
                     chatEvents.fireEvent('callEvents', {
@@ -2959,6 +3054,8 @@
                     sendMessageParams.content = params.userIds;
                 }
             }
+            callStateController.removeTopic(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].audioTopicName)
+            callStateController.removeStreamFromWebRTC(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].audioTopicName)
 
             return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
@@ -3047,6 +3144,21 @@
 
             return chatMessaging.sendMessage(turnOnVideoData, {
                 onResult: function (result) {
+                    if(!result.hasError && Array.isArray(result.result)) {
+                        for(var i in result.result) {
+                            if(callUsers[result.result[i].userId]) {
+                                callUsers[result.result[i].userId].video = true;
+                                callUsers[result.result[i].userId].mute = result.result[i].mute;
+                                callUsers[result.result[i].userId].videoTopicName = 'Vi-' + result.result[i].sendTopic;
+
+                                var user = callUsers[result.result[i].userId];
+                                callStateController.appendUserToCallDiv(result.result[i].userId, callStateController.generateHTMLElements(result.result[i].userId));
+                                setTimeout(function () {
+                                    callStateController.createTopic(result.result[i].userId, user.videoTopicName, 'video', 'send');
+                                })
+                            }
+                        }
+                    }
                     callback && callback(result);
                 }
             });
@@ -3077,6 +3189,8 @@
                 });
                 return;
             }
+            callStateController.removeTopic(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].videoTopicName)
+            callStateController.removeStreamFromWebRTC(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].videoTopicName)
 
             return chatMessaging.sendMessage(turnOffVideoData, {
                 onResult: function (result) {
