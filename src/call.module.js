@@ -913,7 +913,7 @@
                     return new Promise(function (resolve, reject) {
                         var mediaConstraints = {audio: (mediaType === 'audio'), video: (mediaType === 'video')};
 
-                        if(direction === 'send') {
+                        if(direction === 'send' && mediaType === 'video') {
                             mediaConstraints.video = {
                                 width: callVideoMinWidth,
                                 height: callVideoMinHeight,
