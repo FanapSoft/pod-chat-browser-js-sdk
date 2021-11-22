@@ -739,12 +739,18 @@
                         if(i === 'screenShare')
                             continue;
 
-                        if (params.callVideo) {
+                        if(callUsers[i].video) {
                             callController.startParticipantVideo(i);
                         }
-                        if(params.callAudio) {
+                        if(!callUsers[i].mute) {
                             callController.startParticipantAudio(i);
                         }
+                        /*if (params.callVideo) {
+                            callController.startParticipantVideo(i);
+                        }*/
+                        /*if(params.callAudio) {
+                            callController.startParticipantAudio(i);
+                        }*/
                     }
                 },
                 setupCallParticipant: function (participant) {
@@ -1246,7 +1252,7 @@
                         if(callUsers[i] && callUsers[i].peers[videoTopic] && callUsers[i].peers[videoTopic].peerConnection.connectionState === 'failed'){
                             this.shouldReconnectTopic(i, videoTopic, 'video', callUsers[i].direction)
                         }
-                        if(callUsers[i] && callUsers[i].peers[audioTopic] && callUsers[i].peers[videoTopic].peerConnection.connectionState === 'failed'){
+                        if(callUsers[i] && callUsers[i].peers[audioTopic] && callUsers[i].peers[audioTopic].peerConnection.connectionState === 'failed'){
                             this.shouldReconnectTopic(i, audioTopic, 'audio', callUsers[i].direction)
                         }
                     }
