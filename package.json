@@ -9,7 +9,7 @@
     "publish:snapshot": "npm run version:snapshot && npm publish --tag snapshot",
     "version:snapshot": "npm version prerelease --preid snapshot",
     "publish:release": "npm run version:release && npm publish",
-    "version:release": "npm version 11.2.2"
+    "version:release": "npm version 11.3.1"
   },
   "repository": {
     "type": "git",
