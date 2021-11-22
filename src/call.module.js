@@ -661,9 +661,20 @@
             },
 
             generateCallUIList = function () {
+                var me = chatMessaging.userInfo.Id;
                 var callUIElements = {};
                 for(var i in callUsers) {
-                    callUIElements[i] = callUsers[i].htmlElements;
+                    callUIElements[i] = {
+                        container: callUsers[i].htmlElements.container,
+                        video: callUsers[i].htmlElements[callUsers[i].videoTopicName],
+                        audio: callUsers[i].htmlElements[callUsers[i].audioTopicName]
+                    }
+
+/*                    callUIElements[i].container = callUsers[i].htmlElements.container;
+                    callUIElements[i].video = callUsers[i].htmlElements[callUsers[i].videoTopicName];
+                    callUIElements[i].audio = callUsers[i].htmlElements[callUsers[i].audioTopicName];
+                    */
+                    //callUIElements[i] = callUsers[i].htmlElements;
                 }
                 return {
                     uiElements: callUIElements,
@@ -2203,12 +2214,18 @@
                                     callStateController.appendUserToCallDiv(messageContent[i].userId, callStateController.generateHTMLElements(messageContent[i].userId));
                                     setTimeout(function () {
                                         callStateController.createTopic(messageContent[i].userId, user.videoTopicName, 'video', 'receive');
-
                                     })
                                 }
                             }
                         }
                     }
+
+                    setTimeout(function () {
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_DIVS',
+                            result: generateCallUIList()
+                        });
+                    })
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'TURN_ON_VIDEO_CALL',
@@ -2236,6 +2253,13 @@
                             }
                         }
                     }
+
+                    setTimeout(function () {
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CALL_DIVS',
+                            result: generateCallUIList()
+                        });
+                    })
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'TURN_OFF_VIDEO_CALL',
