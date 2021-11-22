@@ -1378,31 +1378,32 @@
                         }
                     }
                     if (line === -1) {
-                        console.debug("Could not find the m line for", media);
+                        consoleLogging && console.debug("[SDK][setMediaBitrate] Could not find the m line for", media);
                         return sdp;
                     }
-                    console.debug("Found the m line for", media, "at line", line);
+                    consoleLogging && console.debug("[SDK][setMediaBitrate] Found the m line for", media, "at line", line);
 
                     // Pass the m line
                     line++;
 
                     // Skip i and c lines
-                    while (lines[line].indexOf("i=") === 0 || lines[line].indexOf("c=") === 0) {
+                    /* while (lines[line].indexOf("i=") === 0 || lines[line].indexOf("c=") === 0) {
                         line++;
-                    }
+                    }*/
 
                     // If we're on a b line, replace it
                     if (lines[line].indexOf("b") === 0) {
-                        console.debug("Replaced b line at line", line);
+                        consoleLogging && console.debug("[SDK][setMediaBitrate] Replaced b line at line", line);
                         lines[line] = "b=AS:" + bitrate;
                         return lines.join("\n");
                     }
 
                     // Add a new b line
-                    console.debug("Adding new b line before line", line);
-                    var newLines = lines.slice(0, line)
-                    newLines.push("b=AS:" + bitrate)
-                    newLines = newLines.concat(lines.slice(line, lines.length))
+                    consoleLogging && console.debug("[SDK][setMediaBitrate] Adding new b line before line", line);
+                    var newLines = lines.slice(0, line);
+                    newLines.push("b=AS:" + bitrate + "\r");
+                    newLines = newLines.concat(lines.slice(line, lines.length));
+                    consoleLogging && console.debug("[SDK][setMediaBitrate] output: ", newLines.join("\n"));
                     return newLines.join("\n")
                 }
             },
