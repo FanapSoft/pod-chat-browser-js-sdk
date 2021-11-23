@@ -3170,6 +3170,18 @@
                     sendMessageParams.content = params.userIds;
                 }
             }
+            var myId = chatMessaging.userInfo.id;
+
+            if(callUsers[myId]) {
+                callUsers[myId].mute = false;
+                callUsers[myId].audioTopicName = 'Vo-' + callUsers[myId].topicSend;
+
+                var user = callUsers[myId];
+                callStateController.appendUserToCallDiv(myId, callStateController.generateHTMLElements(myId));
+                setTimeout(function () {
+                    callStateController.createTopic(myId, user.audioTopicName, 'audio', 'send');
+                })
+            }
 
             return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
@@ -3183,6 +3195,19 @@
                         // TODO : What is the result?!
                         var messageContent = result.result;
                         returnData.result = messageContent;
+
+                        /*for(var i in result.result) {
+                            if(callUsers[result.result[i].userId]) {
+                                callUsers[result.result[i].userId].mute = false;
+                                callUsers[result.result[i].userId].audioTopicName = 'Vo-' + result.result[i].sendTopic;
+
+                                var user = callUsers[result.result[i].userId];
+                                callStateController.appendUserToCallDiv(result.result[i].userId, callStateController.generateHTMLElements(result.result[i].userId));
+                                setTimeout(function () {
+                                    callStateController.createTopic(result.result[i].userId, user.audioTopicName, 'audio', 'send');
+                                })
+                            }
+                        }*/
                     }
                     callback && callback(returnData);
                 }
