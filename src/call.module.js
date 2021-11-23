@@ -1370,7 +1370,25 @@
                         }
                     }
                 },
+                activateParticipantStream: function (userId, mediaType, direction, topicNameKey, sendTopic, mediaKey) {
+                    if(callUsers[userId]) {
+                        callUsers[userId][mediaKey] = (mediaKey !== 'mute');
+                        callUsers[userId][topicNameKey] = (mediaType === 'audio'?  'Vo-':  'Vi-') + sendTopic;
 
+                        var user = callUsers[userId];
+                        callStateController.appendUserToCallDiv(userId, callStateController.generateHTMLElements(userId));
+                        setTimeout(function () {
+                            callStateController.createTopic(userId, user[topicNameKey], mediaType, direction);
+                        })
+                    }
+                },
+                deactivateParticipantStream: function (userId, topicNameKey, mediaKey) {
+                    callUsers[userId][mediaKey] = false;
+                    var user = callUsers[userId];
+                    clearInterval(callUsers[userId].topicMetaData[user[topicNameKey]].interval)
+                    callStateController.removeTopic(userId, user[topicNameKey]);
+                    callStateController.removeStreamFromWebRTC(userId, user[topicNameKey]);
+                },
                 setMediaBitrates: function (sdp) {
                     return this.setMediaBitrate(this.setMediaBitrate(sdp, "video", 400), "audio", 50);
                 },
@@ -1411,7 +1429,7 @@
                     newLines = newLines.concat(lines.slice(line, lines.length));
                     consoleLogging && console.debug("[SDK][setMediaBitrate] output: ", newLines.join("\n"));
                     return newLines.join("\n")
-                }
+                },
             },
 
             sendCallSocketError = function (message) {
@@ -2129,14 +2147,19 @@
                     } else {
                         if(Array.isArray(messageContent)){
                             for(var i in messageContent) {
-                                if(callUsers[messageContent[i].userId]) {
+                                callStateController.deactivateParticipantStream(
+                                    messageContent[i].userId,
+                                    'audioTopicName',
+                                    'mute'
+                                )
+                                /*if(callUsers[messageContent[i].userId]) {
                                     callUsers[messageContent[i].userId].mute = true;
 
                                     var user = callUsers[messageContent[i].userId];
                                     clearInterval(callUsers[messageContent[i].userId].topicMetaData[user.audioTopicName].interval)
                                     callStateController.removeTopic(messageContent[i].userId, user.audioTopicName);
                                     callStateController.removeStreamFromWebRTC(messageContent[i].userId, user.audioTopicName);
-                                }
+                                }*/
                             }
                         }
                     }
@@ -2157,7 +2180,15 @@
                     } else {
                         if(Array.isArray(messageContent)) {
                             for(var i in messageContent) {
-                                if(callUsers[messageContent[i].userId]) {
+                                callStateController.activateParticipantStream(
+                                    messageContent[i].userId,
+                                    'audio',
+                                    'receive',
+                                    'audioTopicName',
+                                    messageContent[i].sendTopic,
+                                    'mute'
+                                );
+                                /*if(callUsers[messageContent[i].userId]) {
                                     callUsers[messageContent[i].userId].mute = false;
                                     callUsers[messageContent[i].userId].audioTopicName = 'Vo-' + messageContent[i].sendTopic;
 
@@ -2167,7 +2198,7 @@
                                         callStateController.createTopic(messageContent[i].userId, user.audioTopicName, 'audio', 'receive');
 
                                     })
-                                }
+                                }*/
                             }
                         }
                     }
@@ -2213,7 +2244,15 @@
                     } else {
                         if(Array.isArray(messageContent)) {
                             for(var i in messageContent) {
-                                if(callUsers[messageContent[i].userId]) {
+                                callStateController.activateParticipantStream(
+                                    messageContent[i].userId,
+                                    'video',
+                                    'receive',
+                                    'videoTopicName',
+                                    messageContent[i].sendTopic,
+                                    'video'
+                                );
+                                /*if(callUsers[messageContent[i].userId]) {
                                     callUsers[messageContent[i].userId].video = true;
                                     callUsers[messageContent[i].userId].videoTopicName = 'Vi-' + messageContent[i].sendTopic;
 
@@ -2222,7 +2261,7 @@
                                     setTimeout(function () {
                                         callStateController.createTopic(messageContent[i].userId, user.videoTopicName, 'video', 'receive');
                                     })
-                                }
+                                }*/
                             }
                         }
                     }
@@ -2250,13 +2289,18 @@
                     } else {
                         if(Array.isArray(messageContent)){
                             for(var i in messageContent) {
-                                if(callUsers[messageContent[i].userId]) {
+                                callStateController.deactivateParticipantStream(
+                                    messageContent[i].userId,
+                                    'videoTopicName',
+                                    'video'
+                                )
+                               /* if(callUsers[messageContent[i].userId]) {
                                     callUsers[messageContent[i].userId].video = false;
                                     var user = callUsers[messageContent[i].userId];
                                     clearInterval(callUsers[messageContent[i].userId].topicMetaData[user.videoTopicName].interval)
                                     callStateController.removeTopic(messageContent[i].userId, user.videoTopicName);
                                     callStateController.removeStreamFromWebRTC(messageContent[i].userId, user.videoTopicName);
-                                }
+                                }*/
                             }
                         }
                     }
@@ -3127,8 +3171,15 @@
                     sendMessageParams.content = params.userIds;
                 }
             }
+            callStateController.deactivateParticipantStream(
+                chatMessaging.userInfo.id,
+                'audioTopicName',
+                'mute'
+            )
+/*
             callStateController.removeTopic(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].audioTopicName)
             callStateController.removeStreamFromWebRTC(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].audioTopicName)
+*/
 
             return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
@@ -3172,7 +3223,15 @@
             }
             var myId = chatMessaging.userInfo.id;
 
-            if(callUsers[myId]) {
+            callStateController.activateParticipantStream(
+                myId,
+                'audio',
+                'send',
+                'audioTopicName',
+                callUsers[myId].topicSend,
+                'mute'
+            );
+            /*if(callUsers[myId]) {
                 callUsers[myId].mute = false;
                 callUsers[myId].audioTopicName = 'Vo-' + callUsers[myId].topicSend;
 
@@ -3181,7 +3240,7 @@
                 setTimeout(function () {
                     callStateController.createTopic(myId, user.audioTopicName, 'audio', 'send');
                 })
-            }
+            }*/
 
             return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
@@ -3244,7 +3303,15 @@
                 onResult: function (result) {
                     if(!result.hasError && Array.isArray(result.result)) {
                         for(var i in result.result) {
-                            if(callUsers[result.result[i].userId]) {
+                            callStateController.activateParticipantStream(
+                                result.result[i].userId,
+                                'video',
+                                'send',
+                                'videoTopicName',
+                                result.result[i].sendTopic,
+                                'video'
+                            );
+                            /*if(callUsers[result.result[i].userId]) {
                                 callUsers[result.result[i].userId].video = true;
                                 callUsers[result.result[i].userId].mute = result.result[i].mute;
                                 callUsers[result.result[i].userId].videoTopicName = 'Vi-' + result.result[i].sendTopic;
@@ -3254,7 +3321,7 @@
                                 setTimeout(function () {
                                     callStateController.createTopic(result.result[i].userId, user.videoTopicName, 'video', 'send');
                                 })
-                            }
+                            }*/
                         }
                     }
                     callback && callback(result);
@@ -3287,8 +3354,16 @@
                 });
                 return;
             }
+
+            callStateController.deactivateParticipantStream(
+                chatMessaging.userInfo.id,
+                'videoTopicName',
+                'video'
+            )
+/*
             callStateController.removeTopic(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].videoTopicName)
             callStateController.removeStreamFromWebRTC(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].videoTopicName)
+*/
 
             return chatMessaging.sendMessage(turnOffVideoData, {
                 onResult: function (result) {
