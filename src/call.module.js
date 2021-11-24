@@ -1356,9 +1356,7 @@
                     });
 
                     removeAllUsersPromise.then(function (){
-                        console.log({callUsers})
                         callUsers = {};
-                        console.log({callUsers})
                     });
                 },
                 removeFromCallUI: function (topic) {
