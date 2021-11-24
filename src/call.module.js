@@ -1321,33 +1321,45 @@
                     }
                 },
                 removeAllCallParticipants: function () {
-                    for (var i in callUsers) {
-                        var user = callUsers[i];
-                        if (user) {
-                            if(user.videoTopicName && user.peers[user.videoTopicName]) {
-                                callStateController.removeConnectionQualityInterval(i, user.videoTopicName);
-                                callStateController.removeStreamFromWebRTC(i, user.videoTopicName);
-                                callUsers[i].peers[user.videoTopicName].dispose();
-                                delete callUsers[i].peers[user.videoTopicName];
+                    var removeAllUsersPromise = new Promise(function (resolve, reject) {
+                        for (var i in callUsers) {
+                            var user = callUsers[i];
+                            if (user) {
+                                if(user.videoTopicName && user.peers[user.videoTopicName]) {
+                                    clearInterval(callUsers[i].topicMetaData[user.videoTopicName].interval);
+                                    callStateController.removeConnectionQualityInterval(i, user.videoTopicName);
+                                    callStateController.removeStreamFromWebRTC(i, user.videoTopicName);
+                                    callUsers[i].peers[user.videoTopicName].dispose();
+                                    delete callUsers[i].peers[user.videoTopicName];
 
-                            }
-                            if(user.audioTopicName && user.peers[user.audioTopicName]) {
-                                callStateController.removeConnectionQualityInterval(i, user.audioTopicName);
-                                callStateController.removeStreamFromWebRTC(i, user.audioTopicName);
-
-                                callUsers[i].peers[user.audioTopicName].dispose();
-                                delete callUsers[i].peers[user.audioTopicName];
-                            }
-                            setTimeout(function (){
-                                if(callUsers[i]){
-                                    callUsers[i].peers = {};
-                                    callUsers[i].topicMetaData = {};
-                                    callUsers[i].htmlElements = {};
-                                    callUsers[i] = null;
                                 }
-                            }, 200);
+                                if(user.audioTopicName && user.peers[user.audioTopicName]) {
+                                    clearInterval(callUsers[i].topicMetaData[user.audioTopicName].interval);
+                                    callStateController.removeConnectionQualityInterval(i, user.audioTopicName);
+                                    callStateController.removeStreamFromWebRTC(i, user.audioTopicName);
+
+                                    callUsers[i].peers[user.audioTopicName].dispose();
+                                    delete callUsers[i].peers[user.audioTopicName];
+                                }
+                                setTimeout(function (){
+                                    if(callUsers[i]){
+                                        callUsers[i].peers = {};
+                                        callUsers[i].topicMetaData = {};
+                                        callUsers[i].htmlElements = {};
+                                        callUsers[i] = null;
+                                    }
+
+                                    resolve()
+                                }, 200);
+                            }
                         }
-                    }
+                    });
+
+                    removeAllUsersPromise.then(function (){
+                        console.log({callUsers})
+                        callUsers = {};
+                        console.log({callUsers})
+                    });
                 },
                 removeFromCallUI: function (topic) {
                     var videoElement = 'Vi-' + topic,
