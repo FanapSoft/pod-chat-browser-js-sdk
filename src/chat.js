@@ -11389,7 +11389,7 @@
                 callbacks: callbacks
             }, function () {
                 chatSendQueueHandler();
-            });
+            }, true);
         };
 
         this.deliver = function (params) {

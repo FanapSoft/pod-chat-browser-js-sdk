@@ -30,7 +30,7 @@
     <script type="text/javascript">
         // Developement
         var PodChat = window.POD.Chat;
-        var env = 'sandbox'; // main | sandbox | integration
+        var env = 'main'; // main | sandbox | integration
 
         var params = {
             appId: new Date().getTime(),
@@ -1924,6 +1924,20 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 
 <form>
     <fieldset>
+        <legend>Forward Message</legend>
+        <label for="sendTextThread">Thread Id</label>
+        <input type="text" name="sendTextThread" id="forwardMessageDestinationThreadId" class="custom-thread-id" value="952801">
+        <input type="text" placeholder="messageId1, messageId2" id="forwardMessageMessageIds" value="2660372, 2660335">
+        <button type="button" name="button" id="forwardMessage">Forward Message(s)</button>
+    </fieldset>
+</form>
+
+<br>
+<hr>
+<br>
+
+<form>
+    <fieldset>
         <legend>Resend Message by UniqueId</legend>
         <label for="resendUid">Unique Id</label>
         <input type="text" name="resendUid" id="resendUid">
@@ -3081,6 +3095,19 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
         });
     });
 
+    document.getElementById("forwardMessage").addEventListener("click", function (event) {
+        event.preventDefault();
+        var threadId = document.getElementById("forwardMessageDestinationThreadId").value;
+        var messageIds = document.getElementById("forwardMessageMessageIds").value;
+        messageIds = messageIds.split(",").map(function(item) {
+            return Number(item);
+        });
+
+        chatAgent.forwardMessage({
+            threadId: Number(threadId),
+            messageIds: messageIds instanceof Array ? messageIds : [ messageIds ],
+        }, {})
+    })
 </script>
 
 </html>
