@@ -1732,6 +1732,13 @@
                 if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(audioElement)) {
                     removeStreamFromWebRTC(audioElement);
                 }
+            },
+
+            restartMediaOnKeyFrame = function (userId, timeout) {
+                setTimeout(function () {
+                    if(typeof callUsers[chatMessaging.userInfo.id] !== "undefined" && callUsers[chatMessaging.userInfo.id])
+                        restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
+                }, timeout);
             };
 
         this.updateToken = function (newToken) {
@@ -1757,18 +1764,26 @@
                     break;
 
                 case 'GET_KEY_FRAME':
-                    setTimeout(function () {
-                        restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 2000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
+/*                    setTimeout(function () {
+                        if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
+                            restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
                     }, 2000);
                     setTimeout(function () {
-                        restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
+                        if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
+                            restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
                     }, 4000);
                     setTimeout(function () {
-                        restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
+                        if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
+                            restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
                     }, 8000);
                     setTimeout(function () {
-                        restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
-                    }, 12000);
+                        if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
+                            restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
+                    }, 12000);*/
                     break;
 
                 case 'FREEZED':
