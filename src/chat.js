@@ -2955,6 +2955,7 @@
                     case chatMessageVOTypes.TURN_OFF_VIDEO_CALL:
                     case chatMessageVOTypes.ACTIVE_CALL_PARTICIPANTS:
                     case chatMessageVOTypes.CALL_SESSION_CREATED:
+                    case chatMessageVOTypes.DESTINATED_RECORD_CALL:
                         callModule.handleChatMessages(type, chatMessageVOTypes, messageContent, contentCount, threadId, uniqueId);
                         break;
 
