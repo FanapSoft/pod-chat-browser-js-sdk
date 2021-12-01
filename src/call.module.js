@@ -1226,9 +1226,11 @@
                                 topic: topic
                             }, function (result) {
                                 if (result.done === 'TRUE') {
+                                    clearInterval(callUsers[userId].topicMetaData[topic].interval)
                                     callController.removeTopic(userId, topic);
                                     callController.createTopic(userId, topic, mediaType, direction, userId === 'screenShare');
                                 } else if (result.done === 'SKIP') {
+                                    clearInterval(callUsers[userId].topicMetaData[topic].interval)
                                     callController.removeTopic(userId, topic);
                                     callController.createTopic(userId, topic, mediaType, direction, userId === 'screenShare');
                                     //generateAndSendSdpOffers(currentCallParams, [topicName]);
