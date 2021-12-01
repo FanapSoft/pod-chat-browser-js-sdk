@@ -30,7 +30,7 @@
     <script type="text/javascript">
         // Developement
         var PodChat = window.POD.Chat;
-        var env = 'sandbox'; // main | sandbox | integration
+        var env = 'main'; // main | sandbox | integration
 
         var params = {
             appId: new Date().getTime(),
@@ -1955,10 +1955,10 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
     <fieldset>
         <legend>Send File Message</legend>
         <label for="sendFileThread">Thread Id</label>
-        <input type="text" name="sendFileThread" id="sendFileThread" value="54436" class="custom-thread-id">
+        <input type="text" name="sendFileThread" id="sendFileThread" value="972967" class="custom-thread-id">
         <br>
         <label for="sendFileUserGroupHash">Thread userGroupHash</label>
-        <input type="text" name="sendFileUserGroupHash" id="sendFileUserGroupHash" value="5GW93QH695O7HC">
+        <input type="text" name="sendFileUserGroupHash" id="sendFileUserGroupHash" value="EY8X3CYDZQ9QBQ">
         <br>
 
         <label for="sendFileMessageType">Message Type</label>
@@ -1979,6 +1979,7 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
         <label for="sendFileDescription">Description: </label>
         <textarea type="text" name="sendFileDescription" id="sendFileDescription"></textarea>
         <button type="button" name="button" id="sendFileMessage">Send File Message</button>
+        <button type="button" name="button" id="sendMultipleFileMessage">Send Multiple File Message</button>
     </fieldset>
 </form>
 
@@ -2614,6 +2615,63 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
             // }, 100);
         });
 
+    /**
+     * SEND MULTIPLE FILES
+     */
+    document.getElementById("sendMultipleFileMessage")
+        .addEventListener("click", function (e) {
+            e.preventDefault();
+            var fileInput = document.getElementById("sendFileInput"),
+                image = fileInput.files[0],
+                content = document.getElementById("sendFileDescription").value,
+                thread = document.getElementById("sendFileThread").value,
+                messageType = document.getElementById("sendFileMessageType").value,
+                userGroupHash = document.getElementById("sendFileUserGroupHash").value;
+
+            for(var i =1; i<= 5; i++) {
+                setTimeout(function () {
+                    var instantResult = chatAgent.sendFileMessage({
+                        threadId: thread,
+                        file: image,
+                        content: content,
+                        userGroupHash: userGroupHash,
+                        messageType: messageType,
+                        metadata: {
+                            custom_name: "John Doe"
+                        }
+                    }, {
+                        onResult: function (result) {
+                            if (result.hasError) {
+                                console.log('[examples/html] upload of an item failed', result)
+                            }
+                        },
+                        onSent: function (result) {
+                            console.log(result);
+                            console.log(result.uniqueId + " \t has been Sent!");
+                        },
+                        onDeliver: function (result) {
+                            console.log(result.uniqueId + " \t has been Delivered!");
+                        },
+                        onSeen: function (result) {
+                            console.log(result.uniqueId + " \t has been Seen!");
+                        },
+                        onFileUpload: function (result) {
+                            console.log('File Upload is done', result);
+                        }
+                    });
+                    console.log("Instant sendFile Results", instantResult)
+                }, i * 5000);
+            }
+
+            // console.log("Should cancel file upload after 100ms. (uid = " + instantResult.content.file.uniqueId + ")")
+            // setTimeout(() => {
+            //   chatAgent.cancelFileUpload({
+            //     uniqueId: instantResult.content.file.uniqueId
+            //   }, function() {
+            //     console.log("Upload has been Canceled!");
+            //   });
+            // }, 100);
+        })
 
     /**
      * REPLY FILE MESSAGE
