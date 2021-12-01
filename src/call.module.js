@@ -1121,12 +1121,12 @@
                                 errorInfo: user.peers[topic]
                             });
                             // setTimeout(function () {
-                                if(chatMessaging.chatState) {
-                                    callController.shouldReconnectTopic(userId, topic, mediaType, direction);
-                                }
-                            // }, 7000);
 
-                            callController.removeConnectionQualityInterval(userId, topic);
+                            if(chatMessaging.chatState) {
+                                callController.shouldReconnectTopic(userId, topic, mediaType, direction);
+                            }
+                            // }, 7000);
+                            //callController.removeConnectionQualityInterval(userId, topic);
                         }
 
                         if(user.peers[topic].peerConnection.connectionState === 'connected') {
@@ -1164,6 +1164,7 @@
                             });
                             if(chatMessaging.chatState) {
                                 callController.shouldReconnectTopic(userId, topic, mediaType, direction);
+                                //callController.removeConnectionQualityInterval(userId, topic);
                             }
                             // } else {
                             //     setTimeout(function () {
@@ -1606,6 +1607,12 @@
                     }
                     consoleLogging && console.log("[SDK][handleProcessSdpAnswer]", jsonMessage, jsonMessage.topic)
                     startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
+                    if(userId === 'screenShare') {
+                        restartMediaOnKeyFrame("screenShare", 2000);
+                        restartMediaOnKeyFrame("screenShare", 4000);
+                        restartMediaOnKeyFrame("screenShare", 8000);
+                        restartMediaOnKeyFrame("screenShare", 12000);
+                    }
                 });
             },
 
@@ -1718,8 +1725,8 @@
 
             restartMediaOnKeyFrame = function (userId, timeout) {
                 setTimeout(function () {
-                    if(typeof callUsers[chatMessaging.userInfo.id] !== "undefined" && callUsers[chatMessaging.userInfo.id])
-                        restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
+                    if(typeof callUsers[userId] !== "undefined" && callUsers[userId])
+                        restartMedia(callUsers[userId].videoTopicName);
                 }, timeout);
             };
 
@@ -1746,10 +1753,22 @@
                     break;
 
                 case 'GET_KEY_FRAME':
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 2000);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
+                    if(callUsers && callUsers[chatMessaging.userInfo.id] && callUsers[chatMessaging.userInfo.id].video) {
+                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, 2000);
+                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
+                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
+                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
+                    }
+                    if(callUsers && callUsers['screenShare']
+                        && callUsers['screenShare'].video
+                        && screenShareState.started
+                        && screenShareState.imOwner) {
+                        restartMediaOnKeyFrame('screenShare', 2000);
+                        restartMediaOnKeyFrame('screenShare', 4000);
+                        restartMediaOnKeyFrame('screenShare', 8000);
+                        restartMediaOnKeyFrame('screenShare', 12000);
+                    }
+
 /*                    setTimeout(function () {
                         if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
                             restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
@@ -2028,8 +2047,9 @@
                         type: 'CALL_PARTICIPANT_CONNECTED',
                         result: messageContent
                     });
-
-                    restartMedia(callTopics['sendVideoTopic']);
+//callTopics['sendVideoTopic']
+                    //restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
 
                     break;
 
@@ -2108,8 +2128,8 @@
                         result: messageContent
                     });
 
-                    restartMedia(callTopics['sendVideoTopic']);
-
+                    //restartMedia(callTopics['sendVideoTopic']);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
                     break;
 
                 /**
@@ -2339,8 +2359,8 @@
                         result: messageContent
                     });
 
-                    restartMedia(callTopics['sendVideoTopic']);
-
+                    //restartMedia(callTopics['sendVideoTopic']);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
                     break;
 
                 /**
@@ -2436,8 +2456,8 @@
                         result: messageContent
                     });
 
-                    restartMedia(callTopics['sendVideoTopic']);
-
+                    //restartMedia(callTopics['sendVideoTopic']);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
                     break;
             }
         }
@@ -2729,7 +2749,8 @@
 
             return chatMessaging.sendMessage(recordCallData, {
                 onResult: function (result) {
-                    restartMedia(callTopics['sendVideoTopic']);
+                    //restartMedia(callTopics['sendVideoTopic']);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
                     callback && callback(result);
                 }
             });
