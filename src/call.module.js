@@ -898,8 +898,8 @@
                 },
                 removeTopic: function (userId, topic) {
                     if(callUsers[userId].peers[topic]) {
-                        callUsers[userId].peers[topic].dispose();
                         this.removeConnectionQualityInterval(userId, topic);
+                        callUsers[userId].peers[topic].dispose();
                         callUsers[userId].peers[topic] = null;
                     }
                 },
