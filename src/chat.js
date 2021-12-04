@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 (function () {
     /*
@@ -13540,20 +13540,13 @@
                                     resolve(stackArr);
                                 }
                             });
-                            /*returnData.result = result;*/
-                            /*var messageContent = result.result,
-                                messageLength = messageContent.length,
-                                resultData = {
-                                    participants: formatDataToMakeAssistantHistoryList(messageContent),
-                                    contentCount: result.contentCount,
-                                    hasNext: (sendData.content.offset + sendData.content.count < result.contentCount && messageLength > 0),
-                                    nextOffset: sendData.content.offset * 1 + messageLength * 1
-                                };
-
-                            returnData.result = resultData;*/
                         } else {
-                            consoleLogging && console.log("[SDK][exportChat] Problem in one step... . Rerunning the request.", wantedCount, stepCount, stackArr.length, sendData, result);
-                            resolve(requestExportChat(stackArr, wantedCount, stepCount, stackArr.length, sendData))
+                            if(result.errorCode !== 21) {
+                                consoleLogging && console.log("[SDK][exportChat] Problem in one step... . Rerunning the request.", wantedCount, stepCount, stackArr.length, sendData, result);
+                                resolve(requestExportChat(stackArr, wantedCount, stepCount, stackArr.length, sendData))
+                            } else {
+                                reject(result)
+                            }
                         }
                     }
                 });
@@ -13607,7 +13600,47 @@
                     responseType = params.responseType !== null ? params.responseType : "blob",
                     autoStartDownload = params.autoStartDownload !== null ? params.autoStartDownload : true
 
-                var blob = new Blob([Utility.convertToCSV(result)], { type: 'text/csv;charset=utf-8;' });
+                var str = ''
+                    , universalBOM = "\uFEFF";
+
+                console.log(result);
+                str += "تاریخ " + ',';
+                str += " ساعت " + ',';
+                str += "نام فرستنده" + ',';
+                str += "نام کاربری فرستنده" + ',';
+                str += "متن پیام" + ',';
+                str += '\r\n';
+                var line = '', radif = 1;
+                for (var i = 0; i < result.length; i++) {
+                    line = '';
+
+                    if(result[i].messageType !== 1) {
+                        continue;
+                    }
+
+                    var sender = '';
+                    if(result[i].participant.contactName) {
+                        sender = result[i].participant.contactName + ',';
+                    } else {
+                        if(result[i].participant.firstName) {
+                            sender = result[i].participant.firstName + ' ';
+                        }
+                        if(result[i].participant.lastName) {
+                            sender += result[i].participant.lastName;
+                        }
+                        sender += ','
+                    }
+
+                    line += new Date(result[i].time).toLocaleDateString('fa-IR') + ',';
+                    line += new Date(result[i].time).toLocaleTimeString('fa-IR') + ',';
+                    line += sender;
+                    line += result[i].participant.username + ',';
+                    line += result[i].message.replaceAll(",", ".").replace(/(\r\n|\n|\r)/gm, " ") + ',';
+
+                    str += line + '\r\n';
+                    radif++;
+                }
+                var blob = new Blob([str], { type: 'text/csv;charset=utf-8;' });
                 chatEvents.fireEvent('threadEvents', {
                     type: 'EXPORT_CHAT',
                     subType: 'DONE',
@@ -13630,7 +13663,7 @@
                         url = URL.createObjectURL(blob);
                     //if (link.download !== undefined) { // feature detection
                         // Browsers that support HTML5 download attribute
-                    link.setAttribute("href", url);
+                    link.setAttribute("href", 'data:text/csv; charset=utf-8,' + encodeURIComponent(universalBOM + str));
                     link.setAttribute("download", exportedFilename);
                     if(autoStartDownload) {
                         link.style.visibility = 'hidden';
@@ -13653,7 +13686,9 @@
                 }
                 //}
                 callback = undefined;
-            });
+            })/*.catch(function (result) {
+                consoleLogging && console.log(result);
+            });*/
         }
 
         this.startCall = callModule.startCall;
