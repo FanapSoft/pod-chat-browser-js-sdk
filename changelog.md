@@ -4,9 +4,14 @@ All notable changes to this project will be documented here.
 to see complete list of changelog please visit [ChangeLog](https://github.com/masoudmanson/pod-chat/blob/master/changelog.md)
 
 
-## [Unreleased]
+## [11.3.4] - 2021-12-04
 
--   Search in threads metadata
+### Fixed
+- Screenshare reconnect in current call
+- Interval error when peer not fully connected
+
+### Added
+- Sample code of preventing async error when sending multiple file messages
 
 
 ## [4.10.0] - 2019-06-24
