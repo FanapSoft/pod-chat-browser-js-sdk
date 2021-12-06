@@ -488,172 +488,29 @@
              */
             startCallWebRTCFunctions = function (params, callback) {
                 if (callDivId) {
-                    var callParentDiv,
-                        callVideo = (typeof params.video === 'boolean') ? params.video : true,
+                    var callVideo = (typeof params.video === 'boolean') ? params.video : true,
                         callMute = (typeof params.mute === 'boolean') ? params.mute : false;
-                        //sendingTopic = params.sendingTopic,
-                        //receiveTopic = params.receiveTopic;
+
+                    if(params.selfData) {
+                        callStateController.setupCallParticipant(params.selfData);
+                    }
 
                     if(params.clientsList && params.clientsList.length) {
                         for(var i in params.clientsList) {
-                            callStateController.setupCallParticipant(params.clientsList[i]);
-                            //callStateController.callUsers.push(params.clientsList[i]);
+                            if(params.clientsList[i].userId !== chatMessaging.userInfo.id)
+                                callStateController.setupCallParticipant(params.clientsList[i]);
                         }
                     }
 
                     callStateController.setupScreenSharingObject(params.screenShare);
 
-                    /*callTopics['sendVideoTopic'] = 'Vi-' + sendingTopic;
-                    callTopics['sendAudioTopic'] = 'Vo-' + sendingTopic;
-                    callTopics['screenShare'] = params.screenShare;
-                    //callTopics['receiveVideoTopic'] = 'Vi-' + receiveTopic;
-                    //callTopics['receiveAudioTopic'] = 'Vo-' + receiveTopic;
-                    callTopics['receive'] = [];
-                    callTopics['receive'].push({
-                        "VideoTopic": 'Vi-' + receiveTopic,
-                        "AudioTopic": 'Vo-' + receiveTopic
-                    });*/
-
-                    /*webpeersMetadata[callTopics['sendVideoTopic']] = {
-                        interval: null,
-                        receivedSdpAnswer: false,
-                        connectionQualityInterval: null,
-                        poorConnectionCount: 0,
-                        poorConnectionResolvedCount: 0,
-                        isConnectionPoor: false
-                    };
-                    webpeersMetadata[callTopics['sendAudioTopic']] = {
-                        interval: null,
-                        receivedSdpAnswer: false,
-                        connectionQualityInterval: null,
-                        poorConnectionCount: 0,
-                        poorConnectionResolvedCount: 0,
-                        isConnectionPoor: false
-                    };
-                    webpeersMetadata[callTopics['screenShare']] = {
-                        interval: null,
-                        receivedSdpAnswer: false,
-                        connectionQualityInterval: null,
-                        poorConnectionCount: 0,
-                        poorConnectionResolvedCount: 0,
-                        isConnectionPoor: false
-                    };
-
-                    for(var i in callTopics['receive']) {
-                        webpeersMetadata[callTopics['receive'][i]['VideoTopic']] = {
-                            interval: null,
-                            receivedSdpAnswer: false
-                        };
-                        webpeersMetadata[callTopics['receive'][i]['AudioTopic']] = {
-                            interval: null,
-                            receivedSdpAnswer: false
-                        };
-                    }*/
-
-                    //callParentDiv = document.getElementById(callDivId);
-
-                    /*// Local Video Tag
-                    if (callVideo && !uiRemoteMedias[callTopics['sendVideoTopic']]) {
-                        uiRemoteMedias[callTopics['sendVideoTopic']] = document.createElement('video');
-                        var el = uiRemoteMedias[callTopics['sendVideoTopic']];
-                        el.setAttribute('id', 'uiRemoteVideo-' + callTopics['sendVideoTopic']);
-                        el.setAttribute('class', callVideoTagClassName);
-                        el.setAttribute('playsinline', '');
-                        el.setAttribute('muted', '');
-                        el.setAttribute('width', callVideoMinWidth + 'px');
-                        el.setAttribute('height', callVideoMinHeight + 'px');
-                    }
-
-                    // Local Audio Tag
-                    if (!uiRemoteMedias[callTopics['sendAudioTopic']]) {
-                        uiRemoteMedias[callTopics['sendAudioTopic']] = document.createElement('audio');
-                        var el = uiRemoteMedias[callTopics['sendAudioTopic']];
-                        el.setAttribute('id', 'uiRemoteAudio-' + callTopics['sendAudioTopic']);
-                        el.setAttribute('class', callAudioTagClassName);
-                        el.setAttribute('autoplay', '');
-                        el.setAttribute('muted', '');
-                        el.setAttribute('controls', '');
-                    }
-
-                    for(var i in callTopics['receive']){
-                        // Remote Video Tag
-                        if (callVideo && !uiRemoteMedias[callTopics['receive'][i]['VideoTopic']]) {
-                            uiRemoteMedias[callTopics['receive'][i]['VideoTopic']] = document.createElement('video');
-                            var el = uiRemoteMedias[callTopics['receive'][i]['VideoTopic']];
-                            el.setAttribute('id', 'uiRemoteVideo-' + callTopics['receive'][i]['VideoTopic']);
-                            el.setAttribute('class', callVideoTagClassName);
-                            el.setAttribute('playsinline', '');
-                            el.setAttribute('muted', '');
-                            el.setAttribute('width', callVideoMinWidth + 'px');
-                            el.setAttribute('height', callVideoMinHeight + 'px');
-                        }
-
-                        // Remote Audio Tag
-                        if (!uiRemoteMedias[callTopics['receive'][i]['AudioTopic']]) {
-                            uiRemoteMedias[callTopics['receive'][i]['AudioTopic']] = document.createElement('audio');
-                            var el = uiRemoteMedias[callTopics['receive'][i]['AudioTopic']];
-                            el.setAttribute('id', 'uiRemoteAudio-' + callTopics['receive'][i]['AudioTopic']);
-                            el.setAttribute('class', callAudioTagClassName);
-                            el.setAttribute('autoplay', '');
-                            callMute && el.setAttribute('muted', '');
-                            el.setAttribute('controls', '');
-                        }
-                    }*/
-
                     callback && callback(generateCallUIList());
-
-                    /*for(var i in callTopics['receive']) {
-                        uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']])
-                        callVideo && uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['VideoTopic']])
-                    }
-
-                    if (callParentDiv) {
-                        callVideo && callParentDiv.appendChild(uiRemoteMedias[callTopics['sendVideoTopic']]);
-                        callParentDiv.appendChild(uiRemoteMedias[callTopics['sendAudioTopic']]);
-                        if(callVideo) {
-                            for(var i in callTopics['receive']) {
-                                callParentDiv.appendChild(uiRemoteMedias[callTopics['receive'][i]['VideoTopic']])
-                            }
-                        }
-                        for(var i in callTopics['receive']) {
-                            callParentDiv.appendChild(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']]);
-                        }
-
-                        callback && callback({
-                            'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
-                            'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
-                            uiRemoteElements: uiRemoteElements
-                            /!*                            'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                                                        'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*!/
-                        });
-                    } else {
-                        callback && callback({
-                            'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
-                            'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
-                            uiRemoteElements: uiRemoteElements
-                            /!*'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                            'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*!/
-                        });
-                    }*/
-
 
                     callStateController.createSessionInChat(Object.assign(params, {
                         callVideo: callVideo,
                         callAudio: !callMute,
                     }));
 
-                    /*sendCallMessage({
-                        id: 'STOPALL'
-                    }, function (result) {*/
-
-                    /*handleCallSocketOpen({
-                        brokerAddress: params.brokerAddress,
-                        turnAddress: params.turnAddress,
-                        callVideo: callVideo,
-                        callAudio: !callMute,
-                    });*/
-
-                    /* });*/
                 } else {
                     consoleLogging && console.log('No Call DIV has been declared!');
                     return;
@@ -868,12 +725,40 @@
                  * @param params
                  * @param direction
                  */
-                removeParticipant: function (user) {
-                    if(user === chatMessaging.userInfo.id) {
+                removeParticipant: function (userId) {
+                    var user = callUsers[userId];
+                    if(!user)
+                        return;
+
+                    if(user.videoTopicName && user.peers[user.videoTopicName]) {
+                        clearInterval(callUsers[userId].topicMetaData[user.videoTopicName].interval);
+                        callStateController.removeConnectionQualityInterval(userId, user.videoTopicName);
+                        callStateController.removeStreamFromWebRTC(userId, user.videoTopicName);
+                        callUsers[userId].peers[user.videoTopicName].dispose();
+                        delete callUsers[userId].peers[user.videoTopicName];
+
+                    }
+                    if(user.audioTopicName && user.peers[user.audioTopicName]) {
+                        clearInterval(callUsers[userId].topicMetaData[user.audioTopicName].interval);
+                        callStateController.removeConnectionQualityInterval(userId, user.audioTopicName);
+                        callStateController.removeStreamFromWebRTC(userId, user.audioTopicName);
+
+                        callUsers[userId].peers[user.audioTopicName].dispose();
+                        delete callUsers[userId].peers[user.audioTopicName];
+                    }
+
+                    if(callUsers[userId]){
+                        callUsers[userId].peers = {};
+                        callUsers[userId].topicMetaData = {};
+                        callUsers[userId].htmlElements = {};
+                        callUsers[userId] = null;
+                    }
+
+                    /*if(user === chatMessaging.userInfo.id) {
                         //TODO: only remove me
                         callStop();
                         return;
-                    }
+                    }*/
                 },
                 stopParticipantAudio: function (userId) {
                     this.removeTopic(userId, callUsers[userId].peers[userId].audioTopicName);
@@ -1927,13 +1812,14 @@
                  * Type 74    Start Call Request
                  */
                 case chatMessageVOTypes.START_CALL:
-                    if(!callRequestController.iCanAcceptTheCall()) {
+                    //TODO: this is required, but prevents group call
+                    /*if(!callRequestController.iCanAcceptTheCall()) {
                         chatEvents.fireEvent('callEvents', {
                             type: 'CALL_STARTED_ELSEWHERE',
                             message: 'Call already started somewhere else..., aborting...'
                         });
                         return;
-                    }
+                    }*/
 
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
@@ -1960,6 +1846,7 @@
                             screenShare: messageContent.chatDataDto.screenShare,
                             brokerAddress: messageContent.chatDataDto.brokerAddressWeb,
                             turnAddress: messageContent.chatDataDto.turnAddress,
+                            selfData: messageContent.clientDTO,
                             clientsList: messageContent.otherClientDtoList
                         }, function (callDivs) {
                             chatEvents.fireEvent('callEvents', {
@@ -2098,9 +1985,16 @@
                         result: messageContent
                     });
 
-                    if (!!messageContent[0].sendTopic) {
-                        //removeFromCallUI(messageContent[0].sendTopic);
-                        callStateController.removeFromCallUI(messageContent[0].sendTopic)
+                    if (!!messageContent[0].userId) {
+                        //callStateController.removeFromCallUI(messageContent[0].sendTopic)
+                        callStateController.removeParticipant(messageContent[0].userId);
+                    }
+
+                    //If I'm the only call participant, stop the call
+                    if(callUsers) {
+                        if(Object.values(callUsers).length < 2) {
+                            callStop()
+                        }
                     }
 
                     break;
@@ -2122,6 +2016,28 @@
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                     }
+                    if(Array.isArray(messageContent)) {
+                        for (var i in messageContent) {
+                            var correctedData = {
+                                video: messageContent[i].video,
+                                mute: messageContent[i].mute,
+                                userId: messageContent[i].userId,
+                                topicSend: messageContent[i].sendTopic
+                            }
+                            callStateController.setupCallParticipant(correctedData);
+                            if(correctedData.video) {
+                                callStateController.startParticipantVideo(correctedData.userId);
+                            }
+                            if(!correctedData.mute) {
+                                callStateController.startParticipantAudio(correctedData.userId);
+                            }
+                        }
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_DIVS',
+                        result: generateCallUIList()
+                    });
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_PARTICIPANT_JOINED',
@@ -2179,17 +2095,14 @@
                                     'audioTopicName',
                                     'mute'
                                 )
-                                /*if(callUsers[messageContent[i].userId]) {
-                                    callUsers[messageContent[i].userId].mute = true;
-
-                                    var user = callUsers[messageContent[i].userId];
-                                    clearInterval(callUsers[messageContent[i].userId].topicMetaData[user.audioTopicName].interval)
-                                    callStateController.removeTopic(messageContent[i].userId, user.audioTopicName);
-                                    callStateController.removeStreamFromWebRTC(messageContent[i].userId, user.audioTopicName);
-                                }*/
                             }
                         }
                     }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_DIVS',
+                        result: generateCallUIList()
+                    });
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_PARTICIPANT_MUTE',
@@ -2229,6 +2142,11 @@
                             }
                         }
                     }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_DIVS',
+                        result: generateCallUIList()
+                    });
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_PARTICIPANT_UNMUTE',
@@ -2321,13 +2239,6 @@
                                     'videoTopicName',
                                     'video'
                                 )
-                               /* if(callUsers[messageContent[i].userId]) {
-                                    callUsers[messageContent[i].userId].video = false;
-                                    var user = callUsers[messageContent[i].userId];
-                                    clearInterval(callUsers[messageContent[i].userId].topicMetaData[user.videoTopicName].interval)
-                                    callStateController.removeTopic(messageContent[i].userId, user.videoTopicName);
-                                    callStateController.removeStreamFromWebRTC(messageContent[i].userId, user.videoTopicName);
-                                }*/
                             }
                         }
                     }
@@ -2485,8 +2396,8 @@
 
                 if (params.clientType
                     && typeof params.clientType === 'string'
-                    && callClientTypes[params.clientType.toUpperCase()] > 0) {
-                    content.creatorClientDto.clientType = callClientTypes[params.clientType.toUpperCase()];
+                    && callClientType[params.clientType.toUpperCase()] > 0) {
+                    content.creatorClientDto.clientType = callClientType[params.clientType.toUpperCase()];
                 } else {
                     content.creatorClientDto.clientType = callClientType.WEB;
                 }
@@ -2550,8 +2461,8 @@
 
                 content.creatorClientDto.mute = (typeof params.mute === 'boolean') ? params.mute : false;
 
-                if (params.clientType && typeof params.clientType === 'string' && callClientTypes[params.clientType.toUpperCase()] > 0) {
-                    content.creatorClientDto.clientType = callClientTypes[params.clientType.toUpperCase()];
+                if (params.clientType && typeof params.clientType === 'string' && callClientType[params.clientType.toUpperCase()] > 0) {
+                    content.creatorClientDto.clientType = callClientType[params.clientType.toUpperCase()];
                 } else {
                     content.creatorClientDto.clientType = callClientType.WEB;
                 }
@@ -2584,6 +2495,10 @@
                 });
                 return;
             }
+
+            callRequestController.cameraPaused = (typeof params.cameraPaused === 'boolean') ? params.cameraPaused : false;
+            callRequestController.callRequestReceived = true;
+            callRequestController.callEstablishedInMySide = true;
 
             return chatMessaging.sendMessage(startCallData, {
                 onResult: function (result) {
@@ -2656,8 +2571,8 @@
 
                 callRequestController.cameraPaused = (typeof params.cameraPaused === 'boolean') ? params.cameraPaused : callRequestController.cameraPaused;
 
-                if (params.clientType && typeof params.clientType === 'string' && callClientTypes[params.clientType.toUpperCase()] > 0) {
-                    content.clientType = callClientTypes[params.clientType.toUpperCase()];
+                if (params.clientType && typeof params.clientType === 'string' && callClientType[params.clientType.toUpperCase()] > 0) {
+                    content.clientType = callClientType[params.clientType.toUpperCase()];
                 } else {
                     content.clientType = callClientType.WEB;
                 }
