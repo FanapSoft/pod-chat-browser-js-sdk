@@ -753,12 +753,6 @@
                         callUsers[userId].htmlElements = {};
                         callUsers[userId] = null;
                     }
-
-                    /*if(user === chatMessaging.userInfo.id) {
-                        //TODO: only remove me
-                        callStop();
-                        return;
-                    }*/
                 },
                 stopParticipantAudio: function (userId) {
                     this.removeTopic(userId, callUsers[userId].peers[userId].audioTopicName);
@@ -1812,14 +1806,13 @@
                  * Type 74    Start Call Request
                  */
                 case chatMessageVOTypes.START_CALL:
-                    //TODO: this is required, but prevents group call
-                    /*if(!callRequestController.iCanAcceptTheCall()) {
+                    if(!callRequestController.iCanAcceptTheCall()) {
                         chatEvents.fireEvent('callEvents', {
                             type: 'CALL_STARTED_ELSEWHERE',
                             message: 'Call already started somewhere else..., aborting...'
                         });
                         return;
-                    }*/
+                    }
 
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
@@ -1954,10 +1947,10 @@
                  * Type 91    Send Group Call Request
                  */
                 case chatMessageVOTypes.GROUP_CALL_REQUEST:
+                    callRequestController.callRequestReceived = true;
                     callReceived({
                         callId: messageContent.callId
-                    }, function (r) {
-                    });
+                    }, function (r) {});
 
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
