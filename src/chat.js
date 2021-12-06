@@ -13535,7 +13535,9 @@
 
                                 if(stackArr.length < wantedCount) {
                                     stepCount = wantedCount - stackArr.length < stepCount ? wantedCount - stackArr.length : stepCount;
+                                    //setTimeout(function () {
                                     resolve(requestExportChat(stackArr, wantedCount, stepCount, stackArr.length, sendData));
+                                    //}, 1000)
                                 } else {
                                     resolve(stackArr);
                                 }
@@ -13543,7 +13545,9 @@
                         } else {
                             if(result.errorCode !== 21) {
                                 consoleLogging && console.log("[SDK][exportChat] Problem in one step... . Rerunning the request.", wantedCount, stepCount, stackArr.length, sendData, result);
-                                resolve(requestExportChat(stackArr, wantedCount, stepCount, stackArr.length, sendData))
+                                setTimeout(function () {
+                                    resolve(requestExportChat(stackArr, wantedCount, stepCount, stackArr.length, sendData))
+                                }, 2000)
                             } else {
                                 reject(result)
                             }
@@ -13585,9 +13589,10 @@
                 offset = params.offset;
             }
 
-            if (params.messageType && typeof params.messageType.toUpperCase() !== 'undefined' && chatMessageTypes[params.messageType.toUpperCase()] > 0) {
-                sendData.content.messageType = chatMessageTypes[params.messageType.toUpperCase()];
-            }
+            // if (params.messageType && typeof params.messageType.toUpperCase() !== 'undefined' && chatMessageTypes[params.messageType.toUpperCase()] > 0) {
+            //     sendData.content.messageType = chatMessageTypes[params.messageType.toUpperCase()];
+            // }
+            sendData.content.messageType = 1;
 
             if(wantedCount < stepCount)
                 stepCount = wantedCount;
