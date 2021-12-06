@@ -2399,13 +2399,14 @@
                     content.threadId = +params.threadId;
                 } else {
                     if (Array.isArray(params.invitees)) {
-                        content.invitees = [];
-                        for (var i = 0; i < params.invitees.length; i++) {
-                            var tempInvitee = formatDataToMakeInvitee(params.invitees[i]);
-                            if (tempInvitee) {
-                                content.invitees.push(tempInvitee);
-                            }
-                        }
+                        content.invitees = params.invitees;
+
+                        //for (var i = 0; i < params.invitees.length; i++) {
+                            //var tempInvitee = params.invitees[i];
+                            //if (tempInvitee) {
+                                //content.invitees.push(tempInvitee);
+                            //}
+                        //}
                     } else {
                         chatEvents.fireEvent('error', {
                             code: 999,
@@ -2464,13 +2465,14 @@
                     content.threadId = +params.threadId;
                 } else {
                     if (Array.isArray(params.invitees)) {
-                        content.invitees = [];
-                        for (var i = 0; i < params.invitees.length; i++) {
-                            var tempInvitee = formatDataToMakeInvitee(params.invitees[i]);
-                            if (tempInvitee) {
-                                content.invitees.push(tempInvitee);
-                            }
-                        }
+                        content.invitees = params.invitees;
+
+                        //for (var i = 0; i < params.invitees.length; i++) {
+                        //var tempInvitee = params.invitees[i];
+                        //if (tempInvitee) {
+                        //content.invitees.push(tempInvitee);
+                        //}
+                        //}
                     } else {
                         chatEvents.fireEvent('error', {
                             code: 999,
