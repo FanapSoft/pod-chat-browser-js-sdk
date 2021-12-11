@@ -1604,7 +1604,7 @@
 
             restartMediaOnKeyFrame = function (userId, timeout) {
                 setTimeout(function () {
-                    if(typeof callUsers[userId] !== "undefined" && callUsers[userId])
+                    if(typeof callUsers[userId] !== "undefined" && callUsers[userId] && callUsers[userId].peers[callUsers[userId].videoTopicName])
                         restartMedia(callUsers[userId].videoTopicName);
                 }, timeout);
             };
@@ -2190,16 +2190,6 @@
                                     messageContent[i].sendTopic,
                                     'video'
                                 );
-                                /*if(callUsers[messageContent[i].userId]) {
-                                    callUsers[messageContent[i].userId].video = true;
-                                    callUsers[messageContent[i].userId].videoTopicName = 'Vi-' + messageContent[i].sendTopic;
-
-                                    var user = callUsers[messageContent[i].userId];
-                                    callStateController.appendUserToCallDiv(messageContent[i].userId, callStateController.generateHTMLElements(messageContent[i].userId));
-                                    setTimeout(function () {
-                                        callStateController.createTopic(messageContent[i].userId, user.videoTopicName, 'video', 'receive');
-                                    })
-                                }*/
                             }
                         }
                     }
@@ -2263,8 +2253,15 @@
                         result: messageContent
                     });
 
-                    //restartMedia(callTopics['sendVideoTopic']);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 2000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
+
+                    restartMediaOnKeyFrame("screenShare", 2000);
+                    restartMediaOnKeyFrame("screenShare", 4000);
+                    restartMediaOnKeyFrame("screenShare", 8000);
+                    restartMediaOnKeyFrame("screenShare", 12000);
                     break;
 
                 /**
@@ -2360,8 +2357,15 @@
                         result: messageContent
                     });
 
-                    //restartMedia(callTopics['sendVideoTopic']);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 2000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
+
+                    restartMediaOnKeyFrame("screenShare", 2000);
+                    restartMediaOnKeyFrame("screenShare", 4000);
+                    restartMediaOnKeyFrame("screenShare", 8000);
+                    restartMediaOnKeyFrame("screenShare", 12000);
                     break;
             }
         }
