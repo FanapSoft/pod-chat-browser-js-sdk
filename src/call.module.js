@@ -1413,14 +1413,14 @@
                             let newHeight = callVideoMinHeight - (Math.ceil(Math.random() * 50) + 20);
 
                             videoTrack.applyConstraints({
-                                width: {
-                                    min: newWidth,
-                                    ideal: 1280
-                                },
-                                height: {
-                                    min: newHeight,
-                                    ideal: 720
-                                },
+                                // width: {
+                                //     min: newWidth,
+                                //     ideal: 1280
+                                // },
+                                // height: {
+                                //     min: newHeight,
+                                //     ideal: 720
+                                // },
                                 advanced: [
                                     {
                                         width: newWidth,
@@ -2253,15 +2253,16 @@
                         result: messageContent
                     });
 
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 2000);
                     restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
                     restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
                     restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 25000);
 
-                    restartMediaOnKeyFrame("screenShare", 2000);
                     restartMediaOnKeyFrame("screenShare", 4000);
                     restartMediaOnKeyFrame("screenShare", 8000);
                     restartMediaOnKeyFrame("screenShare", 12000);
+                    restartMediaOnKeyFrame("screenShare", 25000);
+
                     break;
 
                 /**
@@ -2357,15 +2358,16 @@
                         result: messageContent
                     });
 
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 2000);
                     restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
                     restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
                     restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 25000);
 
-                    restartMediaOnKeyFrame("screenShare", 2000);
                     restartMediaOnKeyFrame("screenShare", 4000);
                     restartMediaOnKeyFrame("screenShare", 8000);
                     restartMediaOnKeyFrame("screenShare", 12000);
+                    restartMediaOnKeyFrame("screenShare", 25000);
+
                     break;
             }
         }
