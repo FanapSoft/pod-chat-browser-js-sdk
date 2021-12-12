@@ -5,11 +5,11 @@
   "main": "./src/chat.js",
   "scripts": {
     "test": "mocha --reporter spec --exit",
-    "bundle": "browserify browser-bundling.js -o ./dist/podchat-11.3.4.js",
+    "bundle": "browserify browser-bundling.js -o ./dist/podchat-11.4.1.js",
     "publish:snapshot": "npm run version:snapshot && npm publish --tag snapshot",
     "version:snapshot": "npm version prerelease --preid snapshot",
     "publish:release": "npm run version:release && npm publish",
-    "version:release": "npm version 11.4.0"
+    "version:release": "npm version 11.4.1"
   },
   "repository": {
     "type": "git",
