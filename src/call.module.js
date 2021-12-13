@@ -935,7 +935,7 @@
                                         });
 
                                         sendCallMetaData({
-                                            id: callMetaDataTypes.POORCONNECTION,
+                                            id: callMetaDataTypes.POORCONNECTIONRESOLVED,
                                             userid: userId,
                                             title: 'Poor Connection Resolved',
                                             description: topic
@@ -1647,7 +1647,7 @@
             },
             handleReceivedMetaData = function (jsonMessage) {
                 var id = jsonMessage.id;
-                if(!id || typeof id === "undefined" || jsonMessage.userid === chatMessaging.userInfo.id) {
+                if(!id || typeof id === "undefined" || jsonMessage.userid == chatMessaging.userInfo.id) {
                     return;
                 }
 
