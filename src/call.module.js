@@ -191,6 +191,10 @@
             currentCallId = null,
             shouldReconnectCallTimeout = null,
             callTopics = {},
+            callMetaDataTypes = {
+                POORCONNECTION: 1,
+                POORCONNECTIONRESOLVED: 2
+            },
             screenShareState = {
                 started: false,
                 imOwner: false
@@ -884,7 +888,8 @@
                                             message: 'Poor connection for a long time',
                                             metadata: {
                                                 elementId: "uiRemoteVideo-" + topic,
-                                                topic: topic
+                                                topic: topic,
+                                                userId: userId
                                             }
                                         });
                                     }
@@ -904,6 +909,13 @@
                                         userMetadata.isConnectionPoor = true;
                                         userMetadata.poorConnectionCount = 0;
                                         userMetadata.poorConnectionResolvedCount = 0;
+
+                                        sendCallMetaData({
+                                            id: callMetaDataTypes.POORCONNECTION,
+                                            userid: userId,
+                                            title: 'Poor Connection',
+                                            description: topic
+                                        });
                                     } else {
                                         callUsers[userId].topicMetaData[topic].poorConnectionCount++;
                                     }
@@ -917,8 +929,16 @@
                                             message: 'Poor connection resolved',
                                             metadata: {
                                                 elementId: "uiRemoteVideo-" + topic,
-                                                topic: topic
+                                                topic: topic,
+                                                userId: userId
                                             }
+                                        });
+
+                                        sendCallMetaData({
+                                            id: callMetaDataTypes.POORCONNECTION,
+                                            userid: userId,
+                                            title: 'Poor Connection Resolved',
+                                            description: topic
                                         });
                                     } else {
                                         userMetadata.poorConnectionResolvedCount++;
@@ -1607,7 +1627,59 @@
                     if(typeof callUsers[userId] !== "undefined" && callUsers[userId] && callUsers[userId].peers[callUsers[userId].videoTopicName])
                         restartMedia(callUsers[userId].videoTopicName);
                 }, timeout);
-            };
+            },
+
+            sendCallMetaData = function (params, callback) {
+                var message =  {
+                    id: params.id,
+                    userid: params.userid,
+                    title: params.title,
+                    description: params.description
+                };
+
+                sendCallMessage({
+                    id: 'SENDMETADATA',
+                    message: JSON.stringify(message),
+                    chatId: currentCallId
+                }, function (res) {
+                    callback && callback(res)
+                });
+            },
+            handleReceivedMetaData = function (jsonMessage) {
+                var id = jsonMessage.id;
+                if(!id || typeof id === "undefined" || jsonMessage.userid === chatMessaging.userInfo.id) {
+                    return;
+                }
+
+                switch (id) {
+                    case callMetaDataTypes.POORCONNECTION:
+                        chatEvents.fireEvent("callEvents", {
+                            type: 'POOR_VIDEO_CONNECTION',
+                            subType: 'SHORT_TIME',
+                            message: 'Poor connection detected',
+                            metadata: {
+                                elementId: "uiRemoteVideo-" + jsonMessage.description,
+                                topic: jsonMessage.description,
+                                userId: jsonMessage.userid
+                            }
+                        });
+                        break;
+                    case callMetaDataTypes.POORCONNECTIONRESOLVED:
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'POOR_VIDEO_CONNECTION_RESOLVED',
+                            message: 'Poor connection resolved',
+                            metadata: {
+                                elementId: "uiRemoteVideo-" + jsonMessage.description,
+                                topic: jsonMessage.description,
+                                userId: jsonMessage.userid
+                            }
+                        });
+                        break;
+                }
+
+            }
+
+
 
         this.updateToken = function (newToken) {
             token = newToken;
@@ -1647,23 +1719,6 @@
                         restartMediaOnKeyFrame('screenShare', 8000);
                         restartMediaOnKeyFrame('screenShare', 12000);
                     }
-
-/*                    setTimeout(function () {
-                        if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
-                            restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
-                    }, 2000);
-                    setTimeout(function () {
-                        if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
-                            restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
-                    }, 4000);
-                    setTimeout(function () {
-                        if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
-                            restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
-                    }, 8000);
-                    setTimeout(function () {
-                        if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
-                            restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
-                    }, 12000);*/
                     break;
 
                 case 'FREEZED':
@@ -1675,11 +1730,13 @@
                         chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
                     }
                     break;*/
+
                 case 'STOP':
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
                     }
                     break;
+
                 case 'CLOSE':
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
@@ -1696,6 +1753,14 @@
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
                     }
+                    break;
+
+                case 'RECEIVEMETADATA':
+                    // if (chatMessaging.messagesCallbacks[uniqueId]) {
+                    //     chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
+                    // }
+                    handleReceivedMetaData(JSON.parse(jsonMessage.message));
+
                     break;
 
                 case 'ERROR':
@@ -1744,7 +1809,7 @@
                         result: messageContent
                     });
 
-                    currentCallId = messageContent.callId;
+                    //currentCallId = messageContent.callId;
 
                     break;
 
@@ -1791,6 +1856,8 @@
                             type: 'RECEIVE_CALL',
                             result: messageContent
                         });
+
+                        currentCallId = messageContent.callId;
                     } else {
                         chatEvents.fireEvent('callEvents', {
                             type: 'PARTNER_RECEIVED_YOUR_CALL',
@@ -1798,7 +1865,7 @@
                         });
                     }
 
-                    currentCallId = messageContent.callId;
+
 
                     break;
 
@@ -1961,7 +2028,7 @@
                         result: messageContent
                     });
 
-                    currentCallId = messageContent.callId;
+                    //currentCallId = messageContent.callId;
 
                     break;
 
@@ -3120,10 +3187,6 @@
                 'audioTopicName',
                 'mute'
             )
-/*
-            callStateController.removeTopic(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].audioTopicName)
-            callStateController.removeStreamFromWebRTC(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].audioTopicName)
-*/
 
             return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
@@ -3175,16 +3238,6 @@
                 callUsers[myId].topicSend,
                 'mute'
             );
-            /*if(callUsers[myId]) {
-                callUsers[myId].mute = false;
-                callUsers[myId].audioTopicName = 'Vo-' + callUsers[myId].topicSend;
-
-                var user = callUsers[myId];
-                callStateController.appendUserToCallDiv(myId, callStateController.generateHTMLElements(myId));
-                setTimeout(function () {
-                    callStateController.createTopic(myId, user.audioTopicName, 'audio', 'send');
-                })
-            }*/
 
             return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
