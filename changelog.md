@@ -3,7 +3,12 @@
 All notable changes to this project will be documented here.
 to see complete list of changelog please visit [ChangeLog](https://github.com/masoudmanson/pod-chat/blob/master/changelog.md)
 
-## [11.4.1] - 12-12-2021
+## [11.4.2] - 2021-12-13
+### Added
+- Call metadata
+
+
+## [11.4.1] - 2021-12-12
 ### Added
 - send key frame on start recording
 - add participant to a p2p call
