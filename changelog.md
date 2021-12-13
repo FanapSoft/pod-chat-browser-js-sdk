@@ -3,6 +3,19 @@
 All notable changes to this project will be documented here.
 to see complete list of changelog please visit [ChangeLog](https://github.com/masoudmanson/pod-chat/blob/master/changelog.md)
 
+## [11.4.1] - 12-12-2021
+### Added
+- send key frame on start recording
+- add participant to a p2p call
+
+###Changed
+- method: startGroupCall (Support for group call)
+- Result format of exportChat
+
+### Fixed
+- startCall with invitees
+- startGroupCall with invitees
+
 
 ## [11.3.4] - 2021-12-04
 
