@@ -30,7 +30,7 @@
     <script type="text/javascript">
         // Developement
         var PodChat = window.POD.Chat;
-        var env = 'main'; // main | sandbox | integration
+        var env = 'sandbox'; // main | sandbox | integration
 
         var params = {
             appId: new Date().getTime(),
@@ -1908,6 +1908,22 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 
 <form>
     <fieldset>
+        <legend>Admin thread participant</legend>
+        <label for="apThread">Thread Id</label>
+        <input type="text" name="adminThreadParticipantThreadId" id="adminThreadParticipantThreadId" >
+        <br>
+        <label for="apList">User Id</label>
+        <input type="text" name="adminThreadParticipantUserId" id="adminThreadParticipantUserId" placeholder="UserId">
+        <button type="button" name="button" id="adminThreadParticipantBtn">Make admin</button>
+    </fieldset>
+</form>
+
+<br>
+<hr>
+<br>
+
+<form>
+    <fieldset>
         <legend>Send Text Message</legend>
         <label for="sendTextThread">Thread Id</label>
         <input type="text" name="sendTextThread" id="sendTextThread" class="custom-thread-id">
@@ -3165,7 +3181,36 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
             threadId: Number(threadId),
             messageIds: messageIds instanceof Array ? messageIds : [ messageIds ],
         }, {})
-    })
+    });
+
+    document.getElementById("adminThreadParticipantBtn").addEventListener("click", function (event){
+        event.preventDefault();
+        var userId = document.getElementById("adminThreadParticipantUserId").value;
+        var threadId = document.getElementById("adminThreadParticipantThreadId").value;
+        var rolesList = [
+            'post_channel_message',
+            'edit_message_of_others',
+            'delete_message_of_others',
+            'add_new_user',
+            'remove_user',
+            'thread_admin',
+            'add_rule_to_user',
+            'remove_role_from_user',
+            'edit_thread',
+            'read_thread',
+            'ownership'
+        ];
+        console.log("roles list: ", rolesList)
+        chatAgent.setAdmin({
+            threadId: threadId,
+            admins: [{
+                userId: userId,
+                roles: rolesList
+            }],
+        }, function (result) {
+            console.log("[HTML][chatAgent.setAdmin][result]", result);
+        })
+    });
 </script>
 
 </html>
