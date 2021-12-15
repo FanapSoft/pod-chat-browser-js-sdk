@@ -107,6 +107,7 @@
                 TERMINATE_CALL: 96,
                 MUTE_CALL_PARTICIPANT: 97,
                 UNMUTE_CALL_PARTICIPANT: 98,
+                CANCEL_GROUP_CALL: 99,  //TODO: not implemented
                 LOGOUT: 100,
                 LOCATION_PING: 101,
                 CLOSE_THREAD: 102,
@@ -189,6 +190,7 @@
                 : 180,
             currentCallParams = {},
             currentCallId = null,
+            newCallId = null,
             shouldReconnectCallTimeout = null,
             callTopics = {},
             callMetaDataTypes = {
@@ -1857,7 +1859,10 @@
                             result: messageContent
                         });
 
-                        currentCallId = messageContent.callId;
+                        if(!currentCallId)
+                            currentCallId = messageContent.callId;
+                        else
+                            newCallId = messageContent.callId;
                     } else {
                         chatEvents.fireEvent('callEvents', {
                             type: 'PARTNER_RECEIVED_YOUR_CALL',
@@ -1950,10 +1955,11 @@
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_ENDED',
-                        result: messageContent
+                        callId: threadId
                     });
 
-                    callStop();
+                    if(threadId === currentCallId)
+                        callStop();
 
                     break;
 
@@ -2236,7 +2242,12 @@
                         result: messageContent
                     });
 
-                    currentCallId = messageContent.callId;
+                    if(!currentCallId)
+                        currentCallId = messageContent.callId;
+                    else
+                        newCallId = messageContent.callId;
+
+                    //currentCallId = messageContent.callId;
 
                     break;
 
