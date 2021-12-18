@@ -2206,17 +2206,6 @@
                                     messageContent[i].sendTopic,
                                     'mute'
                                 );
-                                /*if(callUsers[messageContent[i].userId]) {
-                                    callUsers[messageContent[i].userId].mute = false;
-                                    callUsers[messageContent[i].userId].audioTopicName = 'Vo-' + messageContent[i].sendTopic;
-
-                                    var user = callUsers[messageContent[i].userId];
-                                    callStateController.appendUserToCallDiv(messageContent[i].userId, callStateController.generateHTMLElements(messageContent[i].userId));
-                                    setTimeout(function () {
-                                        callStateController.createTopic(messageContent[i].userId, user.audioTopicName, 'audio', 'receive');
-
-                                    })
-                                }*/
                             }
                         }
                     }
