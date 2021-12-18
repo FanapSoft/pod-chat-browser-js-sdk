@@ -827,8 +827,17 @@
                         options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = callUsers[userId].htmlElements[topic];
 
                         if(direction === 'send' && mediaType === 'video' && shareScreen) {
-                            navigator.mediaDevices.getDisplayMedia().then(function (result) {
-                                options.videoStream = result;
+                            navigator.mediaDevices.getDisplayMedia().then(function (stream) {
+                                stream.getVideoTracks()[0].addEventListener("ended", function (event) { // Click on browser UI stop sharing button
+                                    //callStateController.removeScreenShareFromCall()
+                                    if(callUsers['screenShare'] && callUsers['screenShare'].peers[topic]){
+                                        //console.log('event screenShare', currentCallId);
+                                        currentModuleInstance.endScreenShare({
+                                            callId: currentCallId
+                                        });
+                                    }
+                                })
+                                options.videoStream = stream;
                                 options.sendSource = 'screen';
                                 // options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
                                 resolve(options);
@@ -1203,7 +1212,9 @@
                 },
                 removeAllCallParticipants: function () {
                     var removeAllUsersPromise = new Promise(function (resolve, reject) {
+                        var index = 0;
                         for (var i in callUsers) {
+                            index++;
                             var user = callUsers[i];
                             if (user) {
                                 if(user.videoTopicName && user.peers[user.videoTopicName]) {
