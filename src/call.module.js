@@ -1241,7 +1241,8 @@
                                         callUsers[i] = null;
                                     }
 
-                                    resolve()
+                                    if(index === Object.keys(callUsers).length)
+                                        resolve();
                                 }, 200);
                             }
                         }
