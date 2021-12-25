@@ -56318,6 +56318,7 @@ WildEmitter.mixin(WildEmitter);
                 TERMINATE_CALL: 96,
                 MUTE_CALL_PARTICIPANT: 97,
                 UNMUTE_CALL_PARTICIPANT: 98,
+                CANCEL_GROUP_CALL: 99,  //TODO: not implemented
                 LOGOUT: 100,
                 LOCATION_PING: 101,
                 CLOSE_THREAD: 102,
@@ -56400,8 +56401,13 @@ WildEmitter.mixin(WildEmitter);
                 : 180,
             currentCallParams = {},
             currentCallId = null,
+            newCallId = null,
             shouldReconnectCallTimeout = null,
             callTopics = {},
+            callMetaDataTypes = {
+                POORCONNECTION: 1,
+                POORCONNECTIONRESOLVED: 2
+            },
             screenShareState = {
                 started: false,
                 imOwner: false
@@ -56699,172 +56705,29 @@ WildEmitter.mixin(WildEmitter);
              */
             startCallWebRTCFunctions = function (params, callback) {
                 if (callDivId) {
-                    var callParentDiv,
-                        callVideo = (typeof params.video === 'boolean') ? params.video : true,
+                    var callVideo = (typeof params.video === 'boolean') ? params.video : true,
                         callMute = (typeof params.mute === 'boolean') ? params.mute : false;
-                        //sendingTopic = params.sendingTopic,
-                        //receiveTopic = params.receiveTopic;
+
+                    if(params.selfData) {
+                        callStateController.setupCallParticipant(params.selfData);
+                    }
 
                     if(params.clientsList && params.clientsList.length) {
                         for(var i in params.clientsList) {
-                            callStateController.setupCallParticipant(params.clientsList[i]);
-                            //callStateController.callUsers.push(params.clientsList[i]);
+                            if(params.clientsList[i].userId !== chatMessaging.userInfo.id)
+                                callStateController.setupCallParticipant(params.clientsList[i]);
                         }
                     }
 
                     callStateController.setupScreenSharingObject(params.screenShare);
 
-                    /*callTopics['sendVideoTopic'] = 'Vi-' + sendingTopic;
-                    callTopics['sendAudioTopic'] = 'Vo-' + sendingTopic;
-                    callTopics['screenShare'] = params.screenShare;
-                    //callTopics['receiveVideoTopic'] = 'Vi-' + receiveTopic;
-                    //callTopics['receiveAudioTopic'] = 'Vo-' + receiveTopic;
-                    callTopics['receive'] = [];
-                    callTopics['receive'].push({
-                        "VideoTopic": 'Vi-' + receiveTopic,
-                        "AudioTopic": 'Vo-' + receiveTopic
-                    });*/
-
-                    /*webpeersMetadata[callTopics['sendVideoTopic']] = {
-                        interval: null,
-                        receivedSdpAnswer: false,
-                        connectionQualityInterval: null,
-                        poorConnectionCount: 0,
-                        poorConnectionResolvedCount: 0,
-                        isConnectionPoor: false
-                    };
-                    webpeersMetadata[callTopics['sendAudioTopic']] = {
-                        interval: null,
-                        receivedSdpAnswer: false,
-                        connectionQualityInterval: null,
-                        poorConnectionCount: 0,
-                        poorConnectionResolvedCount: 0,
-                        isConnectionPoor: false
-                    };
-                    webpeersMetadata[callTopics['screenShare']] = {
-                        interval: null,
-                        receivedSdpAnswer: false,
-                        connectionQualityInterval: null,
-                        poorConnectionCount: 0,
-                        poorConnectionResolvedCount: 0,
-                        isConnectionPoor: false
-                    };
-
-                    for(var i in callTopics['receive']) {
-                        webpeersMetadata[callTopics['receive'][i]['VideoTopic']] = {
-                            interval: null,
-                            receivedSdpAnswer: false
-                        };
-                        webpeersMetadata[callTopics['receive'][i]['AudioTopic']] = {
-                            interval: null,
-                            receivedSdpAnswer: false
-                        };
-                    }*/
-
-                    //callParentDiv = document.getElementById(callDivId);
-
-                    /*// Local Video Tag
-                    if (callVideo && !uiRemoteMedias[callTopics['sendVideoTopic']]) {
-                        uiRemoteMedias[callTopics['sendVideoTopic']] = document.createElement('video');
-                        var el = uiRemoteMedias[callTopics['sendVideoTopic']];
-                        el.setAttribute('id', 'uiRemoteVideo-' + callTopics['sendVideoTopic']);
-                        el.setAttribute('class', callVideoTagClassName);
-                        el.setAttribute('playsinline', '');
-                        el.setAttribute('muted', '');
-                        el.setAttribute('width', callVideoMinWidth + 'px');
-                        el.setAttribute('height', callVideoMinHeight + 'px');
-                    }
-
-                    // Local Audio Tag
-                    if (!uiRemoteMedias[callTopics['sendAudioTopic']]) {
-                        uiRemoteMedias[callTopics['sendAudioTopic']] = document.createElement('audio');
-                        var el = uiRemoteMedias[callTopics['sendAudioTopic']];
-                        el.setAttribute('id', 'uiRemoteAudio-' + callTopics['sendAudioTopic']);
-                        el.setAttribute('class', callAudioTagClassName);
-                        el.setAttribute('autoplay', '');
-                        el.setAttribute('muted', '');
-                        el.setAttribute('controls', '');
-                    }
-
-                    for(var i in callTopics['receive']){
-                        // Remote Video Tag
-                        if (callVideo && !uiRemoteMedias[callTopics['receive'][i]['VideoTopic']]) {
-                            uiRemoteMedias[callTopics['receive'][i]['VideoTopic']] = document.createElement('video');
-                            var el = uiRemoteMedias[callTopics['receive'][i]['VideoTopic']];
-                            el.setAttribute('id', 'uiRemoteVideo-' + callTopics['receive'][i]['VideoTopic']);
-                            el.setAttribute('class', callVideoTagClassName);
-                            el.setAttribute('playsinline', '');
-                            el.setAttribute('muted', '');
-                            el.setAttribute('width', callVideoMinWidth + 'px');
-                            el.setAttribute('height', callVideoMinHeight + 'px');
-                        }
-
-                        // Remote Audio Tag
-                        if (!uiRemoteMedias[callTopics['receive'][i]['AudioTopic']]) {
-                            uiRemoteMedias[callTopics['receive'][i]['AudioTopic']] = document.createElement('audio');
-                            var el = uiRemoteMedias[callTopics['receive'][i]['AudioTopic']];
-                            el.setAttribute('id', 'uiRemoteAudio-' + callTopics['receive'][i]['AudioTopic']);
-                            el.setAttribute('class', callAudioTagClassName);
-                            el.setAttribute('autoplay', '');
-                            callMute && el.setAttribute('muted', '');
-                            el.setAttribute('controls', '');
-                        }
-                    }*/
-
                     callback && callback(generateCallUIList());
-
-                    /*for(var i in callTopics['receive']) {
-                        uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']])
-                        callVideo && uiRemoteElements.push(uiRemoteMedias[callTopics['receive'][i]['VideoTopic']])
-                    }
-
-                    if (callParentDiv) {
-                        callVideo && callParentDiv.appendChild(uiRemoteMedias[callTopics['sendVideoTopic']]);
-                        callParentDiv.appendChild(uiRemoteMedias[callTopics['sendAudioTopic']]);
-                        if(callVideo) {
-                            for(var i in callTopics['receive']) {
-                                callParentDiv.appendChild(uiRemoteMedias[callTopics['receive'][i]['VideoTopic']])
-                            }
-                        }
-                        for(var i in callTopics['receive']) {
-                            callParentDiv.appendChild(uiRemoteMedias[callTopics['receive'][i]['AudioTopic']]);
-                        }
-
-                        callback && callback({
-                            'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
-                            'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
-                            uiRemoteElements: uiRemoteElements
-                            /!*                            'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                                                        'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*!/
-                        });
-                    } else {
-                        callback && callback({
-                            'uiLocalVideo': uiRemoteMedias[callTopics['sendVideoTopic']],
-                            'uiLocalAudio': uiRemoteMedias[callTopics['sendAudioTopic']],
-                            uiRemoteElements: uiRemoteElements
-                            /!*'uiRemoteVideo': uiRemoteMedias[callTopics['receiveVideoTopic']],
-                            'uiRemoteAudio': uiRemoteMedias[callTopics['receiveAudioTopic']]*!/
-                        });
-                    }*/
-
 
                     callStateController.createSessionInChat(Object.assign(params, {
                         callVideo: callVideo,
                         callAudio: !callMute,
                     }));
 
-                    /*sendCallMessage({
-                        id: 'STOPALL'
-                    }, function (result) {*/
-
-                    /*handleCallSocketOpen({
-                        brokerAddress: params.brokerAddress,
-                        turnAddress: params.turnAddress,
-                        callVideo: callVideo,
-                        callAudio: !callMute,
-                    });*/
-
-                    /* });*/
                 } else {
                     consoleLogging && console.log('No Call DIV has been declared!');
                     return;
@@ -56891,29 +56754,6 @@ WildEmitter.mixin(WildEmitter);
                     uiElements: callUIElements,
                 };
             },
-
-            /*handleCallSocketOpen = function (params) {
-                currentCallParams = params;
-
-                sendCallMessage({
-                    id: 'CREATE_SESSION',
-                    brokerAddress: params.brokerAddress,
-                    turnAddress: params.turnAddress.split(',')[0]
-                }, function (res) {
-                    if (res.done === 'TRUE') {
-                        callStopQueue.callStarted = true;
-                        generateAndSendSdpOffers(params, [callTopics['sendVideoTopic'], callTopics['receiveVideoTopic'], callTopics['sendAudioTopic'], callTopics['receiveAudioTopic']]);
-                    } else if (res.done === 'SKIP') {
-                        callStopQueue.callStarted = true;
-                        generateAndSendSdpOffers(params, [callTopics['sendVideoTopic'], callTopics['receiveVideoTopic'], callTopics['sendAudioTopic'], callTopics['receiveAudioTopic']]);
-                    } else {
-                        consoleLogging && console.log('CREATE_SESSION faced a problem', res);
-                        endCall({
-                            callId: currentCallId
-                        });
-                    }
-                });
-            },*/
 
             callStateController = {
                 createSessionInChat: function (params) {
@@ -57102,11 +56942,33 @@ WildEmitter.mixin(WildEmitter);
                  * @param params
                  * @param direction
                  */
-                removeParticipant: function (user) {
-                    if(user === chatMessaging.userInfo.id) {
-                        //TODO: only remove me
-                        callStop();
+                removeParticipant: function (userId) {
+                    var user = callUsers[userId];
+                    if(!user)
                         return;
+
+                    if(user.videoTopicName && user.peers[user.videoTopicName]) {
+                        clearInterval(callUsers[userId].topicMetaData[user.videoTopicName].interval);
+                        callStateController.removeConnectionQualityInterval(userId, user.videoTopicName);
+                        callStateController.removeStreamFromWebRTC(userId, user.videoTopicName);
+                        callUsers[userId].peers[user.videoTopicName].dispose();
+                        delete callUsers[userId].peers[user.videoTopicName];
+
+                    }
+                    if(user.audioTopicName && user.peers[user.audioTopicName]) {
+                        clearInterval(callUsers[userId].topicMetaData[user.audioTopicName].interval);
+                        callStateController.removeConnectionQualityInterval(userId, user.audioTopicName);
+                        callStateController.removeStreamFromWebRTC(userId, user.audioTopicName);
+
+                        callUsers[userId].peers[user.audioTopicName].dispose();
+                        delete callUsers[userId].peers[user.audioTopicName];
+                    }
+
+                    if(callUsers[userId]){
+                        callUsers[userId].peers = {};
+                        callUsers[userId].topicMetaData = {};
+                        callUsers[userId].htmlElements = {};
+                        callUsers[userId] = null;
                     }
                 },
                 stopParticipantAudio: function (userId) {
@@ -57132,8 +56994,8 @@ WildEmitter.mixin(WildEmitter);
                 },
                 removeTopic: function (userId, topic) {
                     if(callUsers[userId].peers[topic]) {
-                        callUsers[userId].peers[topic].dispose();
                         this.removeConnectionQualityInterval(userId, topic);
+                        callUsers[userId].peers[topic].dispose();
                         callUsers[userId].peers[topic] = null;
                     }
                 },
@@ -57176,8 +57038,17 @@ WildEmitter.mixin(WildEmitter);
                         options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = callUsers[userId].htmlElements[topic];
 
                         if(direction === 'send' && mediaType === 'video' && shareScreen) {
-                            navigator.mediaDevices.getDisplayMedia().then(function (result) {
-                                options.videoStream = result;
+                            navigator.mediaDevices.getDisplayMedia().then(function (stream) {
+                                stream.getVideoTracks()[0].addEventListener("ended", function (event) { // Click on browser UI stop sharing button
+                                    //callStateController.removeScreenShareFromCall()
+                                    if(callUsers['screenShare'] && callUsers['screenShare'].peers[topic]){
+                                        //console.log('event screenShare', currentCallId);
+                                        currentModuleInstance.endScreenShare({
+                                            callId: currentCallId
+                                        });
+                                    }
+                                })
+                                options.videoStream = stream;
                                 options.sendSource = 'screen';
                                 // options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
                                 resolve(options);
@@ -57239,7 +57110,8 @@ WildEmitter.mixin(WildEmitter);
                                             message: 'Poor connection for a long time',
                                             metadata: {
                                                 elementId: "uiRemoteVideo-" + topic,
-                                                topic: topic
+                                                topic: topic,
+                                                userId: userId
                                             }
                                         });
                                     }
@@ -57259,6 +57131,13 @@ WildEmitter.mixin(WildEmitter);
                                         userMetadata.isConnectionPoor = true;
                                         userMetadata.poorConnectionCount = 0;
                                         userMetadata.poorConnectionResolvedCount = 0;
+
+                                        sendCallMetaData({
+                                            id: callMetaDataTypes.POORCONNECTION,
+                                            userid: userId,
+                                            title: 'Poor Connection',
+                                            description: topic
+                                        });
                                     } else {
                                         callUsers[userId].topicMetaData[topic].poorConnectionCount++;
                                     }
@@ -57272,8 +57151,16 @@ WildEmitter.mixin(WildEmitter);
                                             message: 'Poor connection resolved',
                                             metadata: {
                                                 elementId: "uiRemoteVideo-" + topic,
-                                                topic: topic
+                                                topic: topic,
+                                                userId: userId
                                             }
+                                        });
+
+                                        sendCallMetaData({
+                                            id: callMetaDataTypes.POORCONNECTIONRESOLVED,
+                                            userid: userId,
+                                            title: 'Poor Connection Resolved',
+                                            description: topic
                                         });
                                     } else {
                                         userMetadata.poorConnectionResolvedCount++;
@@ -57355,12 +57242,12 @@ WildEmitter.mixin(WildEmitter);
                                 errorInfo: user.peers[topic]
                             });
                             // setTimeout(function () {
-                                if(chatMessaging.chatState) {
-                                    callController.shouldReconnectTopic(userId, topic, mediaType, direction);
-                                }
-                            // }, 7000);
 
-                            callController.removeConnectionQualityInterval(userId, topic);
+                            if(chatMessaging.chatState) {
+                                callController.shouldReconnectTopic(userId, topic, mediaType, direction);
+                            }
+                            // }, 7000);
+                            //callController.removeConnectionQualityInterval(userId, topic);
                         }
 
                         if(user.peers[topic].peerConnection.connectionState === 'connected') {
@@ -57398,6 +57285,7 @@ WildEmitter.mixin(WildEmitter);
                             });
                             if(chatMessaging.chatState) {
                                 callController.shouldReconnectTopic(userId, topic, mediaType, direction);
+                                //callController.removeConnectionQualityInterval(userId, topic);
                             }
                             // } else {
                             //     setTimeout(function () {
@@ -57437,9 +57325,11 @@ WildEmitter.mixin(WildEmitter);
                                 topic: topic
                             }, function (result) {
                                 if (result.done === 'TRUE') {
+                                    clearInterval(callUsers[userId].topicMetaData[topic].interval)
                                     callController.removeTopic(userId, topic);
                                     callController.createTopic(userId, topic, mediaType, direction, userId === 'screenShare');
                                 } else if (result.done === 'SKIP') {
+                                    clearInterval(callUsers[userId].topicMetaData[topic].interval)
                                     callController.removeTopic(userId, topic);
                                     callController.createTopic(userId, topic, mediaType, direction, userId === 'screenShare');
                                     //generateAndSendSdpOffers(currentCallParams, [topicName]);
@@ -57533,7 +57423,9 @@ WildEmitter.mixin(WildEmitter);
                 },
                 removeAllCallParticipants: function () {
                     var removeAllUsersPromise = new Promise(function (resolve, reject) {
+                        var index = 0;
                         for (var i in callUsers) {
+                            index++;
                             var user = callUsers[i];
                             if (user) {
                                 if(user.videoTopicName && user.peers[user.videoTopicName]) {
@@ -57560,7 +57452,8 @@ WildEmitter.mixin(WildEmitter);
                                         callUsers[i] = null;
                                     }
 
-                                    resolve()
+                                    if(index === Object.keys(callUsers).length)
+                                        resolve();
                                 }, 200);
                             }
                         }
@@ -57765,14 +57658,14 @@ WildEmitter.mixin(WildEmitter);
                             let newHeight = callVideoMinHeight - (Math.ceil(Math.random() * 50) + 20);
 
                             videoTrack.applyConstraints({
-                                width: {
-                                    min: newWidth,
-                                    ideal: 1280
-                                },
-                                height: {
-                                    min: newHeight,
-                                    ideal: 720
-                                },
+                                // width: {
+                                //     min: newWidth,
+                                //     ideal: 1280
+                                // },
+                                // height: {
+                                //     min: newHeight,
+                                //     ideal: 720
+                                // },
                                 advanced: [
                                     {
                                         width: newWidth,
@@ -57838,6 +57731,12 @@ WildEmitter.mixin(WildEmitter);
                     }
                     consoleLogging && console.log("[SDK][handleProcessSdpAnswer]", jsonMessage, jsonMessage.topic)
                     startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
+                    if(userId === 'screenShare') {
+                        restartMediaOnKeyFrame("screenShare", 2000);
+                        restartMediaOnKeyFrame("screenShare", 4000);
+                        restartMediaOnKeyFrame("screenShare", 8000);
+                        restartMediaOnKeyFrame("screenShare", 12000);
+                    }
                 });
             },
 
@@ -57910,47 +57809,102 @@ WildEmitter.mixin(WildEmitter);
                 currentCallId = null;
             },
 
-            removeStreamFromWebRTC = function (RTCStream) {
-                var callParentDiv = document.getElementById(callDivId);
+            /*
+                        removeStreamFromWebRTC = function (RTCStream) {
+                            var callParentDiv = document.getElementById(callDivId);
 
-                if (uiRemoteMedias.hasOwnProperty(RTCStream)) {
-                    const stream = uiRemoteMedias[RTCStream].srcObject;
-                    if (!!stream) {
-                        const tracks = stream.getTracks();
+                            if (uiRemoteMedias.hasOwnProperty(RTCStream)) {
+                                const stream = uiRemoteMedias[RTCStream].srcObject;
+                                if (!!stream) {
+                                    const tracks = stream.getTracks();
 
-                        if (!!tracks) {
-                            tracks.forEach(function (track) {
-                                track.stop();
-                            });
-                        }
+                                    if (!!tracks) {
+                                        tracks.forEach(function (track) {
+                                            track.stop();
+                                        });
+                                    }
 
-                        uiRemoteMedias[RTCStream].srcObject = null;
-                    }
+                                    uiRemoteMedias[RTCStream].srcObject = null;
+                                }
 
-                    uiRemoteMedias[RTCStream].remove();
-                    delete (uiRemoteMedias[RTCStream]);
-                }
-            },
+                                uiRemoteMedias[RTCStream].remove();
+                                delete (uiRemoteMedias[RTCStream]);
+                            }
+                        },
 
-            removeFromCallUI = function (topic) {
-                var videoElement = 'Vi-' + topic;
-                var audioElement = 'Vo-' + topic;
 
-                if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(videoElement)) {
-                    removeStreamFromWebRTC(videoElement);
-                }
+                        removeFromCallUI = function (topic) {
+                            var videoElement = 'Vi-' + topic;
+                            var audioElement = 'Vo-' + topic;
 
-                if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(audioElement)) {
-                    removeStreamFromWebRTC(audioElement);
-                }
-            },
+                            if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(videoElement)) {
+                                removeStreamFromWebRTC(videoElement);
+                            }
+
+                            if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(audioElement)) {
+                                removeStreamFromWebRTC(audioElement);
+                            }
+                        },
+            */
 
             restartMediaOnKeyFrame = function (userId, timeout) {
                 setTimeout(function () {
-                    if(typeof callUsers[chatMessaging.userInfo.id] !== "undefined" && callUsers[chatMessaging.userInfo.id])
-                        restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
+                    if(typeof callUsers[userId] !== "undefined" && callUsers[userId] && callUsers[userId].peers[callUsers[userId].videoTopicName])
+                        restartMedia(callUsers[userId].videoTopicName);
                 }, timeout);
-            };
+            },
+
+            sendCallMetaData = function (params, callback) {
+                var message =  {
+                    id: params.id,
+                    userid: params.userid,
+                    title: params.title,
+                    description: params.description
+                };
+
+                sendCallMessage({
+                    id: 'SENDMETADATA',
+                    message: JSON.stringify(message),
+                    chatId: currentCallId
+                }, function (res) {
+                    callback && callback(res)
+                });
+            },
+            handleReceivedMetaData = function (jsonMessage) {
+                var id = jsonMessage.id;
+                if(!id || typeof id === "undefined" || jsonMessage.userid == chatMessaging.userInfo.id) {
+                    return;
+                }
+
+                switch (id) {
+                    case callMetaDataTypes.POORCONNECTION:
+                        chatEvents.fireEvent("callEvents", {
+                            type: 'POOR_VIDEO_CONNECTION',
+                            subType: 'SHORT_TIME',
+                            message: 'Poor connection detected',
+                            metadata: {
+                                elementId: "uiRemoteVideo-" + jsonMessage.description,
+                                topic: jsonMessage.description,
+                                userId: jsonMessage.userid
+                            }
+                        });
+                        break;
+                    case callMetaDataTypes.POORCONNECTIONRESOLVED:
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'POOR_VIDEO_CONNECTION_RESOLVED',
+                            message: 'Poor connection resolved',
+                            metadata: {
+                                elementId: "uiRemoteVideo-" + jsonMessage.description,
+                                topic: jsonMessage.description,
+                                userId: jsonMessage.userid
+                            }
+                        });
+                        break;
+                }
+
+            }
+
+
 
         this.updateToken = function (newToken) {
             token = newToken;
@@ -57975,26 +57929,21 @@ WildEmitter.mixin(WildEmitter);
                     break;
 
                 case 'GET_KEY_FRAME':
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 2000);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
-/*                    setTimeout(function () {
-                        if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
-                            restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
-                    }, 2000);
-                    setTimeout(function () {
-                        if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
-                            restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
-                    }, 4000);
-                    setTimeout(function () {
-                        if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
-                            restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
-                    }, 8000);
-                    setTimeout(function () {
-                        if(typeof callUsers[chatMessaging.userInfo.id] === "undefined" || !callUsers[chatMessaging.userInfo.id])
-                            restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
-                    }, 12000);*/
+                    if(callUsers && callUsers[chatMessaging.userInfo.id] && callUsers[chatMessaging.userInfo.id].video) {
+                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, 2000);
+                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
+                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
+                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
+                    }
+                    if(callUsers && callUsers['screenShare']
+                        && callUsers['screenShare'].video
+                        && screenShareState.started
+                        && screenShareState.imOwner) {
+                        restartMediaOnKeyFrame('screenShare', 2000);
+                        restartMediaOnKeyFrame('screenShare', 4000);
+                        restartMediaOnKeyFrame('screenShare', 8000);
+                        restartMediaOnKeyFrame('screenShare', 12000);
+                    }
                     break;
 
                 case 'FREEZED':
@@ -58006,11 +57955,13 @@ WildEmitter.mixin(WildEmitter);
                         chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
                     }
                     break;*/
+
                 case 'STOP':
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
                     }
                     break;
+
                 case 'CLOSE':
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
@@ -58027,6 +57978,14 @@ WildEmitter.mixin(WildEmitter);
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
                     }
+                    break;
+
+                case 'RECEIVEMETADATA':
+                    // if (chatMessaging.messagesCallbacks[uniqueId]) {
+                    //     chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
+                    // }
+                    handleReceivedMetaData(JSON.parse(jsonMessage.message));
+
                     break;
 
                 case 'ERROR':
@@ -58075,7 +58034,7 @@ WildEmitter.mixin(WildEmitter);
                         result: messageContent
                     });
 
-                    currentCallId = messageContent.callId;
+                    //currentCallId = messageContent.callId;
 
                     break;
 
@@ -58122,6 +58081,11 @@ WildEmitter.mixin(WildEmitter);
                             type: 'RECEIVE_CALL',
                             result: messageContent
                         });
+
+                        if(!currentCallId)
+                            currentCallId = messageContent.callId;
+                        else
+                            newCallId = messageContent.callId;
                     } else {
                         chatEvents.fireEvent('callEvents', {
                             type: 'PARTNER_RECEIVED_YOUR_CALL',
@@ -58129,7 +58093,7 @@ WildEmitter.mixin(WildEmitter);
                         });
                     }
 
-                    currentCallId = messageContent.callId;
+
 
                     break;
 
@@ -58170,6 +58134,7 @@ WildEmitter.mixin(WildEmitter);
                             screenShare: messageContent.chatDataDto.screenShare,
                             brokerAddress: messageContent.chatDataDto.brokerAddressWeb,
                             turnAddress: messageContent.chatDataDto.turnAddress,
+                            selfData: messageContent.clientDTO,
                             clientsList: messageContent.otherClientDtoList
                         }, function (callDivs) {
                             chatEvents.fireEvent('callEvents', {
@@ -58213,10 +58178,11 @@ WildEmitter.mixin(WildEmitter);
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_ENDED',
-                        result: messageContent
+                        callId: threadId
                     });
 
-                    callStop();
+                    if(threadId === currentCallId)
+                        callStop();
 
                     break;
 
@@ -58257,8 +58223,9 @@ WildEmitter.mixin(WildEmitter);
                         type: 'CALL_PARTICIPANT_CONNECTED',
                         result: messageContent
                     });
-
-                    restartMedia(callTopics['sendVideoTopic']);
+//callTopics['sendVideoTopic']
+                    //restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
 
                     break;
 
@@ -58276,10 +58243,10 @@ WildEmitter.mixin(WildEmitter);
                  * Type 91    Send Group Call Request
                  */
                 case chatMessageVOTypes.GROUP_CALL_REQUEST:
+                    callRequestController.callRequestReceived = true;
                     callReceived({
                         callId: messageContent.callId
-                    }, function (r) {
-                    });
+                    }, function (r) {});
 
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
@@ -58290,7 +58257,7 @@ WildEmitter.mixin(WildEmitter);
                         result: messageContent
                     });
 
-                    currentCallId = messageContent.callId;
+                    //currentCallId = messageContent.callId;
 
                     break;
 
@@ -58307,9 +58274,16 @@ WildEmitter.mixin(WildEmitter);
                         result: messageContent
                     });
 
-                    if (!!messageContent[0].sendTopic) {
-                        //removeFromCallUI(messageContent[0].sendTopic);
-                        callStateController.removeFromCallUI(messageContent[0].sendTopic)
+                    if (!!messageContent[0].userId) {
+                        //callStateController.removeFromCallUI(messageContent[0].sendTopic)
+                        callStateController.removeParticipant(messageContent[0].userId);
+                    }
+
+                    //If I'm the only call participant, stop the call
+                    if(callUsers) {
+                        if(Object.values(callUsers).length < 2) {
+                            callStop()
+                        }
                     }
 
                     break;
@@ -58331,14 +58305,36 @@ WildEmitter.mixin(WildEmitter);
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                     }
+                    if(Array.isArray(messageContent)) {
+                        for (var i in messageContent) {
+                            var correctedData = {
+                                video: messageContent[i].video,
+                                mute: messageContent[i].mute,
+                                userId: messageContent[i].userId,
+                                topicSend: messageContent[i].sendTopic
+                            }
+                            callStateController.setupCallParticipant(correctedData);
+                            if(correctedData.video) {
+                                callStateController.startParticipantVideo(correctedData.userId);
+                            }
+                            if(!correctedData.mute) {
+                                callStateController.startParticipantAudio(correctedData.userId);
+                            }
+                        }
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_DIVS',
+                        result: generateCallUIList()
+                    });
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_PARTICIPANT_JOINED',
                         result: messageContent
                     });
 
-                    restartMedia(callTopics['sendVideoTopic']);
-
+                    //restartMedia(callTopics['sendVideoTopic']);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
                     break;
 
                 /**
@@ -58388,17 +58384,14 @@ WildEmitter.mixin(WildEmitter);
                                     'audioTopicName',
                                     'mute'
                                 )
-                                /*if(callUsers[messageContent[i].userId]) {
-                                    callUsers[messageContent[i].userId].mute = true;
-
-                                    var user = callUsers[messageContent[i].userId];
-                                    clearInterval(callUsers[messageContent[i].userId].topicMetaData[user.audioTopicName].interval)
-                                    callStateController.removeTopic(messageContent[i].userId, user.audioTopicName);
-                                    callStateController.removeStreamFromWebRTC(messageContent[i].userId, user.audioTopicName);
-                                }*/
                             }
                         }
                     }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_DIVS',
+                        result: generateCallUIList()
+                    });
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_PARTICIPANT_MUTE',
@@ -58424,20 +58417,14 @@ WildEmitter.mixin(WildEmitter);
                                     messageContent[i].sendTopic,
                                     'mute'
                                 );
-                                /*if(callUsers[messageContent[i].userId]) {
-                                    callUsers[messageContent[i].userId].mute = false;
-                                    callUsers[messageContent[i].userId].audioTopicName = 'Vo-' + messageContent[i].sendTopic;
-
-                                    var user = callUsers[messageContent[i].userId];
-                                    callStateController.appendUserToCallDiv(messageContent[i].userId, callStateController.generateHTMLElements(messageContent[i].userId));
-                                    setTimeout(function () {
-                                        callStateController.createTopic(messageContent[i].userId, user.audioTopicName, 'audio', 'receive');
-
-                                    })
-                                }*/
                             }
                         }
                     }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'CALL_DIVS',
+                        result: generateCallUIList()
+                    });
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_PARTICIPANT_UNMUTE',
@@ -58467,7 +58454,12 @@ WildEmitter.mixin(WildEmitter);
                         result: messageContent
                     });
 
-                    currentCallId = messageContent.callId;
+                    if(!currentCallId)
+                        currentCallId = messageContent.callId;
+                    else
+                        newCallId = messageContent.callId;
+
+                    //currentCallId = messageContent.callId;
 
                     break;
 
@@ -58488,16 +58480,6 @@ WildEmitter.mixin(WildEmitter);
                                     messageContent[i].sendTopic,
                                     'video'
                                 );
-                                /*if(callUsers[messageContent[i].userId]) {
-                                    callUsers[messageContent[i].userId].video = true;
-                                    callUsers[messageContent[i].userId].videoTopicName = 'Vi-' + messageContent[i].sendTopic;
-
-                                    var user = callUsers[messageContent[i].userId];
-                                    callStateController.appendUserToCallDiv(messageContent[i].userId, callStateController.generateHTMLElements(messageContent[i].userId));
-                                    setTimeout(function () {
-                                        callStateController.createTopic(messageContent[i].userId, user.videoTopicName, 'video', 'receive');
-                                    })
-                                }*/
                             }
                         }
                     }
@@ -58530,13 +58512,6 @@ WildEmitter.mixin(WildEmitter);
                                     'videoTopicName',
                                     'video'
                                 )
-                               /* if(callUsers[messageContent[i].userId]) {
-                                    callUsers[messageContent[i].userId].video = false;
-                                    var user = callUsers[messageContent[i].userId];
-                                    clearInterval(callUsers[messageContent[i].userId].topicMetaData[user.videoTopicName].interval)
-                                    callStateController.removeTopic(messageContent[i].userId, user.videoTopicName);
-                                    callStateController.removeStreamFromWebRTC(messageContent[i].userId, user.videoTopicName);
-                                }*/
                             }
                         }
                     }
@@ -58568,7 +58543,15 @@ WildEmitter.mixin(WildEmitter);
                         result: messageContent
                     });
 
-                    restartMedia(callTopics['sendVideoTopic']);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 25000);
+
+                    restartMediaOnKeyFrame("screenShare", 4000);
+                    restartMediaOnKeyFrame("screenShare", 8000);
+                    restartMediaOnKeyFrame("screenShare", 12000);
+                    restartMediaOnKeyFrame("screenShare", 25000);
 
                     break;
 
@@ -58665,7 +58648,15 @@ WildEmitter.mixin(WildEmitter);
                         result: messageContent
                     });
 
-                    restartMedia(callTopics['sendVideoTopic']);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 25000);
+
+                    restartMediaOnKeyFrame("screenShare", 4000);
+                    restartMediaOnKeyFrame("screenShare", 8000);
+                    restartMediaOnKeyFrame("screenShare", 12000);
+                    restartMediaOnKeyFrame("screenShare", 25000);
 
                     break;
             }
@@ -58694,8 +58685,8 @@ WildEmitter.mixin(WildEmitter);
 
                 if (params.clientType
                     && typeof params.clientType === 'string'
-                    && callClientTypes[params.clientType.toUpperCase()] > 0) {
-                    content.creatorClientDto.clientType = callClientTypes[params.clientType.toUpperCase()];
+                    && callClientType[params.clientType.toUpperCase()] > 0) {
+                    content.creatorClientDto.clientType = callClientType[params.clientType.toUpperCase()];
                 } else {
                     content.creatorClientDto.clientType = callClientType.WEB;
                 }
@@ -58704,13 +58695,14 @@ WildEmitter.mixin(WildEmitter);
                     content.threadId = +params.threadId;
                 } else {
                     if (Array.isArray(params.invitees)) {
-                        content.invitees = [];
-                        for (var i = 0; i < params.invitees.length; i++) {
-                            var tempInvitee = formatDataToMakeInvitee(params.invitees[i]);
-                            if (tempInvitee) {
-                                content.invitees.push(tempInvitee);
-                            }
-                        }
+                        content.invitees = params.invitees;
+
+                        //for (var i = 0; i < params.invitees.length; i++) {
+                            //var tempInvitee = params.invitees[i];
+                            //if (tempInvitee) {
+                                //content.invitees.push(tempInvitee);
+                            //}
+                        //}
                     } else {
                         chatEvents.fireEvent('error', {
                             code: 999,
@@ -58759,8 +58751,8 @@ WildEmitter.mixin(WildEmitter);
 
                 content.creatorClientDto.mute = (typeof params.mute === 'boolean') ? params.mute : false;
 
-                if (params.clientType && typeof params.clientType === 'string' && callClientTypes[params.clientType.toUpperCase()] > 0) {
-                    content.creatorClientDto.clientType = callClientTypes[params.clientType.toUpperCase()];
+                if (params.clientType && typeof params.clientType === 'string' && callClientType[params.clientType.toUpperCase()] > 0) {
+                    content.creatorClientDto.clientType = callClientType[params.clientType.toUpperCase()];
                 } else {
                     content.creatorClientDto.clientType = callClientType.WEB;
                 }
@@ -58769,13 +58761,14 @@ WildEmitter.mixin(WildEmitter);
                     content.threadId = +params.threadId;
                 } else {
                     if (Array.isArray(params.invitees)) {
-                        content.invitees = [];
-                        for (var i = 0; i < params.invitees.length; i++) {
-                            var tempInvitee = formatDataToMakeInvitee(params.invitees[i]);
-                            if (tempInvitee) {
-                                content.invitees.push(tempInvitee);
-                            }
-                        }
+                        content.invitees = params.invitees;
+
+                        //for (var i = 0; i < params.invitees.length; i++) {
+                        //var tempInvitee = params.invitees[i];
+                        //if (tempInvitee) {
+                        //content.invitees.push(tempInvitee);
+                        //}
+                        //}
                     } else {
                         chatEvents.fireEvent('error', {
                             code: 999,
@@ -58793,6 +58786,10 @@ WildEmitter.mixin(WildEmitter);
                 });
                 return;
             }
+
+            callRequestController.cameraPaused = (typeof params.cameraPaused === 'boolean') ? params.cameraPaused : false;
+            callRequestController.callRequestReceived = true;
+            callRequestController.callEstablishedInMySide = true;
 
             return chatMessaging.sendMessage(startCallData, {
                 onResult: function (result) {
@@ -58865,8 +58862,8 @@ WildEmitter.mixin(WildEmitter);
 
                 callRequestController.cameraPaused = (typeof params.cameraPaused === 'boolean') ? params.cameraPaused : callRequestController.cameraPaused;
 
-                if (params.clientType && typeof params.clientType === 'string' && callClientTypes[params.clientType.toUpperCase()] > 0) {
-                    content.clientType = callClientTypes[params.clientType.toUpperCase()];
+                if (params.clientType && typeof params.clientType === 'string' && callClientType[params.clientType.toUpperCase()] > 0) {
+                    content.clientType = callClientType[params.clientType.toUpperCase()];
                 } else {
                     content.clientType = callClientType.WEB;
                 }
@@ -58958,7 +58955,8 @@ WildEmitter.mixin(WildEmitter);
 
             return chatMessaging.sendMessage(recordCallData, {
                 onResult: function (result) {
-                    restartMedia(callTopics['sendVideoTopic']);
+                    //restartMedia(callTopics['sendVideoTopic']);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
                     callback && callback(result);
                 }
             });
@@ -59412,10 +59410,6 @@ WildEmitter.mixin(WildEmitter);
                 'audioTopicName',
                 'mute'
             )
-/*
-            callStateController.removeTopic(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].audioTopicName)
-            callStateController.removeStreamFromWebRTC(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].audioTopicName)
-*/
 
             return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
@@ -59467,16 +59461,6 @@ WildEmitter.mixin(WildEmitter);
                 callUsers[myId].topicSend,
                 'mute'
             );
-            /*if(callUsers[myId]) {
-                callUsers[myId].mute = false;
-                callUsers[myId].audioTopicName = 'Vo-' + callUsers[myId].topicSend;
-
-                var user = callUsers[myId];
-                callStateController.appendUserToCallDiv(myId, callStateController.generateHTMLElements(myId));
-                setTimeout(function () {
-                    callStateController.createTopic(myId, user.audioTopicName, 'audio', 'send');
-                })
-            }*/
 
             return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
@@ -73248,25 +73232,22 @@ WildEmitter.mixin(WildEmitter);
 
                                 if(stackArr.length < wantedCount) {
                                     stepCount = wantedCount - stackArr.length < stepCount ? wantedCount - stackArr.length : stepCount;
+                                    //setTimeout(function () {
                                     resolve(requestExportChat(stackArr, wantedCount, stepCount, stackArr.length, sendData));
+                                    //}, 1000)
                                 } else {
                                     resolve(stackArr);
                                 }
                             });
-                            /*returnData.result = result;*/
-                            /*var messageContent = result.result,
-                                messageLength = messageContent.length,
-                                resultData = {
-                                    participants: formatDataToMakeAssistantHistoryList(messageContent),
-                                    contentCount: result.contentCount,
-                                    hasNext: (sendData.content.offset + sendData.content.count < result.contentCount && messageLength > 0),
-                                    nextOffset: sendData.content.offset * 1 + messageLength * 1
-                                };
-
-                            returnData.result = resultData;*/
                         } else {
-                            consoleLogging && console.log("[SDK][exportChat] Problem in one step... . Rerunning the request.", wantedCount, stepCount, stackArr.length, sendData, result);
-                            resolve(requestExportChat(stackArr, wantedCount, stepCount, stackArr.length, sendData))
+                            if(result.errorCode !== 21) {
+                                consoleLogging && console.log("[SDK][exportChat] Problem in one step... . Rerunning the request.", wantedCount, stepCount, stackArr.length, sendData, result);
+                                setTimeout(function () {
+                                    resolve(requestExportChat(stackArr, wantedCount, stepCount, stackArr.length, sendData))
+                                }, 2000)
+                            } else {
+                                reject(result)
+                            }
                         }
                     }
                 });
@@ -73305,9 +73286,10 @@ WildEmitter.mixin(WildEmitter);
                 offset = params.offset;
             }
 
-            if (params.messageType && typeof params.messageType.toUpperCase() !== 'undefined' && chatMessageTypes[params.messageType.toUpperCase()] > 0) {
-                sendData.content.messageType = chatMessageTypes[params.messageType.toUpperCase()];
-            }
+            // if (params.messageType && typeof params.messageType.toUpperCase() !== 'undefined' && chatMessageTypes[params.messageType.toUpperCase()] > 0) {
+            //     sendData.content.messageType = chatMessageTypes[params.messageType.toUpperCase()];
+            // }
+            sendData.content.messageType = 1;
 
             if(wantedCount < stepCount)
                 stepCount = wantedCount;
@@ -73320,7 +73302,46 @@ WildEmitter.mixin(WildEmitter);
                     responseType = params.responseType !== null ? params.responseType : "blob",
                     autoStartDownload = params.autoStartDownload !== null ? params.autoStartDownload : true
 
-                var blob = new Blob([Utility.convertToCSV(result)], { type: 'text/csv;charset=utf-8;' });
+                var str = ''
+                    , universalBOM = "\uFEFF";
+
+                str += "\u{62A}\u{627}\u{631}\u{6CC}\u{62E} " + ','; //tarikh
+                str += " \u{633}\u{627}\u{639}\u{62A} " + ','; //saat
+                str += "\u{646}\u{627}\u{645} \u{641}\u{631}\u{633}\u{62A}\u{646}\u{62F}\u{647}" + ',';//name ferestande
+                str += "\u{646}\u{627}\u{645} \u{6A9}\u{627}\u{631}\u{628}\u{631}\u{6CC} \u{641}\u{631}\u{633}\u{62A}\u{646}\u{62F}\u{647}" + ','; //name karbariye ferestande
+                str += "\u{645}\u{62A}\u{646} \u{67E}\u{6CC}\u{627}\u{645}" + ',';//matne payam
+                str += '\r\n';
+                var line = '', radif = 1;
+                for (var i = 0; i < result.length; i++) {
+                    line = '';
+
+                    if(result[i].messageType !== 1) {
+                        continue;
+                    }
+
+                    var sender = '';
+                    if(result[i].participant.contactName) {
+                        sender = result[i].participant.contactName + ',';
+                    } else {
+                        if(result[i].participant.firstName) {
+                            sender = result[i].participant.firstName + ' ';
+                        }
+                        if(result[i].participant.lastName) {
+                            sender += result[i].participant.lastName;
+                        }
+                        sender += ','
+                    }
+
+                    line += new Date(result[i].time).toLocaleDateString('fa-IR') + ',';
+                    line += new Date(result[i].time).toLocaleTimeString('fa-IR') + ',';
+                    line += sender;
+                    line += result[i].participant.username + ',';
+                    line += result[i].message.replaceAll(",", ".").replace(/(\r\n|\n|\r)/gm, " ") + ',';
+
+                    str += line + '\r\n';
+                    radif++;
+                }
+                var blob = new Blob([str], { type: 'text/csv;charset=utf-8;' });
                 chatEvents.fireEvent('threadEvents', {
                     type: 'EXPORT_CHAT',
                     subType: 'DONE',
@@ -73343,7 +73364,7 @@ WildEmitter.mixin(WildEmitter);
                         url = URL.createObjectURL(blob);
                     //if (link.download !== undefined) { // feature detection
                         // Browsers that support HTML5 download attribute
-                    link.setAttribute("href", url);
+                    link.setAttribute("href", 'data:text/csv; charset=utf-8,' + encodeURIComponent(universalBOM + str));
                     link.setAttribute("download", exportedFilename);
                     if(autoStartDownload) {
                         link.style.visibility = 'hidden';
@@ -73366,7 +73387,9 @@ WildEmitter.mixin(WildEmitter);
                 }
                 //}
                 callback = undefined;
-            });
+            })/*.catch(function (result) {
+                consoleLogging && console.log(result);
+            });*/
         }
 
         this.startCall = callModule.startCall;
