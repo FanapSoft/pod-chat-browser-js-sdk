@@ -3,6 +3,20 @@
 All notable changes to this project will be documented here.
 to see complete list of changelog please visit [ChangeLog](https://github.com/masoudmanson/pod-chat/blob/master/changelog.md)
 
+## [12.1.0] - 2021-12-25
+### Added
+- Browsers default "stop sharing" button event handler
+- Sample to admin a user in a thread
+
+### Fixed
+- rejectCall in p2p calls
+- exportChat result headers not readable
+
+## [11.4.3] - 2021-12-13
+### Added
+- Poor Connection metadata
+
+
 ## [11.4.2] - 2021-12-13
 ### Added
 - Call metadata
