@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 
 (function () {
     /*
@@ -13608,12 +13608,11 @@
                 var str = ''
                     , universalBOM = "\uFEFF";
 
-                console.log(result);
-                str += "تاریخ " + ',';
-                str += " ساعت " + ',';
-                str += "نام فرستنده" + ',';
-                str += "نام کاربری فرستنده" + ',';
-                str += "متن پیام" + ',';
+                str += "\u{62A}\u{627}\u{631}\u{6CC}\u{62E} " + ','; //tarikh
+                str += " \u{633}\u{627}\u{639}\u{62A} " + ','; //saat
+                str += "\u{646}\u{627}\u{645} \u{641}\u{631}\u{633}\u{62A}\u{646}\u{62F}\u{647}" + ',';//name ferestande
+                str += "\u{646}\u{627}\u{645} \u{6A9}\u{627}\u{631}\u{628}\u{631}\u{6CC} \u{641}\u{631}\u{633}\u{62A}\u{646}\u{62F}\u{647}" + ','; //name karbariye ferestande
+                str += "\u{645}\u{62A}\u{646} \u{67E}\u{6CC}\u{627}\u{645}" + ',';//matne payam
                 str += '\r\n';
                 var line = '', radif = 1;
                 for (var i = 0; i < result.length; i++) {
