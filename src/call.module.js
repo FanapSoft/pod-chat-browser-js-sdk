@@ -15,7 +15,6 @@
         }
 
 
-
         var Utility = params.Utility,
             currentModuleInstance = this,
             Sentry = params.Sentry,
@@ -156,6 +155,18 @@
                 'VIDEO': 0x1
             },
             callOptions = params.callOptions,
+            isPrivateIP = function (ip) {
+                var r = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
+
+                if(!ip.match(r))
+                    return false;
+
+                var parts = ip.split('.');
+                return parts[0] === '10' ||
+                    (parts[0] === '172' && (parseInt(parts[1], 10) >= 16 && parseInt(parts[1], 10) <= 31)) ||
+                    (parts[0] === '192' && parts[1] === '168');
+            },
+            useInternalTurnAddress = isPrivateIP(params.socketAddress), // !!(params.callOptions && params.callOptions.useInternalTurnAddress),
             callTurnIp = (params.callOptions
                 && params.callOptions.hasOwnProperty('callTurnIp')
                 && typeof params.callOptions.callTurnIp === 'string')
@@ -853,8 +864,11 @@
                     });
                 },
                 getTurnServer: function (params) {
-                    if (!!params.turnAddress && params.turnAddress.length > 0) {
-                        var serversTemp = params.turnAddress.split(',');
+                    console.log({useInternalTurnAddress})
+                    if (!!params.turnAddress && params.turnAddress.length > 0
+                        || (useInternalTurnAddress && !!params.internalTurnAddress && params.turnAddress.length > 0 )) {
+
+                        var serversTemp = useInternalTurnAddress ? params.internalTurnAddress.split(',') : params.turnAddress.split(',');
 
                         return [
                             {
@@ -1923,6 +1937,7 @@
                             screenShare: messageContent.chatDataDto.screenShare,
                             brokerAddress: messageContent.chatDataDto.brokerAddressWeb,
                             turnAddress: messageContent.chatDataDto.turnAddress,
+                            internalTurnAddress: messageContent.chatDataDto.internalTurnAddress,
                             selfData: messageContent.clientDTO,
                             clientsList: messageContent.otherClientDtoList
                         }, function (callDivs) {
