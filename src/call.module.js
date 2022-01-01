@@ -218,7 +218,6 @@
                 },
                 cameraPaused: true
             },
-            uiRemoteMedias = {},
             callStopQueue = {
                 callStarted: false,
             },
@@ -840,7 +839,6 @@
                                 })
                                 options.videoStream = stream;
                                 options.sendSource = 'screen';
-                                // options[(direction === 'send' ? 'localVideo' : 'remoteVideo')] = uiRemoteMedias[topic];
                                 resolve(options);
                             }).catch(function (error) {
                                 console.error("[SDK][navigator.mediaDevices.getDisplayMedia]", error);
@@ -1602,43 +1600,6 @@
                 currentCallId = null;
             },
 
-            /*
-                        removeStreamFromWebRTC = function (RTCStream) {
-                            var callParentDiv = document.getElementById(callDivId);
-
-                            if (uiRemoteMedias.hasOwnProperty(RTCStream)) {
-                                const stream = uiRemoteMedias[RTCStream].srcObject;
-                                if (!!stream) {
-                                    const tracks = stream.getTracks();
-
-                                    if (!!tracks) {
-                                        tracks.forEach(function (track) {
-                                            track.stop();
-                                        });
-                                    }
-
-                                    uiRemoteMedias[RTCStream].srcObject = null;
-                                }
-
-                                uiRemoteMedias[RTCStream].remove();
-                                delete (uiRemoteMedias[RTCStream]);
-                            }
-                        },
-
-
-                        removeFromCallUI = function (topic) {
-                            var videoElement = 'Vi-' + topic;
-                            var audioElement = 'Vo-' + topic;
-
-                            if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(videoElement)) {
-                                removeStreamFromWebRTC(videoElement);
-                            }
-
-                            if (topic.length > 0 && uiRemoteMedias.hasOwnProperty(audioElement)) {
-                                removeStreamFromWebRTC(audioElement);
-                            }
-                        },
-            */
 
             restartMediaOnKeyFrame = function (userId, timeout) {
                 setTimeout(function () {
