@@ -13601,7 +13601,7 @@
             requestExportChat(stackArr, wantedCount, stepCount, offset, sendData).then(function (result) {
                 consoleLogging && console.log("[SDK][exportChat] Export done..., Now converting...");
 
-                var exportedFilename = 'export-' + params.threadId + '.csv',
+                var exportedFilename = (params.fileName || 'export-' + params.threadId) + '.csv',
                     responseType = params.responseType !== null ? params.responseType : "blob",
                     autoStartDownload = params.autoStartDownload !== null ? params.autoStartDownload : true
 

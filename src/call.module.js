@@ -1042,11 +1042,21 @@
                         }
 
                         if(user.peers[topic].peerConnection.connectionState === 'connected') {
-                            if(mediaType === 'video' && direction === 'send') {
-                                user.topicMetaData[topic].connectionQualityInterval = setInterval(function() {
-                                    callController.checkConnectionQuality(userId, topic, mediaType, direction)
-                                }, 1000);
+                            if(mediaType === 'video') {
+                                if(direction === 'send') {
+                                    user.topicMetaData[topic].connectionQualityInterval = setInterval(function() {
+                                        callController.checkConnectionQuality(userId, topic, mediaType, direction)
+                                    }, 1000);
+                                }
+
+                                if(direction === 'receive') {
+                                    chatEvents.fireEvent("callEvents", {
+                                        type: "RECEIVE_VIDEO_CONNECTION_ESTABLISHED",
+                                        userId: userId
+                                    })
+                                }
                             }
+
                         }
                     }
 
@@ -1672,6 +1682,14 @@
 
 
             asyncRequestTimeouts[uniqueId] && clearTimeout(asyncRequestTimeouts[uniqueId]);
+
+            if(jsonMessage.done === 'FALSE') {
+                chatEvents.fireEvent('callEvents', {
+                    type: 'CALL_ERROR',
+                    code: 7000,
+                    message: "Kurento error: " + (jsonMessage.desc ? jsonMessage.desc : jsonMessage.message)
+                });
+            }
 
             switch (jsonMessage.id) {
                 case 'PROCESS_SDP_ANSWER':
