@@ -585,12 +585,6 @@
                         if(!callUsers[i].mute) {
                             callController.startParticipantAudio(i);
                         }
-                        /*if (params.callVideo) {
-                            callController.startParticipantVideo(i);
-                        }*/
-                        /*if(params.callAudio) {
-                            callController.startParticipantAudio(i);
-                        }*/
                     }
                 },
                 setupCallParticipant: function (participant) {
@@ -1032,13 +1026,10 @@
                                 errorMessage: `Call Peer (${topic}) has failed!`,
                                 errorInfo: user.peers[topic]
                             });
-                            // setTimeout(function () {
 
                             if(chatMessaging.chatState) {
                                 callController.shouldReconnectTopic(userId, topic, mediaType, direction);
                             }
-                            // }, 7000);
-                            //callController.removeConnectionQualityInterval(userId, topic);
                         }
 
                         if(user.peers[topic].peerConnection.connectionState === 'connected') {
@@ -1086,15 +1077,7 @@
                             });
                             if(chatMessaging.chatState) {
                                 callController.shouldReconnectTopic(userId, topic, mediaType, direction);
-                                //callController.removeConnectionQualityInterval(userId, topic);
                             }
-                            // } else {
-                            //     setTimeout(function () {
-                            //         if(chatMessaging.chatState) {
-                            //             callController.shouldReconnectTopic(userId, topic, mediaType, direction);
-                            //         }
-                            //     }, 7000);
-                            // }
                         }
 
                         if (user.peers[topic].peerConnection.iceConnectionState === "connected") {
@@ -1610,7 +1593,6 @@
                 currentCallId = null;
             },
 
-
             restartMediaOnKeyFrame = function (userId, timeout) {
                 setTimeout(function () {
                     if(typeof callUsers[userId] !== "undefined" && callUsers[userId] && callUsers[userId].peers[callUsers[userId].videoTopicName])
@@ -1634,6 +1616,7 @@
                     callback && callback(res)
                 });
             },
+
             handleReceivedMetaData = function (jsonMessage) {
                 var id = jsonMessage.id;
                 if(!id || typeof id === "undefined" || jsonMessage.userid == chatMessaging.userInfo.id) {
@@ -1667,7 +1650,6 @@
                 }
 
             }
-
 
 
         this.updateToken = function (newToken) {
