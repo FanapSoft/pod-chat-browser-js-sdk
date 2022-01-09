@@ -568,11 +568,6 @@
                         }
                     });
                 },
-                /**
-                 * First we start a call
-                 *
-                 * @param params
-                 */
                 startCall: function (params) {
                     var callController = this;
                     for(var i in callUsers) {
@@ -708,23 +703,11 @@
 
                     return user.htmlElements;
                 },
-                /**
-                 * When call started we can add participants
-                 *
-                 * @param params
-                 * @param direction
-                 */
                 addParticipant: function (params, direction) {
                     //TODO: generate html elements
                     //TODO: add user to callUsers
                     //TODO: createTopics
                 },
-                /**
-                 * When call started we can remove a participant from the call
-                 *
-                 * @param params
-                 * @param direction
-                 */
                 removeParticipant: function (userId) {
                     var user = callUsers[userId];
                     if(!user)
