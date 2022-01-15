@@ -193,7 +193,6 @@
             currentCallId = null,
             newCallId = null,
             shouldReconnectCallTimeout = null,
-            callTopics = {},
             callMetaDataTypes = {
                 POORCONNECTION: 1,
                 POORCONNECTIONRESOLVED: 2
@@ -207,9 +206,7 @@
                 ANDROID: 2,
                 DESKTOP: 3
             },
-            webpeers = {},
             callUsers = {},
-            webpeersMetadata = {},
             callRequestController = {
                 callRequestReceived: false,
                 callEstablishedInMySide: false,
@@ -1177,9 +1174,6 @@
                     var callController = this,
                         screenShare = callUsers["screenShare"];
                     if(screenShare.peers[screenShare.videoTopicName]) {
-                        // Local Video Tag
-
-                        //removeStreamFromWebRTC(callTopics['screenShare']);
                         callStateController.removeStreamFromWebRTC('screenShare', screenShare.videoTopicName)
                         callStateController.removeTopic('screenShare', screenShare.videoTopicName);
                         chatEvents.fireEvent('callEvents', {
@@ -1413,7 +1407,7 @@
                 if (currentCallParams && Object.keys(currentCallParams).length) {
                     consoleLogging && console.log('[SDK] Sending Key Frame ...');
 
-                    var videoTopic = !!videoTopicParam ? videoTopicParam : callUsers[chatMessaging.userInfo.id].videoTopicName;//callTopics['sendVideoTopic'];
+                    var videoTopic = !!videoTopicParam ? videoTopicParam : callUsers[chatMessaging.userInfo.id].videoTopicName;
                     let videoElement = document.getElementById(`uiRemoteVideo-${videoTopic}`);
 
                     if (videoElement) {
@@ -1499,10 +1493,7 @@
                     consoleLogging && console.log("[SDK][handleProcessSdpAnswer]", jsonMessage, jsonMessage.topic)
                     startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
                     if(userId === 'screenShare') {
-                        restartMediaOnKeyFrame("screenShare", 2000);
-                        restartMediaOnKeyFrame("screenShare", 4000);
-                        restartMediaOnKeyFrame("screenShare", 8000);
-                        restartMediaOnKeyFrame("screenShare", 12000);
+                        restartMediaOnKeyFrame("screenShare", [2000, 4000, 8000, 12000]);
                     }
                 });
             },
@@ -1576,11 +1567,13 @@
                 currentCallId = null;
             },
 
-            restartMediaOnKeyFrame = function (userId, timeout) {
-                setTimeout(function () {
-                    if(typeof callUsers[userId] !== "undefined" && callUsers[userId] && callUsers[userId].peers[callUsers[userId].videoTopicName])
-                        restartMedia(callUsers[userId].videoTopicName);
-                }, timeout);
+            restartMediaOnKeyFrame = function (userId, timeouts) {
+                for (var i = 0; i < timeouts.length; i++) {
+                    setTimeout(function () {
+                        if(typeof callUsers[userId] !== "undefined" && callUsers[userId] && callUsers[userId].peers[callUsers[userId].videoTopicName])
+                            restartMedia(callUsers[userId].videoTopicName);
+                    }, timeouts[i]);
+                }
             },
 
             sendCallMetaData = function (params, callback) {
@@ -1667,19 +1660,13 @@
 
                 case 'GET_KEY_FRAME':
                     if(callUsers && callUsers[chatMessaging.userInfo.id] && callUsers[chatMessaging.userInfo.id].video) {
-                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, 2000);
-                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
-                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
-                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
+                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, [2000,4000,8000,12000]);
                     }
                     if(callUsers && callUsers['screenShare']
                         && callUsers['screenShare'].video
                         && screenShareState.started
                         && screenShareState.imOwner) {
-                        restartMediaOnKeyFrame('screenShare', 2000);
-                        restartMediaOnKeyFrame('screenShare', 4000);
-                        restartMediaOnKeyFrame('screenShare', 8000);
-                        restartMediaOnKeyFrame('screenShare', 12000);
+                        restartMediaOnKeyFrame('screenShare', [2000,4000,8000,12000]);
                     }
                     break;
 
@@ -1961,9 +1948,7 @@
                         type: 'CALL_PARTICIPANT_CONNECTED',
                         result: messageContent
                     });
-//callTopics['sendVideoTopic']
-                    //restartMedia(callUsers[chatMessaging.userInfo.id].videoTopicName);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, [100])
 
                     break;
 
@@ -2071,8 +2056,17 @@
                         result: messageContent
                     });
 
-                    //restartMedia(callTopics['sendVideoTopic']);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
+                    if(callUsers && callUsers[chatMessaging.userInfo.id] && callUsers[chatMessaging.userInfo.id].video) {
+                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, [2000, 4000, 8000, 12000, 16000, 24000]);
+
+                    }
+                    if(callUsers && callUsers['screenShare']
+                        && callUsers['screenShare'].video
+                        && screenShareState.started
+                        && screenShareState.imOwner) {
+                        restartMediaOnKeyFrame('screenShare', [2000, 4000, 8000, 12000, 16000, 24000]);
+                    }
+
                     break;
 
                 /**
@@ -2281,15 +2275,8 @@
                         result: messageContent
                     });
 
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 25000);
-
-                    restartMediaOnKeyFrame("screenShare", 4000);
-                    restartMediaOnKeyFrame("screenShare", 8000);
-                    restartMediaOnKeyFrame("screenShare", 12000);
-                    restartMediaOnKeyFrame("screenShare", 25000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, [4000,8000,12000,25000]);
+                    restartMediaOnKeyFrame("screenShare", [4000,8000,12000,25000]);
 
                     break;
 
@@ -2386,15 +2373,9 @@
                         result: messageContent
                     });
 
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 4000);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 8000);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 12000);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 25000);
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, [4000,8000,12000,25000]);
 
-                    restartMediaOnKeyFrame("screenShare", 4000);
-                    restartMediaOnKeyFrame("screenShare", 8000);
-                    restartMediaOnKeyFrame("screenShare", 12000);
-                    restartMediaOnKeyFrame("screenShare", 25000);
+                    restartMediaOnKeyFrame("screenShare", [4000,8000,12000,25000]);
 
                     break;
             }
@@ -2694,7 +2675,7 @@
             return chatMessaging.sendMessage(recordCallData, {
                 onResult: function (result) {
                     //restartMedia(callTopics['sendVideoTopic']);
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, 100)
+                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, [100])
                     callback && callback(result);
                 }
             });
