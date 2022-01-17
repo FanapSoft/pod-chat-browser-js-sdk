@@ -831,7 +831,7 @@
                         || (useInternalTurnAddress && !!params.internalTurnAddress && params.turnAddress.length > 0 )) {
 
                         var serversTemp = useInternalTurnAddress ? params.internalTurnAddress.split(',') : params.turnAddress.split(',');
-                        console.log({useInternalTurnAddress}, params.internalTurnAddress.split(','))
+
                         return [
                             {
                                 "urls": "turn:" + serversTemp[0],
@@ -1123,8 +1123,10 @@
                     }
                 },
                 removeConnectionQualityInterval: function (userId, topic) {
-                    callUsers[userId].topicMetaData[topic]['poorConnectionCount'] = 0;
-                    clearInterval(callUsers[userId].topicMetaData[topic]['connectionQualityInterval']);
+                    if(callUsers[userId] && callUsers[userId].topicMetaData[topic]) {
+                        callUsers[userId].topicMetaData[topic]['poorConnectionCount'] = 0;
+                        clearInterval(callUsers[userId].topicMetaData[topic]['connectionQualityInterval']);
+                    }
                 },
                 removeStreamFromWebRTC : function (userId, topic) {
                     if(callUsers[userId].htmlElements[topic]){
@@ -1199,7 +1201,7 @@
                                 }
                                 if(user.audioTopicName && user.peers[user.audioTopicName]) {
                                     clearInterval(callUsers[i].topicMetaData[user.audioTopicName].interval);
-                                    callStateController.removeConnectionQualityInterval(i, user.audioTopicName);
+                                    //callStateController.removeConnectionQualityInterval(i, user.audioTopicName);
                                     callStateController.removeStreamFromWebRTC(i, user.audioTopicName);
 
                                     callUsers[i].peers[user.audioTopicName].dispose();
@@ -1758,7 +1760,18 @@
                         result: messageContent
                     });
 
-                    //currentCallId = messageContent.callId;
+                    if (messageContent.callId > 0) {
+                        if(!currentCallId ) {
+                            currentCallId = messageContent.callId;
+                        }
+                        else
+                            newCallId = messageContent.callId;
+                    } else {
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'PARTNER_RECEIVED_YOUR_CALL',
+                            result: messageContent
+                        });
+                    }
 
                     break;
 
@@ -1805,9 +1818,9 @@
                             type: 'RECEIVE_CALL',
                             result: messageContent
                         });
-
-                        if(!currentCallId)
+                        if(!currentCallId ) {
                             currentCallId = messageContent.callId;
+                        }
                         else
                             newCallId = messageContent.callId;
                     } else {
@@ -1816,8 +1829,6 @@
                             result: messageContent
                         });
                     }
-
-
 
                     break;
 
