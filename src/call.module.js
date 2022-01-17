@@ -2864,6 +2864,10 @@
                     content.callIds = params.callIds;
                 }
 
+                if (typeof params.threadId === 'string') {
+                    content.threadId = params.threadId;
+                }
+                
                 if (typeof params.contactType === 'string') {
                     content.contactType = params.contactType;
                 }
