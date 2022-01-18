@@ -2406,7 +2406,6 @@
                     content.type = 0x0; // Defaults to AUDIO Call
                 }
 
-                //TODO: Check for mute
                 content.creatorClientDto.mute = (params.mute && typeof params.mute === 'boolean') ? params.mute : false;
                 content.mute = (params.mute && typeof params.mute === 'boolean') ? params.mute : false;
 
@@ -2867,7 +2866,7 @@
                 if (typeof params.threadId === 'string') {
                     content.threadId = params.threadId;
                 }
-                
+
                 if (typeof params.contactType === 'string') {
                     content.contactType = params.contactType;
                 }
