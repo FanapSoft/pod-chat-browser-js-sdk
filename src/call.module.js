@@ -1707,9 +1707,6 @@
                     break;
 
                 case 'RECEIVEMETADATA':
-                    // if (chatMessaging.messagesCallbacks[uniqueId]) {
-                    //     chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
-                    // }
                     handleReceivedMetaData(JSON.parse(jsonMessage.message));
 
                     break;
@@ -2424,15 +2421,16 @@
                 if (typeof +params.threadId === 'number' && +params.threadId > 0) {
                     content.threadId = +params.threadId;
                 } else {
-                    if (Array.isArray(params.invitees)) {
-                        content.invitees = params.invitees;
+                    if (Array.isArray(params.invitees) && params.invitees.length) {
+                        content.invitees = [];//params.invitees;
+                        for (var i = 0; i < params.invitees.length; i++) {
+                            var tempInvitee = params.invitees[i];
 
-                        //for (var i = 0; i < params.invitees.length; i++) {
-                            //var tempInvitee = params.invitees[i];
-                            //if (tempInvitee) {
-                                //content.invitees.push(tempInvitee);
-                            //}
-                        //}
+                            if (tempInvitee && typeof tempInvitee.idType === "string") {
+                                tempInvitee.idType = inviteeVOidTypes[tempInvitee.idType];
+                                content.invitees.push(tempInvitee);
+                            }
+                        }
                     } else {
                         chatEvents.fireEvent('error', {
                             code: 999,
@@ -2491,14 +2489,16 @@
                     content.threadId = +params.threadId;
                 } else {
                     if (Array.isArray(params.invitees)) {
-                        content.invitees = params.invitees;
+                        content.invitees = [];
 
-                        //for (var i = 0; i < params.invitees.length; i++) {
-                        //var tempInvitee = params.invitees[i];
-                        //if (tempInvitee) {
-                        //content.invitees.push(tempInvitee);
-                        //}
-                        //}
+                        for (var i = 0; i < params.invitees.length; i++) {
+                            var tempInvitee = params.invitees[i];
+
+                            if (tempInvitee && typeof tempInvitee.idType === "string") {
+                                tempInvitee.idType = inviteeVOidTypes[tempInvitee.idType];
+                                content.invitees.push(tempInvitee);
+                            }
+                        }
                     } else {
                         chatEvents.fireEvent('error', {
                             code: 999,
