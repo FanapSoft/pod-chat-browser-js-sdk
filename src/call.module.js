@@ -107,7 +107,7 @@
                 TERMINATE_CALL: 96,
                 MUTE_CALL_PARTICIPANT: 97,
                 UNMUTE_CALL_PARTICIPANT: 98,
-                CANCEL_GROUP_CALL: 99,  //TODO: not implemented
+                CANCEL_GROUP_CALL: 99,
                 LOGOUT: 100,
                 LOCATION_PING: 101,
                 CLOSE_THREAD: 102,
@@ -2168,6 +2168,21 @@
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_PARTICIPANT_UNMUTE',
+                        result: messageContent
+                    });
+
+                    break;
+
+                /**
+                 * Type 99   Partner rejected call
+                 */
+                case chatMessageVOTypes.CANCEL_GROUP_CALL:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+
+                    chatEvents.fireEvent('callEvents', {
+                        type: 'REJECT_GROUP_CALL',
                         result: messageContent
                     });
 

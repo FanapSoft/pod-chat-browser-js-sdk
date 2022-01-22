@@ -167,6 +167,7 @@
                 TERMINATE_CALL: 96,
                 MUTE_CALL_PARTICIPANT: 97,
                 UNMUTE_CALL_PARTICIPANT: 98,
+                CANCEL_GROUP_CALL: 99,
                 LOGOUT: 100,
                 LOCATION_PING: 101,
                 CLOSE_THREAD: 102,
@@ -2955,6 +2956,7 @@
                     case chatMessageVOTypes.TURN_OFF_VIDEO_CALL:
                     case chatMessageVOTypes.ACTIVE_CALL_PARTICIPANTS:
                     case chatMessageVOTypes.CALL_SESSION_CREATED:
+                    case chatMessageVOTypes.CANCEL_GROUP_CALL:
                     case chatMessageVOTypes.DESTINATED_RECORD_CALL:
                         callModule.handleChatMessages(type, chatMessageVOTypes, messageContent, contentCount, threadId, uniqueId);
                         break;
