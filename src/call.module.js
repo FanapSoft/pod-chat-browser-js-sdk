@@ -195,7 +195,8 @@
             shouldReconnectCallTimeout = null,
             callMetaDataTypes = {
                 POORCONNECTION: 1,
-                POORCONNECTIONRESOLVED: 2
+                POORCONNECTIONRESOLVED: 2,
+                CUSTOMUSERMETADATA: 3
             },
             screenShareState = {
                 started: false,
@@ -900,8 +901,10 @@
                                         sendCallMetaData({
                                             id: callMetaDataTypes.POORCONNECTION,
                                             userid: userId,
-                                            title: 'Poor Connection',
-                                            description: topic
+                                            content: {
+                                                title: 'Poor Connection',
+                                                description: topic,
+                                            }
                                         });
                                     } else {
                                         callUsers[userId].topicMetaData[topic].poorConnectionCount++;
@@ -924,8 +927,10 @@
                                         sendCallMetaData({
                                             id: callMetaDataTypes.POORCONNECTIONRESOLVED,
                                             userid: userId,
-                                            title: 'Poor Connection Resolved',
-                                            description: topic
+                                            content: {
+                                                title: 'Poor Connection Resolved',
+                                                description: topic
+                                            }
                                         });
                                     } else {
                                         userMetadata.poorConnectionResolvedCount++;
@@ -1578,25 +1583,23 @@
                 }
             },
 
-            sendCallMetaData = function (params, callback) {
+            sendCallMetaData = function (params) {
                 var message =  {
                     id: params.id,
                     userid: params.userid,
-                    title: params.title,
-                    description: params.description
+                    content: params.content || undefined
                 };
 
                 sendCallMessage({
                     id: 'SENDMETADATA',
                     message: JSON.stringify(message),
                     chatId: currentCallId
-                }, function (res) {
-                    callback && callback(res)
                 });
             },
 
-            handleReceivedMetaData = function (jsonMessage) {
-                var id = jsonMessage.id;
+            handleReceivedMetaData = function (jsonMessage, uniqueId) {
+                var jMessage = JSON.parse(jsonMessage.message);
+                var id = jMessage.id;
                 if(!id || typeof id === "undefined" || jsonMessage.userid == chatMessaging.userInfo.id) {
                     return;
                 }
@@ -1608,9 +1611,9 @@
                             subType: 'SHORT_TIME',
                             message: 'Poor connection detected',
                             metadata: {
-                                elementId: "uiRemoteVideo-" + jsonMessage.description,
-                                topic: jsonMessage.description,
-                                userId: jsonMessage.userid
+                                elementId: "uiRemoteVideo-" + jMessage.content.description,
+                                topic: jMessage.content.description,
+                                userId: jMessage.userid
                             }
                         });
                         break;
@@ -1619,10 +1622,20 @@
                             type: 'POOR_VIDEO_CONNECTION_RESOLVED',
                             message: 'Poor connection resolved',
                             metadata: {
-                                elementId: "uiRemoteVideo-" + jsonMessage.description,
-                                topic: jsonMessage.description,
-                                userId: jsonMessage.userid
+                                elementId: "uiRemoteVideo-" + jMessage.content.description,
+                                topic: jMessage.content.description,
+                                userId: jMessage.userid
                             }
+                        });
+                        break;
+                    case callMetaDataTypes.CUSTOMUSERMETADATA:
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](jsonMessage);
+                        }
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'CUSTOM_USER_METADATA',
+                            userId: jMessage.userid,
+                            content: jMessage.content
                         });
                         break;
                 }
@@ -1707,7 +1720,7 @@
                     break;
 
                 case 'RECEIVEMETADATA':
-                    handleReceivedMetaData(JSON.parse(jsonMessage.message));
+                    handleReceivedMetaData(jsonMessage, uniqueId);
 
                     break;
 
@@ -2539,6 +2552,14 @@
                 onResult: function (result) {
                     callback && callback(result);
                 }
+            });
+        };
+
+        this.sendCallMetaData = function (params) {
+            sendCallMetaData({
+                id: callMetaDataTypes.CUSTOMUSERMETADATA,
+                userid: chatMessaging.userInfo.id,
+                content: params.content
             });
         };
 

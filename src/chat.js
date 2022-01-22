@@ -13751,6 +13751,8 @@
 
         this.callStop = callModule.callStop;
 
+        this.sendCallMetaData = callModule.sendCallMetaData;
+
         this.getMutualGroups = function (params, callback) {
             var count = +params.count ? +params.count : 50,
                 offset = +params.offset ? +params.offset : 0;
