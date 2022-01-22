@@ -1241,7 +1241,7 @@
                 },
                 findUserIdByTopic: function (topic) {
                     for(var i in callUsers) {
-                        if (callUsers[i].videoTopicName === topic || callUsers[i].audioTopicName === topic) {
+                        if (callUsers[i] && (callUsers[i].videoTopicName === topic || callUsers[i].audioTopicName === topic)) {
                             //peer = callUsers[i].peers[jsonMessage.topic];
                             return i;
                         }
