@@ -2232,6 +2232,7 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 <hr>
 <br>
 
+<!--
 <form method="POST" action="https://sandbox.pod.ir:8043/srv/basic-platform/nzh/addContacts">
     <fieldset>
         <legend>Add Contact</legend>
@@ -2258,7 +2259,51 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
         <button type="submit">Add Contact</button>
     </fieldset>
 </form>
+-->
+<form method="POST" >
+    <fieldset>
+        <legend>Add Contact New</legend>
+        <label for="firstNameAdd">firstName : </label>
+        <input type="text" name="firstName" id="firstNameAdd" value="">
+        <br>
+        <label for="lastNameAdd">lastName : </label>
+        <input type="text" name="lastName" id="lastNameAdd" value="">
+        <br>
+        <label for="cellphoneNumberAdd">cellphoneNumber : </label>
+        <input type="text" name="cellphoneNumber" id="cellphoneNumberAdd" value="">
+        <br>
+        <label for="userNameAdd">username : </label>
+        <input type="text" name="userName" id="userNameAdd" value="">
+        <br>
+        <label for="emailAdd">email : </label>
+        <input type="text" name="email" id="emailAdd" value="">
+        <br>
+        <input type="hidden" name="_token_issuer_" value="1">
+        <button id="newAddContacts" type="submit">Add Contact</button>
+    </fieldset>
+</form>
+<script>
+    document.getElementById("newAddContacts").addEventListener("click", function (event) {
+        event.preventDefault();
+        var firstName = document.getElementById("firstNameAdd");
+        var lastName = document.getElementById("lastNameAdd");
+        var email = document.getElementById("emailAdd");
+        var cellphoneNumber = document.getElementById("cellphoneNumberAdd");
+        var username = document.getElementById("userNameAdd");
 
+        chatAgent.newAddContacts({
+            contacts: [
+                {
+                    firstName,
+                    lastName,
+                    email,
+                    cellphoneNumber,
+                    username
+                }
+            ]
+        });
+    });
+</script>
 
 <br>
 <hr>

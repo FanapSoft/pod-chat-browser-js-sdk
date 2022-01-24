@@ -202,6 +202,7 @@
                 GET_TAG_LIST: 145,
                 DELETE_MESSAGE_THREAD: 151,
                 EXPORT_CHAT: 152,
+                ADD_CONTACTS: 200,
                 ERROR: 999
             },
             inviteeVOidTypes = {
@@ -3262,6 +3263,15 @@
                             chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount, uniqueId));
                         }
 
+                        break;
+
+                    /**
+                     * Type 200    Adding a user to contacts list
+                     */
+                    case chatMessageVOTypes.ADD_CONTACTS:
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount, uniqueId));
+                        }
                         break;
 
                     /**
@@ -12052,6 +12062,196 @@
                     });
                 }
             });
+        };
+
+        this.newAddContacts  = function (params, callback) {
+            var addContactsData = {
+                chatMessageVOType: chatMessageVOTypes.ADD_CONTACTS,
+                content: {},
+                pushMsgType: 3,
+                token: token,
+                typeCode: generalTypeCode
+            },
+                AddContactVO = {},
+                firstNameList = [],
+                lastNameList = [],
+                cellPhoneNumberList = [],
+                emailList = [],
+                usernameList = [],
+                uniqueIdList = [];
+
+            if (params) {
+                for(var item in params.contacts) {
+                    if (typeof params.contacts[item].firstName === 'string') {
+                        firstNameList.push(params.contacts[item].firstName);
+                    } else {
+                        firstNameList.push('');
+                    }
+
+                    if (typeof params.contacts[item].lastName === 'string') {
+                        lastNameList.push(params.contacts[item].lastName)
+                    } else {
+                        lastNameList.push('');
+                    }
+
+                    if (typeof params.contacts[item].cellphoneNumber === 'string') {
+                        cellPhoneNumberList.push(params.contacts[item].cellphoneNumber)
+                        // data.cellphoneNumber = params.cellphoneNumber;
+                    } else {
+                        cellPhoneNumberList.push('');
+                        // data.cellphoneNumber = '';
+                    }
+
+                    if (typeof params.contacts[item].email === 'string') {
+                        emailList.push(params.contacts[item].email);
+                        // data.email = params.email;
+                    } else {
+                        emailList.push('');
+                        // data.email = '';
+                    }
+
+                    if (typeof params.contacts[item].username === 'string') {
+                        usernameList.push(params.contacts[item].username);
+                        // data.username = params.username;
+                    }
+
+                    uniqueIdList.push(Utility.generateUUID());
+                    // data.uniqueId = Utility.generateUUID();
+                }
+
+                AddContactVO = {
+                    uniqueIdList: uniqueIdList,
+                    emailList: emailList,
+                    usernameList: usernameList,
+                    firstNameList: firstNameList,
+                    lastNameList: lastNameList
+                };
+            }
+
+            addContactsData.content = AddContactVO;
+
+            return chatMessaging.sendMessage(addContactsData, {
+                onResult: function (result) {
+                    console.log(result);
+                    var responseData = JSON.parse(result.result.responseText);
+
+                    var returnData = {
+                        hasError: responseData.hasError,
+                        cache: false,
+                        errorMessage: responseData.message,
+                        errorCode: responseData.errorCode
+                    };
+
+                    if (typeof result.result == 'object') {
+                        var messageContent = responseData.result,
+                            messageLength = responseData.result.length,
+                            resultData = {
+                                contacts: [],
+                                contentCount: messageLength
+                            },
+                            contactData;
+
+                        for (var i = 0; i < messageLength; i++) {
+                            contactData = formatDataToMakeContact(messageContent[i]);
+                            if (contactData) {
+                                resultData.contacts.push(contactData);
+                            }
+                        }
+
+                        returnData.result = resultData;
+
+                        /**
+                         * Add Contacts into cache database #cache
+                         */
+                        if (canUseCache && cacheSecret.length > 0) {
+                            if (db) {
+                                var cacheData = [];
+
+                                for (var i = 0; i < resultData.contacts.length; i++) {
+                                    try {
+                                        var tempData = {},
+                                            salt = Utility.generateUUID();
+                                        tempData.id = resultData.contacts[i].id;
+                                        tempData.owner = chatMessaging.userInfo.id;
+                                        tempData.uniqueId = resultData.contacts[i].uniqueId;
+                                        tempData.userId = Utility.crypt(resultData.contacts[i].userId, cacheSecret, salt);
+                                        tempData.cellphoneNumber = Utility.crypt(resultData.contacts[i].cellphoneNumber, cacheSecret, salt);
+                                        tempData.email = Utility.crypt(resultData.contacts[i].email, cacheSecret, salt);
+                                        tempData.firstName = Utility.crypt(resultData.contacts[i].firstName, cacheSecret, salt);
+                                        tempData.lastName = Utility.crypt(resultData.contacts[i].lastName, cacheSecret, salt);
+                                        tempData.expireTime = new Date().getTime() + cacheExpireTime;
+                                        tempData.data = Utility.crypt(JSON.stringify(unsetNotSeenDuration(resultData.contacts[i])), cacheSecret, salt);
+                                        tempData.salt = salt;
+
+                                        cacheData.push(tempData);
+                                    } catch (error) {
+                                        chatEvents.fireEvent('error', {
+                                            code: error.code,
+                                            message: error.message,
+                                            error: error
+                                        });
+                                    }
+                                }
+
+                                db.contacts.bulkPut(cacheData)
+                                    .catch(function (error) {
+                                        chatEvents.fireEvent('error', {
+                                            code: error.code,
+                                            message: error.message,
+                                            error: error
+                                        });
+                                    });
+                            } else {
+                                chatEvents.fireEvent('error', {
+                                    code: 6601,
+                                    message: CHAT_ERRORS[6601],
+                                    error: null
+                                });
+                            }
+                        }
+
+                        // }
+                        callback && callback(returnData);
+                    }
+                    //callback && callback(result);
+                }
+            });
+
+            /* var requestParams = {
+                url: SERVICE_ADDRESSES.PLATFORM_ADDRESS + SERVICES_PATH.ADD_CONTACTS,
+                method: 'POST',
+                data: data,
+                headers: {
+                    '_token_': token,
+                    '_token_issuer_': 1
+                }
+            }; */
+
+            /*httpRequest(requestParams, function (result) {
+                if (!result.hasError) {
+                    var responseData = JSON.parse(result.result.responseText);
+
+                    var returnData = {
+                        hasError: responseData.hasError,
+                        cache: false,
+                        errorMessage: responseData.message,
+                        errorCode: responseData.errorCode
+                    };
+
+                    if (!responseData.hasError) {*/
+
+
+
+
+                //} else {
+                  /*  chatEvents.fireEvent('error', {
+                        code: result.errorCode,
+                        message: result.errorMessage,
+                        error: result
+                    });
+                    */
+                //}
+            //});
         };
 
         this.updateContacts = function (params, callback) {
