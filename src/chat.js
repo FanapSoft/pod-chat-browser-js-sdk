@@ -192,6 +192,7 @@
                 END_SCREEN_SHARE: 124,
                 DELETE_FROM_CALL_HISTORY: 125,
                 DESTINATED_RECORD_CALL: 126,
+                GET_CALLS_TO_JOIN: 129,
                 MUTUAL_GROUPS: 130,
                 CREATE_TAG: 140,
                 EDIT_TAG: 141,
@@ -2958,6 +2959,7 @@
                     case chatMessageVOTypes.CALL_SESSION_CREATED:
                     case chatMessageVOTypes.CANCEL_GROUP_CALL:
                     case chatMessageVOTypes.DESTINATED_RECORD_CALL:
+                    case chatMessageVOTypes.GET_CALLS_TO_JOIN:
                         callModule.handleChatMessages(type, chatMessageVOTypes, messageContent, contentCount, threadId, uniqueId);
                         break;
 
@@ -13720,6 +13722,8 @@
         this.endScreenShare = callModule.endScreenShare;
 
         this.getCallsList = callModule.getCallsList;
+
+        this.getCallsToJoin = callModule.getCallsToJoin;
 
         this.deleteFromCallList = callModule.deleteFromCallList;
 

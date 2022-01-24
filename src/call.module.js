@@ -132,6 +132,7 @@
                 END_SCREEN_SHARE: 124,
                 DELETE_FROM_CALL_HISTORY: 125,
                 DESTINATED_RECORD_CALL: 126,
+                GET_CALLS_TO_JOIN: 129,
                 MUTUAL_GROUPS: 130,
                 CREATE_TAG: 140,
                 EDIT_TAG: 141,
@@ -2414,6 +2415,15 @@
                     restartMediaOnKeyFrame("screenShare", [4000,8000,12000,25000]);
 
                     break;
+
+                /**
+                 * Type 129   Get Calls To Join
+                 */
+                case chatMessageVOTypes.GET_CALLS_TO_JOIN:
+                    if (chatMessaging.messagesCallbacks[uniqueId]) {
+                        chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
+                    }
+                    break;
             }
         }
 
@@ -2899,8 +2909,8 @@
                     content.callIds = params.callIds;
                 }
 
-                if (typeof params.threadId === 'string') {
-                    content.threadId = params.threadId;
+                if (typeof params.threadId === 'number' && +params.threadId > 0) {
+                    content.threadId = +params.threadId;
                 }
 
                 if (typeof params.contactType === 'string') {
@@ -2916,6 +2926,62 @@
                 chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'No params have been sent to End the call!'
+                });
+                return;
+            }
+
+            return chatMessaging.sendMessage(getCallListData, {
+                onResult: function (result) {
+                    callback && callback(result);
+                }
+            });
+        };
+
+        this.getCallsToJoin = function (params, callback) {
+            var getCallListData = {
+                chatMessageVOType: chatMessageVOTypes.GET_CALLS_TO_JOIN,
+                pushMsgType: 3,
+                token: token
+            }, content = {};
+
+            if (params) {
+                if (typeof params.count === 'number' && params.count >= 0) {
+                    content.count = +params.count;
+                } else {
+                    content.count = 50;
+                }
+
+                if (typeof params.offset === 'number' && params.offset >= 0) {
+                    content.offset = +params.offset;
+                } else {
+                    content.offset = 0;
+                }
+
+                if (typeof params.creatorSsoId === 'number' && params.creatorSsoId > 0) {
+                    content.creatorSsoId = +params.creatorSsoId;
+                }
+
+                if (typeof params.name === 'string') {
+                    content.name = params.name;
+                }
+
+                if (typeof params.type === 'string' && callTypes.hasOwnProperty(params.type.toUpperCase())) {
+                    content.type = callTypes[params.type.toUpperCase()];
+                }
+
+                if (Array.isArray(params.threadIds)) {
+                    content.threadIds = params.threadIds;
+                }
+
+                if (typeof params.uniqueId === 'string') {
+                    content.uniqueId = params.uniqueId;
+                }
+
+                getCallListData.content = JSON.stringify(content);
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'Invalid params'
                 });
                 return;
             }
