@@ -2477,6 +2477,15 @@
                     }
                 }
 
+                if(params.threadInfo
+                    && (params.threadInfo.title
+                        || params.threadInfo.description
+                        || params.threadInfo.metadata
+                        || params.threadInfo.uniqueName)
+                ) {
+                    startCallData.content.createCallThreadRequest = params.threadInfo
+                }
+
                 startCallData.content = JSON.stringify(content);
             } else {
                 chatEvents.fireEvent('error', {
@@ -2543,6 +2552,15 @@
                         });
                         return;
                     }
+                }
+
+                if(params.threadInfo
+                    && (params.threadInfo.title
+                        || params.threadInfo.description
+                        || params.threadInfo.metadata
+                        || params.threadInfo.uniqueName)
+                ) {
+                    startCallData.content.createCallThreadRequest = params.threadInfo
                 }
 
                 startCallData.content = JSON.stringify(content);
