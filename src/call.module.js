@@ -2560,7 +2560,7 @@
                         || params.threadInfo.metadata
                         || params.threadInfo.uniqueName)
                 ) {
-                    startCallData.content.createCallThreadRequest = params.threadInfo
+                    content.createCallThreadRequest = params.threadInfo
                 }
 
                 startCallData.content = JSON.stringify(content);
