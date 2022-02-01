@@ -13919,6 +13919,8 @@
 
         this.startScreenShare = callModule.startScreenShare;
 
+        this.resizeScreenShare = callModule.resizeScreenShare
+
         this.endScreenShare = callModule.endScreenShare;
 
         this.getCallsList = callModule.getCallsList;
