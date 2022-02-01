@@ -14,8 +14,6 @@
             WebrtcAdapter = window.adapter;
         }
 
-
-
         var Utility = params.Utility,
             currentModuleInstance = this,
             Sentry = params.Sentry,
@@ -197,7 +195,8 @@
             callMetaDataTypes = {
                 POORCONNECTION: 1,
                 POORCONNECTIONRESOLVED: 2,
-                CUSTOMUSERMETADATA: 3
+                CUSTOMUSERMETADATA: 3,
+                SCREENSHAREMETADATA: 4
             },
             screenShareState = {
                 started: false,
@@ -1695,8 +1694,59 @@
                             content: jMessage.content
                         });
                         break;
+                    case callMetaDataTypes.SCREENSHAREMETADATA:
+                        screenShareInfo.setWidth(jMessage.content.dimension.width);
+                        screenShareInfo.setHeight(jMessage.content.dimension.height);
+                        applyScreenShareSizeToElement();
+                        chatEvents.fireEvent("callEvents", {
+                            type: 'SCREENSHARE_METADATA',
+                            userId: jMessage.userid,
+                            content: jMessage.content
+                        });
+                        break;
                 }
 
+            },
+
+            applyScreenShareSizeToElement = function () {
+                var videoElement = callUsers['screenShare'].htmlElements[callUsers['screenShare'].videoTopicName];
+                let videoTrack = videoElement.srcObject.getTracks()[0];
+
+                if (navigator && !!navigator.userAgent.match(/firefox/gi)) {
+                    videoTrack.enable = false;
+                    let newWidth = callVideoMinWidth - (Math.ceil(Math.random() * 50) + 20);
+                    let newHeight = callVideoMinHeight - (Math.ceil(Math.random() * 50) + 20);
+
+                    videoTrack.applyConstraints({
+                        advanced: [
+                            {
+                                width: screenShareInfo.getWidth(),
+                                height: screenShareInfo.getHeight()
+                            },
+                            {
+                                aspectRatio: 1.333
+                            }
+                        ]
+                    }).then((res) => {
+                        videoTrack.enabled = true;
+                        setTimeout(() => {
+                            videoTrack.applyConstraints({
+                                "width": screenShareInfo.getWidth(),
+                                "height": screenShareInfo.getHeight()
+                            });
+                        }, 500);
+                    }).catch(e => consoleLogging && console.log(e));
+                } else {
+                    videoTrack.applyConstraints({
+                        "width": screenShareInfo.getWidth() - (Math.ceil(Math.random() * 5) + 5)
+                    }).then((res) => {
+                        setTimeout(function () {
+                            videoTrack.applyConstraints({
+                                "width": screenShareInfo.getWidth()
+                            });
+                        }, 500);
+                    }).catch(e => consoleLogging && console.log(e));
+                }
             }
 
 
@@ -2141,8 +2191,19 @@
                     }
                     if(callUsers && callUsers['screenShare']
                         && callUsers['screenShare'].video
-                        && screenShareState.started
-                        && screenShareState.imOwner) {
+                        && screenShareInfo.isStarted()
+                        && screenShareInfo.iAmOwner()
+                    ) {
+                        sendCallMetaData({
+                            id: callMetaDataTypes.SCREENSHAREMETADATA,
+                            userid: chatMessaging.userInfo.id,
+                            content: {
+                                dimension: {
+                                    width: screenShareInfo.getWidth(),
+                                    height: screenShareInfo.getHeight()
+                                }
+                            }
+                        });
                         restartMediaOnKeyFrame('screenShare', [2000, 4000, 8000, 12000, 16000, 24000]);
                     }
 
@@ -2891,6 +2952,22 @@
                             direction = 'receive';
                             shareScreen = false;
                         }
+
+                        if(screenShareInfo.isStarted() && screenShareInfo.iAmOwner()) {
+                            screenShareInfo.setWidth(callVideoMinWidth);
+                            screenShareInfo.setHeight(callVideoMinHeight);
+                            sendCallMetaData({
+                                id: callMetaDataTypes.SCREENSHAREMETADATA,
+                                userid: chatMessaging.userInfo.id,
+                                content: {
+                                    dimension: {
+                                        width: screenShareInfo.getWidth(),
+                                        height: screenShareInfo.getHeight()
+                                    }
+                                }
+                            });
+                        }
+
                         callStateController.addScreenShareToCall(direction, shareScreen);
                     }
                     callback && callback(result);
@@ -2943,6 +3020,34 @@
                     callback && callback(result);
                 }
             });
+        };
+
+        this.resizeScreenShare = function (params, callback) {
+            var result = {}
+            if(screenShareInfo.isStarted() && screenShareInfo.iAmOwner()) {
+                screenShareInfo.setWidth(params.width);
+                screenShareInfo.setHeight(params.height);
+
+                applyScreenShareSizeToElement()
+
+                sendCallMetaData({
+                    id: callMetaDataTypes.SCREENSHAREMETADATA,
+                    userid: chatMessaging.userInfo.id,
+                    content: {
+                        dimension: {
+                            width: screenShareInfo.getWidth(),
+                            height: screenShareInfo.getHeight()
+                        }
+                    }
+                })
+
+                result.hasError = false;
+            } else {
+                result.hasError = true;
+                result.errorMessage = 'You can not apply size to others ScreenShare or ScreenShare is not started'
+            }
+
+            callback && callback(result);
         };
 
         this.getCallsList = function (params, callback) {
