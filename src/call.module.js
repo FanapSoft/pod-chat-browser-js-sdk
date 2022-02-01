@@ -2134,6 +2134,8 @@
                     if (!!messageContent[0].userId) {
                         //callStateController.removeFromCallUI(messageContent[0].sendTopic)
                         callStateController.removeParticipant(messageContent[0].userId);
+                        if(screenShareInfo.getOwner() === messageContent[0].userId)
+                            callStateController.removeScreenShareFromCall()
                     }
 
                     //If I'm the only call participant, stop the call
