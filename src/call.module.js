@@ -203,6 +203,7 @@
                 started: false,
                 imOwner: false
             },
+            screenShareInfo = new ScreenShareStateClass(),
             callClientType = {
                 WEB: 1,
                 ANDROID: 2,
@@ -229,6 +230,58 @@
             consoleLogging = (params.asyncLogging.consoleLogging && typeof params.asyncLogging.consoleLogging === 'boolean')
                 ? params.asyncLogging.consoleLogging
                 : false;
+
+        function ScreenShareStateClass() {
+            var config = {
+                ownerId: 0,
+                imOwner: false,
+                isStarted: false,
+                width: callVideoMinWidth,
+                hight: callVideoMinHeight
+            }
+
+            return {
+                setOwner: function (ownerId) {
+                    config.ownerId = +ownerId;
+                },
+                setIsStarted: function (isStarted) {
+                    config.isStarted = isStarted;
+                },
+                isStarted: function () {
+                    return config.isStarted;
+                },
+                iAmOwner: function () {
+                    return config.ownerId === chatMessaging.userInfo.id
+                },
+                setWidth: function (width) {
+                    config.width = width;
+                },
+                setHeight: function (height) {
+                    config.height = height;
+                },
+                getWidth: function (width) {
+                    return config.width;
+                },
+                getHeight: function (height) {
+                    return config.height;
+                },
+                getOwner: function () {
+                    return config.ownerId
+                },
+                setDimension: function (dimension) {
+                    if(dimension
+                        && dimension.width && +dimension.width > 0
+                        && dimension.height  && +dimension.height > 0
+                    ) {
+                        screenShareInfo.setHeight(dimension.height);
+                        screenShareInfo.setWidth(dimension.width);
+                    } else {
+                        screenShareInfo.setHeight(callVideoMinHeight);
+                        screenShareInfo.setWidth(callVideoMinWidth);
+                    }
+                }
+            }
+        }
 
         var init = function () {
 
@@ -500,6 +553,9 @@
                         callStateController.setupCallParticipant(params.selfData);
                     }
 
+                    screenShareInfo.setOwner(params.screenShareOwner);
+                    screenShareInfo.setIsStarted(!!params.screenShareOwner);
+
                     if(params.clientsList && params.clientsList.length) {
                         for(var i in params.clientsList) {
                             if(params.clientsList[i].userId !== chatMessaging.userInfo.id)
@@ -617,7 +673,7 @@
                     };
                     obj.topicMetaData = {};
                     obj.peers = {};
-                    if(screenShareState.imOwner) {
+                    if(screenShareInfo.iAmOwner()) {
                         obj.direction = 'send';
                     } else {
                         obj.direction = 'receive'
@@ -1179,9 +1235,9 @@
                     }
                 },
                 removeScreenShareFromCall: function (topic) {
-                    var callController = this,
-                        screenShare = callUsers["screenShare"];
-                    if(screenShare.peers[screenShare.videoTopicName]) {
+                    var screenShare = callUsers["screenShare"];
+
+                    if(screenShare && screenShare.peers[screenShare.videoTopicName]) {
                         callStateController.removeStreamFromWebRTC('screenShare', screenShare.videoTopicName)
                         callStateController.removeTopic('screenShare', screenShare.videoTopicName);
                         chatEvents.fireEvent('callEvents', {
@@ -1680,8 +1736,9 @@
                     }
                     if(callUsers && callUsers['screenShare']
                         && callUsers['screenShare'].video
-                        && screenShareState.started
-                        && screenShareState.imOwner) {
+                        && screenShareInfo.isStarted()
+                        && screenShareInfo.iAmOwner()
+                    ) {
                         restartMediaOnKeyFrame('screenShare', [2000,4000,8000,12000]);
                     }
                     break;
@@ -2339,16 +2396,17 @@
                     if(!callRequestController.callEstablishedInMySide)
                         return;
 
-                    screenShareState.started = true;
-                    if(messageContent.screenOwner.id === chatMessaging.userInfo.id) {
-                        screenShareState.imOwner = true;
+                    screenShareInfo.setIsStarted(true);
+                    screenShareInfo.setOwner(messageContent.screenOwner.id);
+                    /*if(messageContent.screenOwner.id === chatMessaging.userInfo.id) {
+                        screenShareInfo.setIAmOwner(true);
                     } else {
-                        screenShareState.imOwner = false;
-                    }
+                        screenShareInfo.setIAmOwner(false);
+                    }*/
 
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                    } else if(!screenShareState.imOwner) {
+                    } else if(!screenShareInfo.iAmOwner()) {
                         callStateController.addScreenShareToCall("receive", false)
                     }
 
@@ -2363,12 +2421,12 @@
                  * Type 124   End Screen Share
                  */
                 case chatMessageVOTypes.END_SCREEN_SHARE:
-                    screenShareState.imOwner = false;
-                    screenShareState.started = false;
+                    // screenShareInfo.setIAmOwner(false);
+                    screenShareInfo.setIsStarted(false);
 
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                    } else if (!screenShareState.imOwner) {
+                    } else if (!screenShareInfo.iAmOwner()) {
                        consoleLogging && console.log("[SDK][END_SCREEN_SHARE], im not owner of screen");
                        callStateController.removeScreenShareFromCall();
                     }
@@ -2828,7 +2886,8 @@
                     consoleLogging && console.log("[sdk][startScreenShare][onResult]: ", result);
                     if(!result.hasError) {
                         var direction = 'send', shareScreen = true;
-                        if(screenShareState.started && !screenShareState.imOwner) {
+
+                        if(screenShareInfo.isStarted() && !screenShareInfo.iAmOwner()){
                             direction = 'receive';
                             shareScreen = false;
                         }
@@ -2865,7 +2924,7 @@
                 return;
             }
 
-            if(!screenShareState.imOwner) {
+            if(!screenShareInfo.iAmOwner()) {
                 chatEvents.fireEvent('error', {
                     code: 999,
                     message: 'You can not end others screen sharing!'
