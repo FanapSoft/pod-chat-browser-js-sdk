@@ -625,7 +625,7 @@
                 startCall: function (params) {
                     var callController = this;
                     for(var i in callUsers) {
-                        if(i === 'screenShare')
+                        if(i === 'screenShare' && !screenShareInfo.isStarted())
                             continue;
 
                         if(callUsers[i].video) {
@@ -687,7 +687,10 @@
                         isConnectionPoor: false
                     };
                     callUsers['screenShare'] = obj;
-                    this.generateHTMLElements('screenShare')
+                    if(screenShareInfo.isStarted())
+                        this.appendUserToCallDiv('screenShare', this.generateHTMLElements('screenShare'));
+                    else
+                        this.generateHTMLElements('screenShare')
                 },
                 appendUserToCallDiv: function (userId) {
                     if(!callDivId) {
@@ -1989,7 +1992,9 @@
                             turnAddress: messageContent.chatDataDto.turnAddress,
                             internalTurnAddress: messageContent.chatDataDto.internalTurnAddress,
                             selfData: messageContent.clientDTO,
-                            clientsList: messageContent.otherClientDtoList
+                            clientsList: messageContent.otherClientDtoList,
+                            screenShareOwner: +messageContent.chatDataDto.screenShareUser,
+                            recordingOwner: +messageContent.chatDataDto.recordingUser
                         }, function (callDivs) {
                             chatEvents.fireEvent('callEvents', {
                                 type: 'CALL_DIVS',
