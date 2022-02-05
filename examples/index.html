@@ -28,7 +28,7 @@
     <!--<script type="text/javascript" src="podchat-browser.min.js"></script>-->
 
     <script type="text/javascript">
-        // Developement
+        // Development
         var PodChat = window.POD.Chat;
         var env = 'main'; // main | sandbox | integration
 
@@ -963,13 +963,15 @@
          * Listen to File Upload Events
          */
         chatAgent.on("fileUploadEvents", function (event) {
-            console.log(event);
+            console.log("[fileUploadEvents]", event);
         });
 
         /**
          * Listen to Contact Events
          */
         chatAgent.on("contactEvents", function (event) {
+            console.log("[contactEvents]", event);
+
             if (event.type == 'CONTACTS_SYNCED') {
                 console.log('Core contacts have been successfully synced with chat server.');
             }
@@ -980,7 +982,7 @@
          */
         chatAgent.on("threadEvents", function (event) {
             var type = event.type;
-            console.log(event);
+            console.log("[threadEvents]", event);
 
             switch (type) {
                 case "THREAD_LAST_ACTIVITY_TIME":
@@ -1029,7 +1031,7 @@
             var type = event.type,
                 message = event.result.message;
 
-            console.log(event);
+            console.log("[messageEvents]", event);
 
             switch (type) {
                 case "MESSAGE_NEW":
@@ -1071,7 +1073,7 @@
          */
         chatAgent.on("systemEvents", function (event) {
             var type = event.type;
-            console.log(event);
+            console.log("[systemEvents]", event);
 
             switch (type) {
                 case "IS_TYPING":
@@ -1088,7 +1090,7 @@
          */
         chatAgent.on('userEvents', function (event) {
             var type = event.type;
-            console.log(event);
+            console.log("[userEvents]", event);
 
             switch (type) {
                 case 'CHAT_PROFILE_UPDATED':
@@ -1105,7 +1107,7 @@
          */
         chatAgent.on('callEvents', function (event) {
             var type = event.type;
-            console.log(event);
+            console.log("[callEvents]", event);
 
             // if (type === 'CALL_ERROR')
             // debugger;
@@ -1927,6 +1929,7 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
         <label for="apList">User Id</label>
         <input type="text" name="adminThreadParticipantUserId" id="adminThreadParticipantUserId" placeholder="UserId">
         <button type="button" name="button" id="adminThreadParticipantBtn">Make admin</button>
+        <button type="button" name="button" id="removeAdminThreadParticipantBtn">Remove admin</button>
     </fieldset>
 </form>
 
@@ -3268,6 +3271,37 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
             console.log("[HTML][chatAgent.setAdmin][result]", result);
         })
     });
+
+    document.getElementById("removeAdminThreadParticipantBtn").addEventListener("click", function (event){
+        event.preventDefault();
+        var userId = document.getElementById("adminThreadParticipantUserId").value;
+        var threadId = document.getElementById("adminThreadParticipantThreadId").value;
+        var rolesList = [
+            'post_channel_message',
+            'edit_message_of_others',
+            'delete_message_of_others',
+            'add_new_user',
+            'remove_user',
+            'thread_admin',
+            'add_rule_to_user',
+            'remove_role_from_user',
+            'edit_thread',
+            'read_thread',
+            'ownership'
+        ];
+        console.log("roles list: ", rolesList)
+        chatAgent.removeAdmin({
+            threadId: threadId,
+            admins: [{
+                userId: userId,
+                roles: rolesList
+            }],
+        }, function (result) {
+            console.log("[HTML][chatAgent.removeAdmin][result]", result);
+        })
+    });
+
+
 </script>
 
 </html>
