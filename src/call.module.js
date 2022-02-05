@@ -2786,6 +2786,11 @@
                 }
 
                 acceptCallData.content = JSON.stringify(content);
+
+                if(params.joinCall) {
+                    callRequestController.callRequestReceived = true;
+                    currentCallId = params.callId;
+                }
             } else {
                 chatEvents.fireEvent('error', {
                     code: 999,
