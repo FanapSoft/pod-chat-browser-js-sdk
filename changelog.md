@@ -3,6 +3,28 @@
 All notable changes to this project will be documented here.
 to see complete list of changelog please visit [ChangeLog](https://github.com/masoudmanson/pod-chat/blob/master/changelog.md)
 
+## [12.3.1] - 2022-02-06
+### Added
+- Option to use internal turn address
+- Event: RECEIVE_VIDEO_CONNECTION_ESTABLISHED
+- Send keyframe on all video connections
+- Parameter: threadId in method: getCallsList
+- Implementation for reject group call
+- Method: sendCallMetaData
+- Method: getCallsToJoin
+- Parameter: threadInfo in methods: startCall & startGroupCall
+- Possibility to increase ScreenShare quality
+- Possibility to join already existing group call
+- Parameter: fileName in method exportChat
+
+### Changed
+- startCall & startGroupCall now support string in idType
+- Refactored ScreenShare functionality
+
+### Fixed
+- Minor bug fixes
+- Remove ScreenShare stream if it's owner leaves the group call
+
 ## [12.1.0] - 2021-12-25
 ### Added
 - Browsers default "stop sharing" button event handler
