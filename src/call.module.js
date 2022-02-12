@@ -14,6 +14,8 @@
             WebrtcAdapter = window.adapter;
         }
 
+
+
         var Utility = params.Utility,
             currentModuleInstance = this,
             Sentry = params.Sentry,
@@ -221,6 +223,7 @@
                 callStarted: false,
             },
             callServerName,
+            callServerManager = new callServerManagerClass(),
             messageTtl = params.messageTtl || 10000,
             config = {
                 getHistoryCount: 50
@@ -282,6 +285,41 @@
             }
         }
 
+        function callServerManagerClass() {
+            var config = {
+                servers: [],
+                currentServerIndex: 0,
+            };
+
+            return {
+                setServers: function (serversList) {
+                    config.servers = serversList;
+                },
+                setCurrentServer: function (query) {
+                    for(let i in config.servers) {
+                        if(config.servers[i].indexOf(query) !== -1) {
+                            config.currentServerIndex = i;
+                            break;
+                        }
+                    }
+                },
+                getCurrentServer: function () {
+                    return config.servers[config.currentServerIndex];
+                },
+                isJanus: function () {
+                    return config.servers[config.currentServerIndex].toLowerCase().substr(0, 1) === 'j';
+                },
+                canChangeServer: function () {
+                    return config.currentServerIndex < config.servers.length - 1;
+                },
+                changeServer: function () {
+                    if(this.canChangeServer()) {
+                        config.currentServerIndex++;
+                    }
+                }
+            }
+        }
+
         var init = function () {
 
             },
@@ -301,7 +339,7 @@
                 var data = {
                     type: 3,
                     content: {
-                        peerName: callServerName,
+                        peerName: callServerManager.getCurrentServer(),// callServerName,
                         priority: 1,
                         content: JSON.stringify(message),
                         ttl: messageTtl
@@ -327,14 +365,21 @@
                 if (callRequestTimeout > 0) {
                     asyncRequestTimeouts[uniqueId] && clearTimeout(asyncRequestTimeouts[uniqueId]);
                     asyncRequestTimeouts[uniqueId] = setTimeout(function () {
+                        if (chatMessaging.messagesCallbacks[uniqueId]) {
+                            delete chatMessaging.messagesCallbacks[uniqueId];
+                        }
+
+                        if(callServerManager.canChangeServer() && message.id === 'CREATE_SESSION') {
+                            // 'CREATE_SESSION',
+                            callServerManager.changeServer();
+                            sendCallMessage(message, callback);
+                            return;
+                        }
+
                         if (typeof callback == 'function') {
                             callback({
                                 done: 'SKIP'
                             });
-                        }
-
-                        if (chatMessaging.messagesCallbacks[uniqueId]) {
-                            delete chatMessaging.messagesCallbacks[uniqueId];
                         }
                     }, callRequestTimeout);
                 }
@@ -602,7 +647,6 @@
                 createSessionInChat: function (params) {
                     currentCallParams = params;
                     var callController = this;
-                    consoleLogging && console.log("createSessionInChat:inside", params);
                     sendCallMessage({
                         id: 'CREATE_SESSION',
                         brokerAddress: params.brokerAddress,
@@ -1029,22 +1073,32 @@
                             }
                         }
 
-                        callUsers[userId].peers[topic].generateOffer((err, sdpOffer) => {
-                            if (err) {
-                                console.error("[SDK][start/WebRc " + direction + "  " + mediaType + " Peer/generateOffer] " + err);
-                                return;
-                            }
-
-                            sdpOffer = callController.setMediaBitrates(sdpOffer);
+                        if(callServerManager.isJanus() && direction === 'receive') {
                             sendCallMessage({
-                                id: (direction === 'send' ? 'SEND_SDP_OFFER' : 'RECIVE_SDP_OFFER'),
-                                sdpOffer: sdpOffer,
-                                useComedia: true,
-                                useSrtp: false,
-                                topic: topic,
-                                mediaType: (mediaType === 'video' ? 2 : 1)
+                                id: 'REGISTER_RECV_NOTIFICATION',
+                                // brokerAddress: brkrAddr/*'192.168.112.66:9093'*/,
+                                // clientId: 'token',
+                                topic:topic,
+                                mediaType: (mediaType === 'video' ? 2 : 1),
                             });
-                        });
+                        } else {
+                            callUsers[userId].peers[topic].generateOffer((err, sdpOffer) => {
+                                if (err) {
+                                    console.error("[SDK][start/WebRc " + direction + "  " + mediaType + " Peer/generateOffer] " + err);
+                                    return;
+                                }
+
+                                // sdpOffer = callController.setMediaBitrates(sdpOffer);
+                                sendCallMessage({
+                                    id: (direction === 'send' ? 'SEND_SDP_OFFER' : 'RECIVE_SDP_OFFER'),
+                                    sdpOffer: sdpOffer,
+                                    useComedia: true,
+                                    useSrtp: false,
+                                    topic: topic,
+                                    mediaType: (mediaType === 'video' ? 2 : 1)
+                                });
+                            });
+                        }
                     });
                 },
                 watchRTCPeerConnection: function (userId, topic, mediaType, direction) {
@@ -1238,7 +1292,6 @@
                 },
                 removeScreenShareFromCall: function (topic) {
                     var screenShare = callUsers["screenShare"];
-
                     if(screenShare && screenShare.peers[screenShare.videoTopicName]) {
                         callStateController.removeStreamFromWebRTC('screenShare', screenShare.videoTopicName)
                         callStateController.removeTopic('screenShare', screenShare.videoTopicName);
@@ -1444,11 +1497,13 @@
                 }
             },
 
-            setCallServerName = function (serverName) {
+            /* setCallServerName = function (serverName) {
+                var servers = serverName.split(",");
+
                 if (!!serverName) {
                     callServerName = serverName;
                 }
-            },
+            },*/
 
             startMedia = function (media) {
                 consoleLogging && console.log("[SDK][startMedia] called with: ", media);
@@ -1524,6 +1579,59 @@
                         }
                     }
                 }
+            },
+
+            subscribeToReceiveOffers = function (jsonMessage) {
+                if(jsonMessage.upOrDown === true) { //TRUE if participant is sending data on this topic
+                    sendCallMessage({
+                        id: 'SUBSCRIBE',
+                        useComedia: true,
+                        useSrtp: false,
+                        topic: jsonMessage.topic,
+                        mediaType: (jsonMessage.topic.indexOf('screen-Share') !== -1 || jsonMessage.topic.indexOf('Vi-') !== -1 ? 2  : 1)
+                        //brokerAddress:brkrAddr
+                    });
+                }
+            },
+
+            handleProcessSdpOffer = function (jsonMessage) {
+                var userId = callStateController.findUserIdByTopic(jsonMessage.topic),
+                    peer = callUsers[userId].peers[jsonMessage.topic];
+
+
+                if (peer == null) {
+                    console.warn("[handleProcessSdpAnswer] Skip, no WebRTC Peer");
+                    return;
+                }
+
+                peer.processOffer(jsonMessage.sdpOffer, function (err, sdpAnswer) {
+                    if (err) {
+                        console.error("[SDK][handleProcessSdpOffer] Error: " + err);
+                        stop();
+                        return;
+                    }
+
+                    sendCallMessage({
+                        id: 'RECIVE_SDP_ANSWER',
+                        sdpAnswer: sdpAnswer,
+                        useComedia: true,
+                        useSrtp: false,
+                        topic: jsonMessage.topic,
+                        mediaType: (jsonMessage.topic.indexOf('screen-Share') !== -1 || jsonMessage.topic.indexOf('Vi-') !== -1 ? 2  : 1)
+                    });
+
+                    callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
+                    startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
+                    if(userId === 'screenShare') {
+                        restartMediaOnKeyFrame("screenShare", [2000, 4000, 8000, 12000]);
+                    }
+
+                    // alert('answer for receive is \n'+sdpAnswer);
+                    // console.log("[handleProcessSdpAnswer] SDP Answer ready; start remote video");
+
+                    // startVideo(uiRemoteVideo);
+                    // uiSetState(UI_STARTED);
+                });
             },
 
             handleProcessSdpAnswer = function (jsonMessage) {
@@ -1778,7 +1886,12 @@
                 case 'PROCESS_SDP_ANSWER':
                     handleProcessSdpAnswer(jsonMessage);
                     break;
-
+                case 'RECEIVING_MEDIA': // Only for receiving topics from janus, first we subscribe
+                    subscribeToReceiveOffers(jsonMessage);
+                    break;
+                case 'PROCESS_SDP_OFFER':  //Then janus sends offers
+                    handleProcessSdpOffer(jsonMessage);
+                    break;
                 case 'ADD_ICE_CANDIDATE':
                     handleAddIceCandidate(jsonMessage);
                     break;
@@ -1980,7 +2093,12 @@
                         && messageContent.hasOwnProperty('chatDataDto')
                         && !!messageContent.chatDataDto.kurentoAddress) {
 
-                        setCallServerName(messageContent.chatDataDto.kurentoAddress.split(',')[0]);
+
+                        //TODO: needs review
+                        //setCallServerName("JanusAdmin");//(messageContent.chatDataDto.kurentoAddress.split(',')[0]);
+                        // setCallServerName(messageContent.chatDataDto.kurentoAddress.split(',')[0]);
+                        // setCallServerName(messageContent.chatDataDto.kurentoAddress);
+                        callServerManager.setServers(messageContent.chatDataDto.kurentoAddress.split(','));
 
                         startCallWebRTCFunctions({
                             video: messageContent.clientDTO.video,
