@@ -934,15 +934,18 @@
                     if (!!params.turnAddress && params.turnAddress.length > 0
                         || (useInternalTurnAddress && !!params.internalTurnAddress && params.turnAddress.length > 0 )) {
 
-                        var serversTemp = useInternalTurnAddress ? params.internalTurnAddress.split(',') : params.turnAddress.split(',');
+                        var serversTemp = useInternalTurnAddress ? params.internalTurnAddress.split(',') : params.turnAddress.split(','),
+                            turnsList = [];
 
-                        return [
-                            {
-                                "urls": "turn:" + serversTemp[0],
+                        for(var i in serversTemp) {
+                            turnsList.push({
+                                "urls": "turn:" + serversTemp[i],
                                 "username": "mkhorrami",
                                 "credential": "mkh_123456"
-                            }
-                        ];
+                            })
+                        }
+
+                        return turnsList;
                     } else {
                         return [
                             {

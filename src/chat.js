@@ -14129,7 +14129,7 @@
         };
 
         /**
-         * Test connectivity with kotern
+         * Check a turn server availability
          *
          * @param turnIp
          * @param port
