@@ -231,7 +231,8 @@
             callRequestTimeout = (typeof params.callRequestTimeout === 'number' && params.callRequestTimeout >= 0) ? params.callRequestTimeout : 10000,
             consoleLogging = (params.asyncLogging.consoleLogging && typeof params.asyncLogging.consoleLogging === 'boolean')
                 ? params.asyncLogging.consoleLogging
-                : false;
+                : false,
+            callNoAnswerTimeout = params.callOptions.callNoAnswerTimeout || 0;
 
         function ScreenShareStateClass() {
             var config = {
@@ -2474,6 +2475,22 @@
                     else
                         newCallId = messageContent.callId;
 
+                    if(callNoAnswerTimeout) {
+                        setTimeout( function(metaData) {
+                            //Reject the call if participant didn't answer
+                            if(!callStopQueue.callStarted) {
+                                chatEvents.fireEvent("callEvents", {
+                                    type: "CALL_NO_ANSWER_TIMEOUT",
+                                    message: "[CALL_SESSION_CREATED] Call request timed out, No answer",
+                                });
+
+                                metaData.callInstance.rejectCall({
+                                    callId: metaData.currentCallId
+                                });
+                            }
+                        }, callNoAnswerTimeout, {callInstance: currentModuleInstance, currentCallId: currentCallId});
+                    }
+
                     //currentCallId = messageContent.callId;
 
                     break;
@@ -3728,10 +3745,6 @@
                 'videoTopicName',
                 'video'
             )
-/*
-            callStateController.removeTopic(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].videoTopicName)
-            callStateController.removeStreamFromWebRTC(chatMessaging.userInfo.id, callUsers[chatMessaging.userInfo.id].videoTopicName)
-*/
 
             return chatMessaging.sendMessage(turnOffVideoData, {
                 onResult: function (result) {
