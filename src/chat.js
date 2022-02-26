@@ -13943,6 +13943,10 @@
 
         this.turnOffVideoCall = callModule.turnOffVideoCall;
 
+        this.disableParticipantsVideoReceive = callModule.disableParticipantsVideoReceive;
+
+        this.enableParticipantsVideoReceive = callModule.enableParticipantsVideoReceive;
+
         this.pauseCamera = callModule.pauseCamera;
 
         this.resumeCamera = callModule.resumeCamera;

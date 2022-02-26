@@ -3753,6 +3753,50 @@
             });
         };
 
+        this.disableParticipantsVideoReceive = function (params, callback) {
+            if (params) {
+                if (Array.isArray(params.userIds) && params.userIds.length) {
+                    for( var i in params.userIds) {
+                        callStateController.deactivateParticipantStream(
+                            params.userIds[i],
+                            'videoTopicName',
+                            'video'
+                        );
+                    }
+                    callback && callback({hasError: false});
+                }
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to closeOthersVideoReceive'
+                });
+                return;
+            }
+        };
+
+        this.enableParticipantsVideoReceive = function (params, callback) {
+            if (params) {
+                if (Array.isArray(params.userIds) && params.userIds.length) {
+                    for( var i in params.userIds) {
+                        callStateController.activateParticipantStream(
+                            params.userIds[i],
+                            'video',
+                            'receive',
+                            'videoTopicName',
+                            callUsers[params.userIds[i]].topicSend,
+                            'video'
+                        );
+                    }
+                    callback && callback({hasError: false});
+                }
+            } else {
+                chatEvents.fireEvent('error', {
+                    code: 999,
+                    message: 'No params have been sent to closeOthersVideoReceive'
+                });
+            }
+        };
+
         /**
          * Pauses camera-send without closing its topic
          * @param params
