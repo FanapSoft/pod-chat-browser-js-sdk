@@ -2476,22 +2476,6 @@
                     else
                         newCallId = messageContent.callId;
 
-                    if(callNoAnswerTimeout) {
-                        setTimeout( function(metaData) {
-                            //Reject the call if participant didn't answer
-                            if(!callStopQueue.callStarted) {
-                                chatEvents.fireEvent("callEvents", {
-                                    type: "CALL_NO_ANSWER_TIMEOUT",
-                                    message: "[CALL_SESSION_CREATED] Call request timed out, No answer",
-                                });
-
-                                metaData.callInstance.rejectCall({
-                                    callId: metaData.currentCallId
-                                });
-                            }
-                        }, callNoAnswerTimeout, {callInstance: currentModuleInstance, currentCallId: currentCallId});
-                    }
-
                     //currentCallId = messageContent.callId;
 
                     break;
