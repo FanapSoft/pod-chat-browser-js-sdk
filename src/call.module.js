@@ -805,11 +805,9 @@
 
                     return user.htmlElements;
                 },
-                addParticipant: function (params, direction) {
-                    //TODO: generate html elements
-                    //TODO: add user to callUsers
-                    //TODO: createTopics
-                },
+                /*addParticipant: function (params, direction) {
+
+                },*/
                 removeParticipant: function (userId) {
                     var user = callUsers[userId];
                     if(!user)
@@ -2097,11 +2095,6 @@
                         && messageContent.hasOwnProperty('chatDataDto')
                         && !!messageContent.chatDataDto.kurentoAddress) {
 
-
-                        //TODO: needs review
-                        //setCallServerName("JanusAdmin");//(messageContent.chatDataDto.kurentoAddress.split(',')[0]);
-                        // setCallServerName(messageContent.chatDataDto.kurentoAddress.split(',')[0]);
-                        // setCallServerName(messageContent.chatDataDto.kurentoAddress);
                         callServerManager.setServers(messageContent.chatDataDto.kurentoAddress.split(','));
 
                         startCallWebRTCFunctions({
@@ -2768,6 +2761,23 @@
             callRequestController.cameraPaused = (typeof params.cameraPaused === 'boolean') ? params.cameraPaused : false;
             callRequestController.callRequestReceived = true;
             callRequestController.callEstablishedInMySide = true;
+
+            if(callNoAnswerTimeout) {
+                //TODO: Remove timeout when call ends fast
+                setTimeout( function(metaData) {
+                    //Reject the call if participant didn't answer
+                    if(!callStopQueue.callStarted ) {
+                        chatEvents.fireEvent("callEvents", {
+                            type: "CALL_NO_ANSWER_TIMEOUT",
+                            message: "[CALL_SESSION_CREATED] Call request timed out, No answer",
+                        });
+
+                        metaData.callInstance.rejectCall({
+                            callId: metaData.currentCallId
+                        });
+                    }
+                }, callNoAnswerTimeout, {callInstance: currentModuleInstance, currentCallId: currentCallId});
+            }
 
             return chatMessaging.sendMessage(startCallData, {
                 onResult: function (result) {
@@ -3506,7 +3516,6 @@
                         errorCode: result.errorCode
                     };
                     if (!returnData.hasError) {
-                        // TODO : What is the result?!
                         var messageContent = result.result;
                         returnData.result = messageContent;
                     }
@@ -3547,7 +3556,6 @@
                         errorCode: result.errorCode
                     };
                     if (!returnData.hasError) {
-                        // TODO : What is the result?!
                         var messageContent = result.result;
                         returnData.result = messageContent;
                     }
@@ -3593,7 +3601,6 @@
                         errorCode: result.errorCode
                     };
                     if (!returnData.hasError) {
-                        // TODO : What is the result?!
                         var messageContent = result.result;
                         returnData.result = messageContent;
                     }
@@ -3644,22 +3651,9 @@
                         errorCode: result.errorCode
                     };
                     if (!returnData.hasError) {
-                        // TODO : What is the result?!
                         var messageContent = result.result;
                         returnData.result = messageContent;
 
-                        /*for(var i in result.result) {
-                            if(callUsers[result.result[i].userId]) {
-                                callUsers[result.result[i].userId].mute = false;
-                                callUsers[result.result[i].userId].audioTopicName = 'Vo-' + result.result[i].sendTopic;
-
-                                var user = callUsers[result.result[i].userId];
-                                callStateController.appendUserToCallDiv(result.result[i].userId, callStateController.generateHTMLElements(result.result[i].userId));
-                                setTimeout(function () {
-                                    callStateController.createTopic(result.result[i].userId, user.audioTopicName, 'audio', 'send');
-                                })
-                            }
-                        }*/
                     }
                     callback && callback(returnData);
                 }
