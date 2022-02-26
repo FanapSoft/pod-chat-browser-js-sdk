@@ -2231,6 +2231,14 @@
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                     }
 
+                    if (messageContent.callId > 0) {
+                        if(!currentCallId ) {
+                            currentCallId = messageContent.callId;
+                        }
+                        else
+                            newCallId = messageContent.callId;
+                    }
+
                     chatEvents.fireEvent('callEvents', {
                         type: 'RECEIVE_CALL',
                         result: messageContent
