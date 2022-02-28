@@ -1609,7 +1609,6 @@
                 var userId = callStateController.findUserIdByTopic(jsonMessage.topic),
                     peer = callUsers[userId].peers[jsonMessage.topic];
 
-
                 if (peer == null) {
                     console.warn("[handleProcessSdpAnswer] Skip, no WebRTC Peer");
                     return;
@@ -1636,12 +1635,6 @@
                     if(userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
                         restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000]);
                     }
-
-                    // alert('answer for receive is \n'+sdpAnswer);
-                    // console.log("[handleProcessSdpAnswer] SDP Answer ready; start remote video");
-
-                    // startVideo(uiRemoteVideo);
-                    // uiSetState(UI_STARTED);
                 });
             },
 
