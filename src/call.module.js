@@ -1624,8 +1624,8 @@
 
                     callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
                     startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
-                    if(userId === 'screenShare') {
-                        restartMediaOnKeyFrame("screenShare", [2000, 4000, 8000, 12000]);
+                    if(userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
+                        restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000]);
                     }
 
                     // alert('answer for receive is \n'+sdpAnswer);
@@ -1668,8 +1668,8 @@
                     }
                     consoleLogging && console.log("[SDK][handleProcessSdpAnswer]", jsonMessage, jsonMessage.topic)
                     startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
-                    if(userId === 'screenShare') {
-                        restartMediaOnKeyFrame("screenShare", [2000, 4000, 8000, 12000]);
+                    if(userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
+                        restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000]);
                     }
                 });
             },
