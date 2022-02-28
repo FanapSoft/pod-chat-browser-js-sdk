@@ -964,6 +964,56 @@
                         ];
                     }
                 },
+                generateTopicPeer: function (userId, topic, mediaType, direction, options) {
+                    var WebRtcFunction = direction === 'send' ? 'WebRtcPeerSendonly' : 'WebRtcPeerRecvonly',
+                        callController = this,
+                        user = callUsers[userId],
+                        topicElement = user.htmlElements[topic],
+                        topicMetaData = user.topicMetaData[topic];
+
+                    callUsers[userId].peers[topic] = new KurentoUtils.WebRtcPeer[WebRtcFunction](options, function (err) {
+                        if (err) {
+                            console.error("[SDK][start/webRtc " + direction + "  " + mediaType + " Peer] Error: " + explainUserMediaError(err, mediaType));
+                            return;
+                        }
+
+                        callController.watchRTCPeerConnection(userId, topic, mediaType, direction);
+
+                        if(direction === 'send') {
+                            startMedia(topicElement);
+                            if(callRequestController.cameraPaused) {
+                                currentModuleInstance.pauseCamera();
+                            }
+                        }
+
+                        if(callServerManager.isJanus() && direction === 'receive') {
+                            sendCallMessage({
+                                id: 'REGISTER_RECV_NOTIFICATION',
+                                // brokerAddress: brkrAddr/*'192.168.112.66:9093'*/,
+                                // clientId: 'token',
+                                topic:topic,
+                                mediaType: (mediaType === 'video' ? 2 : 1),
+                            });
+                        } else {
+                            callUsers[userId].peers[topic].generateOffer((err, sdpOffer) => {
+                                if (err) {
+                                    console.error("[SDK][start/WebRc " + direction + "  " + mediaType + " Peer/generateOffer] " + err);
+                                    return;
+                                }
+
+                                // sdpOffer = callController.setMediaBitrates(sdpOffer);
+                                sendCallMessage({
+                                    id: (direction === 'send' ? 'SEND_SDP_OFFER' : 'RECIVE_SDP_OFFER'),
+                                    sdpOffer: sdpOffer,
+                                    useComedia: true,
+                                    useSrtp: false,
+                                    topic: topic,
+                                    mediaType: (mediaType === 'video' ? 2 : 1)
+                                });
+                            });
+                        }
+                    });
+                },
                 checkConnectionQuality: function (userId, topic) {
                     if(!callUsers[userId] || !callUsers[userId].peers[topic] || !callUsers[userId].peers[topic].peerConnection) {
                         callStateController.removeConnectionQualityInterval(userId, topic);
@@ -1060,56 +1110,6 @@
                         });
 
                         //document.querySelector(".stats-box").innerHTML = statsOutput;
-                    });
-                },
-                generateTopicPeer: function (userId, topic, mediaType, direction, options) {
-                    var WebRtcFunction = direction === 'send' ? 'WebRtcPeerSendonly' : 'WebRtcPeerRecvonly',
-                        callController = this,
-                        user = callUsers[userId],
-                        topicElement = user.htmlElements[topic],
-                        topicMetaData = user.topicMetaData[topic];
-
-                    callUsers[userId].peers[topic] = new KurentoUtils.WebRtcPeer[WebRtcFunction](options, function (err) {
-                        if (err) {
-                            console.error("[SDK][start/webRtc " + direction + "  " + mediaType + " Peer] Error: " + explainUserMediaError(err, mediaType));
-                            return;
-                        }
-
-                        callController.watchRTCPeerConnection(userId, topic, mediaType, direction);
-
-                        if(direction === 'send') {
-                            startMedia(topicElement);
-                            if(callRequestController.cameraPaused) {
-                                currentModuleInstance.pauseCamera();
-                            }
-                        }
-
-                        if(callServerManager.isJanus() && direction === 'receive') {
-                            sendCallMessage({
-                                id: 'REGISTER_RECV_NOTIFICATION',
-                                // brokerAddress: brkrAddr/*'192.168.112.66:9093'*/,
-                                // clientId: 'token',
-                                topic:topic,
-                                mediaType: (mediaType === 'video' ? 2 : 1),
-                            });
-                        } else {
-                            callUsers[userId].peers[topic].generateOffer((err, sdpOffer) => {
-                                if (err) {
-                                    console.error("[SDK][start/WebRc " + direction + "  " + mediaType + " Peer/generateOffer] " + err);
-                                    return;
-                                }
-
-                                // sdpOffer = callController.setMediaBitrates(sdpOffer);
-                                sendCallMessage({
-                                    id: (direction === 'send' ? 'SEND_SDP_OFFER' : 'RECIVE_SDP_OFFER'),
-                                    sdpOffer: sdpOffer,
-                                    useComedia: true,
-                                    useSrtp: false,
-                                    topic: topic,
-                                    mediaType: (mediaType === 'video' ? 2 : 1)
-                                });
-                            });
-                        }
                     });
                 },
                 watchRTCPeerConnection: function (userId, topic, mediaType, direction) {
