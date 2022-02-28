@@ -601,6 +601,15 @@
                     screenShareInfo.setOwner(params.screenShareOwner);
                     screenShareInfo.setIsStarted(!!params.screenShareOwner);
 
+                    if(params.recordingOwner) {
+                        chatEvents.fireEvent('callEvents', {
+                            type: 'START_RECORDING_CALL',
+                            result: {
+                                id: params.recordingOwner
+                            }
+                        });
+                    }
+
                     if(params.clientsList && params.clientsList.length) {
                         for(var i in params.clientsList) {
                             if(params.clientsList[i].userId !== chatMessaging.userInfo.id)
