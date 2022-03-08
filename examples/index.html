@@ -965,6 +965,13 @@
         chatAgent.on("fileUploadEvents", function (event) {
             console.log("[fileUploadEvents]", event);
         });
+        /**
+         * Listen to File Download Events
+         */
+        chatAgent.on("fileDownloadEvents", function (event) {
+            console.log("[fileDownloadEvents]", event);
+        });
+
 
         /**
          * Listen to Contact Events
@@ -2994,7 +3001,8 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
 
             chatAgent.getFileFromPodspace({
                 hashCode: hashCode,
-                responseType: dataType
+                responseType: dataType,
+                enableDownloadProgressEvents: true
             }, function (result) {
                 console.log("chatAgent.getFileFromPodspace:result::", result);
                 if (!result.hasError) {

@@ -952,7 +952,7 @@
 
                 httpRequestObject[eval('fileUploadUniqueId')]
                     .addEventListener('error', function (event) {
-                        if (callback) {
+                        if (callback && method === 'POST') {
                             if (hasFile) {
                                 hasError = true;
                                 chatEvents.fireEvent('fileUploadEvents', {
@@ -974,8 +974,34 @@
                                 errorCode: 6200,
                                 errorMessage: CHAT_ERRORS[6200] + ' (XMLHttpRequest Error Event Listener)'
                             });
+                        } else {
+                            if(callback) {
+                                callback({
+                                    hasError: true,
+                                    errorCode: 6200,
+                                    errorMessage: CHAT_ERRORS[6200] + ' (XMLHttpRequest Error Event Listener)'
+                                });
+                            }
+                            if(params.enableDownloadProgressEvents) {
+                                chatEvents.fireEvent('fileDownloadEvents', {
+                                    hashCode: params.hashCode,
+                                    state: 'DOWNLOAD_ERROR',
+                                    errorCode: 6200,
+                                    errorMessage: CHAT_ERRORS[6200] + ' (XMLHttpRequest Error Event Listener)'
+                                });
+                            }
                         }
                     }, false);
+
+                if(params.enableDownloadProgressEvents) {
+                    httpRequestObject[eval('fileUploadUniqueId')].onprogress = (event) => {
+                        chatEvents.fireEvent('fileDownloadEvents', {
+                            hashCode: params.hashCode,
+                            state: 'DOWNLOADING',
+                            progress: Math.round((event.loaded / event.total) * 100),
+                        });
+                    }
+                }
 
                 httpRequestObject[eval('fileUploadUniqueId')].addEventListener('abort',
                     function (event) {
@@ -6883,6 +6909,8 @@
                         headers: {
                             'Authorization': 'Bearer ' + token
                         },
+                        enableDownloadProgressEvents: params.enableDownloadProgressEvents,
+                        hashCode: params.hashCode
                         //data: getFileData
                     }, function (result) {
                         if (!result.hasError) {
@@ -7084,6 +7112,8 @@
                             headers: {
                                 'Authorization': 'Bearer ' + token
                             },
+                            enableDownloadProgressEvents: params.enableDownloadProgressEvents,
+                            hashCode: params.hashCode
                             //data: getImageData
                         }, function (result) {
                             if (!result.hasError) {
@@ -7125,6 +7155,8 @@
                             headers: {
                                 'Authorization': 'Bearer ' + token
                             },
+                            enableDownloadProgressEvents: params.enableDownloadProgressEvents,
+                            hashCode: params.hashCode
                             //data: getImageData
                         }, function (result) {
                             if (!result.hasError) {

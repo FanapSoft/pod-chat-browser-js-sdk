@@ -22,6 +22,7 @@
                 userEvents: {},
                 callEvents: {},
                 fileUploadEvents: {},
+                fileDownloadEvents: {},
                 systemEvents: {},
                 chatReady: {},
                 error: {},
