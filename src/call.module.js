@@ -240,7 +240,8 @@
                 imOwner: false,
                 isStarted: false,
                 width: callVideoMinWidth,
-                hight: callVideoMinHeight
+                hight: callVideoMinHeight,
+
             }
 
             return {
@@ -1325,13 +1326,11 @@
                                     callStateController.removeStreamFromWebRTC(i, user.videoTopicName);
                                     callUsers[i].peers[user.videoTopicName].dispose();
                                     delete callUsers[i].peers[user.videoTopicName];
-
                                 }
                                 if(user.audioTopicName && user.peers[user.audioTopicName]) {
                                     clearInterval(callUsers[i].topicMetaData[user.audioTopicName].interval);
                                     //callStateController.removeConnectionQualityInterval(i, user.audioTopicName);
                                     callStateController.removeStreamFromWebRTC(i, user.audioTopicName);
-
                                     callUsers[i].peers[user.audioTopicName].dispose();
                                     delete callUsers[i].peers[user.audioTopicName];
                                 }
@@ -2591,11 +2590,6 @@
 
                     screenShareInfo.setIsStarted(true);
                     screenShareInfo.setOwner(messageContent.screenOwner.id);
-                    /*if(messageContent.screenOwner.id === chatMessaging.userInfo.id) {
-                        screenShareInfo.setIAmOwner(true);
-                    } else {
-                        screenShareInfo.setIAmOwner(false);
-                    }*/
 
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
@@ -3084,15 +3078,6 @@
                 });
                 return;
             }
-
-            /*if(screenShareState.started) {
-                chatEvents.fireEvent('error', {
-                    code: 999,
-                    message: "ScreenShare has already started"
-                });
-                console.log("ScreenShare has already started");
-                return
-            }*/
 
             return chatMessaging.sendMessage(sendData, {
                 onResult: function (result) {
