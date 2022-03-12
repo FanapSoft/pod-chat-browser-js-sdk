@@ -3100,6 +3100,13 @@ Thread: <input type="text" id="threadInput" autocomplete="on" width="500">
     document.getElementById('tokenInputSet').addEventListener('click', function (e) {
         console.log('New Token Has been set: ', document.getElementById('tokenInput').value);
         chatAgent.setToken(document.getElementById('tokenInput').value);
+        console.log("Getting current user...");
+        chatAgent.getThreads({}, function (result) {
+            if(!result.hasError) {
+                console.log("Successfully reconnected...")
+            }
+        })
+        console.log(chatAgent.getCurrentUser())
     });
 
     document.getElementById('threadInputSet').addEventListener('click', function (e) {
