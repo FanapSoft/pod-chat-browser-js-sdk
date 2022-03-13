@@ -1003,15 +1003,23 @@
                                 }
 
                                 // sdpOffer = callController.setMediaBitrates(sdpOffer);
-                                sendCallMessage({
-                                    id: (direction === 'send' ? 'SEND_SDP_OFFER' : 'RECIVE_SDP_OFFER'),
-                                    sdpOffer: sdpOffer,
-                                    useComedia: true,
-                                    useSrtp: false,
-                                    topic: topic,
-                                    mediaType: (mediaType === 'video' ? 2 : 1)
-                                });
+                                callStateController.sendSDPOfferRequestMessage(direction, sdpOffer, topic, mediaType,1);
                             });
+                        }
+                    });
+                },
+                sendSDPOfferRequestMessage: function (direction, sdpOffer, topic, mediaType, retries) {
+                    sendCallMessage({
+                        id: (direction === 'send' ? 'SEND_SDP_OFFER' : 'RECIVE_SDP_OFFER'),
+                        sdpOffer: sdpOffer,
+                        useComedia: true,
+                        useSrtp: false,
+                        topic: topic,
+                        mediaType: (mediaType === 'video' ? 2 : 1)
+                    }, function (result) {
+                        if(result.done === 'FALSE' && retries > 0) {
+                            retries -= 1;
+                            callStateController.sendSDPOfferRequestMessage(direction, sdpOffer, topic, mediaType);
                         }
                     });
                 },
@@ -1670,7 +1678,7 @@
                     consoleLogging && console.log("[SDK][handleProcessSdpAnswer]", jsonMessage, jsonMessage.topic)
                     startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
                     if(userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
-                        restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000]);
+                        restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000, 20000]);
                     }
                 });
             },
