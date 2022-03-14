@@ -1267,7 +1267,7 @@
                     }
                 },
                 removeStreamFromWebRTC : function (userId, topic) {
-                    if(callUsers[userId].htmlElements[topic]){
+                    if(callUsers[userId] && callUsers[userId].htmlElements && callUsers[userId].htmlElements[topic]){
                         const stream = callUsers[userId].htmlElements[topic].srcObject;
                         if (!!stream) {
                             const tracks = stream.getTracks();
