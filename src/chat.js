@@ -14223,7 +14223,8 @@
 
     if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
         module.exports = Chat;
-    } else {
+    }
+    if(window) {
         if (!window.POD) {
             window.POD = {};
         }

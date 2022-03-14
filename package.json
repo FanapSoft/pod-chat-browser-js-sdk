@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha --reporter spec --exit",
     "bundle": "browserify browser-bundling.js -o ./dist/podchat-12.4.0.js",
+    "bundle:test": "browserify browser-bundling.js -o ./dist/bundle-test.js",
     "publish:snapshot": "npm run version:snapshot && npm publish --tag snapshot",
     "version:snapshot": "npm version prerelease --preid snapshot",
     "publish:release": "npm run version:release && npm publish",
@@ -38,6 +39,7 @@
     "dompurify": "^2.3.3",
     "faker": "^5.5.3",
     "kurento-utils": "^6.16.0",
+    "node-rsa": "^1.1.1",
     "podasync-ws-only": "^2.7.9",
     "query-string": "^6.8.1",
     "webrtc-adapter": "^8.0.0"
