@@ -2391,17 +2391,17 @@
                 case chatMessageVOTypes.MUTE_CALL_PARTICIPANT:
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                    } else {
-                        if(Array.isArray(messageContent)){
-                            for(var i in messageContent) {
-                                callStateController.deactivateParticipantStream(
-                                    messageContent[i].userId,
-                                    'audioTopicName',
-                                    'mute'
-                                )
-                            }
+                    }
+                    if(Array.isArray(messageContent)){
+                        for(var i in messageContent) {
+                            callStateController.deactivateParticipantStream(
+                                messageContent[i].userId,
+                                'audioTopicName',
+                                'mute'
+                            )
                         }
                     }
+
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_DIVS',
@@ -2421,20 +2421,22 @@
                 case chatMessageVOTypes.UNMUTE_CALL_PARTICIPANT:
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                    } else {
-                        if(Array.isArray(messageContent)) {
-                            for(var i in messageContent) {
-                                callStateController.activateParticipantStream(
-                                    messageContent[i].userId,
-                                    'audio',
-                                    'receive',
-                                    'audioTopicName',
-                                    messageContent[i].sendTopic,
-                                    'mute'
-                                );
-                            }
+                    }
+
+                    if(Array.isArray(messageContent)) {
+                        for(var i in messageContent) {
+                            callStateController.activateParticipantStream(
+                                messageContent[i].userId,
+                                'audio',
+                                //TODO: Should send in here when chat server fixes the bug
+                                'receive',   //(messageContent[i].userId === chatMessaging.userInfo.id ? 'send' : 'receive'),
+                                'audioTopicName',
+                                messageContent[i].sendTopic,
+                                'mute'
+                            );
                         }
                     }
+
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_DIVS',
@@ -2499,18 +2501,18 @@
                 case chatMessageVOTypes.TURN_ON_VIDEO_CALL:
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                    } else {
-                        if(Array.isArray(messageContent)) {
-                            for(var i in messageContent) {
-                                callStateController.activateParticipantStream(
-                                    messageContent[i].userId,
-                                    'video',
-                                    'receive',
-                                    'videoTopicName',
-                                    messageContent[i].sendTopic,
-                                    'video'
-                                );
-                            }
+                    }
+
+                    if(Array.isArray(messageContent)) {
+                        for(var i in messageContent) {
+                            callStateController.activateParticipantStream(
+                                messageContent[i].userId,
+                                'video',
+                                (messageContent[i].userId === chatMessaging.userInfo.id ? 'send' : 'receive'),
+                                'videoTopicName',
+                                messageContent[i].sendTopic,
+                                'video'
+                            );
                         }
                     }
 
@@ -2534,15 +2536,15 @@
                 case chatMessageVOTypes.TURN_OFF_VIDEO_CALL:
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                    } else {
-                        if(Array.isArray(messageContent)){
-                            for(var i in messageContent) {
-                                callStateController.deactivateParticipantStream(
-                                    messageContent[i].userId,
-                                    'videoTopicName',
-                                    'video'
-                                )
-                            }
+                    }
+
+                    if(Array.isArray(messageContent)) {
+                        for(var i in messageContent) {
+                            callStateController.deactivateParticipantStream(
+                                messageContent[i].userId,
+                                'videoTopicName',
+                                'video'
+                            )
                         }
                     }
 
@@ -3591,6 +3593,8 @@
                     sendMessageParams.content = params.userIds;
                 }
             }
+
+            //TODO: should be moved to event 113 when server fixes
             callStateController.deactivateParticipantStream(
                 chatMessaging.userInfo.id,
                 'audioTopicName',
@@ -3638,6 +3642,7 @@
             }
             var myId = chatMessaging.userInfo.id;
 
+            //TODO: Should be moved to event from chat server (when chat server fixes the bug)
             callStateController.activateParticipantStream(
                 myId,
                 'audio',
@@ -3693,29 +3698,6 @@
 
             return chatMessaging.sendMessage(turnOnVideoData, {
                 onResult: function (result) {
-                    if(!result.hasError && Array.isArray(result.result)) {
-                        for(var i in result.result) {
-                            callStateController.activateParticipantStream(
-                                result.result[i].userId,
-                                'video',
-                                'send',
-                                'videoTopicName',
-                                result.result[i].sendTopic,
-                                'video'
-                            );
-                            /*if(callUsers[result.result[i].userId]) {
-                                callUsers[result.result[i].userId].video = true;
-                                callUsers[result.result[i].userId].mute = result.result[i].mute;
-                                callUsers[result.result[i].userId].videoTopicName = 'Vi-' + result.result[i].sendTopic;
-
-                                var user = callUsers[result.result[i].userId];
-                                callStateController.appendUserToCallDiv(result.result[i].userId, callStateController.generateHTMLElements(result.result[i].userId));
-                                setTimeout(function () {
-                                    callStateController.createTopic(result.result[i].userId, user.videoTopicName, 'video', 'send');
-                                })
-                            }*/
-                        }
-                    }
                     callback && callback(result);
                 }
             });
@@ -3746,12 +3728,6 @@
                 });
                 return;
             }
-
-            callStateController.deactivateParticipantStream(
-                chatMessaging.userInfo.id,
-                'videoTopicName',
-                'video'
-            )
 
             return chatMessaging.sendMessage(turnOffVideoData, {
                 onResult: function (result) {
