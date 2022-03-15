@@ -3174,8 +3174,30 @@
         this.resizeScreenShare = function (params, callback) {
             var result = {}
             if(screenShareInfo.isStarted() && screenShareInfo.iAmOwner()) {
-                screenShareInfo.setWidth(params.width);
-                screenShareInfo.setHeight(params.height);
+                var screenSize = window.screen
+                    , qualities = [
+                        {
+                            width: Math.round(screenSize.width / 4),
+                            height: Math.round(screenSize.height / 4)
+                        },
+                        {
+                            width: Math.round(screenSize.width / 3),
+                            height: Math.round(window.screen.height / 3)
+                        },
+                        {
+                            width: Math.round(screenSize.width / 2),
+                            height: Math.round(screenSize.height / 2)
+                        },
+                        {
+                            width: screenSize.width,
+                            height: screenSize.height
+                        }
+                    ]
+                    , selectedQuality = params.quality ? +params.quality - 1 : 3
+                    , qualityObj = qualities[selectedQuality];
+
+                screenShareInfo.setWidth(qualityObj.width);
+                screenShareInfo.setHeight(qualityObj.height);
 
                 applyScreenShareSizeToElement()
 
