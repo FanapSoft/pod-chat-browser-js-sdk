@@ -1,11 +1,11 @@
 {
   "name": "podchat-browser",
-  "version": "12.4.0-snapshot.1",
+  "version": "12.5.0-snapshot.0",
   "description": "Javascript SDK to use POD's Chat Service - Browser Only",
   "main": "./src/chat.js",
   "scripts": {
     "test": "mocha --reporter spec --exit",
-    "bundle": "browserify browser-bundling.js -o ./dist/podchat-12.4.0.js",
+    "bundle": "browserify browser-bundling.js -o ./dist/podchat-12.5.0.js",
     "bundle:test": "browserify browser-bundling.js -o ./examples/bundle-test.js",
     "publish:snapshot": "npm run version:snapshot && npm publish --tag snapshot",
     "version:snapshot": "npm version prerelease --preid snapshot",
