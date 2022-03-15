@@ -1832,42 +1832,46 @@
 
             applyScreenShareSizeToElement = function () {
                 var videoElement = callUsers['screenShare'].htmlElements[callUsers['screenShare'].videoTopicName];
-                let videoTrack = videoElement.srcObject.getTracks()[0];
+                let videoTrack = (videoElement.srcObject
+                    && videoElement.srcObject.getTracks()
+                    && videoElement.srcObject.getTracks().length ? videoElement.srcObject.getTracks()[0] : null);
 
-                if (navigator && !!navigator.userAgent.match(/firefox/gi)) {
-                    videoTrack.enable = false;
-                    let newWidth = callVideoMinWidth - (Math.ceil(Math.random() * 50) + 20);
-                    let newHeight = callVideoMinHeight - (Math.ceil(Math.random() * 50) + 20);
+                if(videoTrack) {
+                    if (navigator && !!navigator.userAgent.match(/firefox/gi)) {
+                        videoTrack.enable = false;
+                        let newWidth = callVideoMinWidth - (Math.ceil(Math.random() * 50) + 20);
+                        let newHeight = callVideoMinHeight - (Math.ceil(Math.random() * 50) + 20);
 
-                    videoTrack.applyConstraints({
-                        advanced: [
-                            {
-                                width: screenShareInfo.getWidth(),
-                                height: screenShareInfo.getHeight()
-                            },
-                            {
-                                aspectRatio: 1.333
-                            }
-                        ]
-                    }).then((res) => {
-                        videoTrack.enabled = true;
-                        setTimeout(() => {
-                            videoTrack.applyConstraints({
-                                "width": screenShareInfo.getWidth(),
-                                "height": screenShareInfo.getHeight()
-                            });
-                        }, 500);
-                    }).catch(e => consoleLogging && console.log(e));
-                } else {
-                    videoTrack.applyConstraints({
-                        "width": screenShareInfo.getWidth() - (Math.ceil(Math.random() * 5) + 5)
-                    }).then((res) => {
-                        setTimeout(function () {
-                            videoTrack.applyConstraints({
-                                "width": screenShareInfo.getWidth()
-                            });
-                        }, 500);
-                    }).catch(e => consoleLogging && console.log(e));
+                        videoTrack.applyConstraints({
+                            advanced: [
+                                {
+                                    width: screenShareInfo.getWidth(),
+                                    height: screenShareInfo.getHeight()
+                                },
+                                {
+                                    aspectRatio: 1.333
+                                }
+                            ]
+                        }).then((res) => {
+                            videoTrack.enabled = true;
+                            setTimeout(() => {
+                                videoTrack.applyConstraints({
+                                    "width": screenShareInfo.getWidth(),
+                                    "height": screenShareInfo.getHeight()
+                                });
+                            }, 500);
+                        }).catch(e => consoleLogging && console.log(e));
+                    } else {
+                        videoTrack.applyConstraints({
+                            "width": screenShareInfo.getWidth() - (Math.ceil(Math.random() * 5) + 5)
+                        }).then((res) => {
+                            setTimeout(function () {
+                                videoTrack.applyConstraints({
+                                    "width": screenShareInfo.getWidth()
+                                });
+                            }, 500);
+                        }).catch(e => consoleLogging && console.log(e));
+                    }
                 }
             }
 
