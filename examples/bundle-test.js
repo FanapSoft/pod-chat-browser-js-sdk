@@ -57478,7 +57478,7 @@ WildEmitter.mixin(WildEmitter);
                     }
                 },
                 removeStreamFromWebRTC : function (userId, topic) {
-                    if(callUsers[userId].htmlElements[topic]){
+                    if(callUsers[userId] && callUsers[userId].htmlElements && callUsers[userId].htmlElements[topic]){
                         const stream = callUsers[userId].htmlElements[topic].srcObject;
                         if (!!stream) {
                             const tracks = stream.getTracks();
@@ -58043,42 +58043,46 @@ WildEmitter.mixin(WildEmitter);
 
             applyScreenShareSizeToElement = function () {
                 var videoElement = callUsers['screenShare'].htmlElements[callUsers['screenShare'].videoTopicName];
-                let videoTrack = videoElement.srcObject.getTracks()[0];
+                let videoTrack = (videoElement.srcObject
+                    && videoElement.srcObject.getTracks()
+                    && videoElement.srcObject.getTracks().length ? videoElement.srcObject.getTracks()[0] : null);
 
-                if (navigator && !!navigator.userAgent.match(/firefox/gi)) {
-                    videoTrack.enable = false;
-                    let newWidth = callVideoMinWidth - (Math.ceil(Math.random() * 50) + 20);
-                    let newHeight = callVideoMinHeight - (Math.ceil(Math.random() * 50) + 20);
+                if(videoTrack) {
+                    if (navigator && !!navigator.userAgent.match(/firefox/gi)) {
+                        videoTrack.enable = false;
+                        let newWidth = callVideoMinWidth - (Math.ceil(Math.random() * 50) + 20);
+                        let newHeight = callVideoMinHeight - (Math.ceil(Math.random() * 50) + 20);
 
-                    videoTrack.applyConstraints({
-                        advanced: [
-                            {
-                                width: screenShareInfo.getWidth(),
-                                height: screenShareInfo.getHeight()
-                            },
-                            {
-                                aspectRatio: 1.333
-                            }
-                        ]
-                    }).then((res) => {
-                        videoTrack.enabled = true;
-                        setTimeout(() => {
-                            videoTrack.applyConstraints({
-                                "width": screenShareInfo.getWidth(),
-                                "height": screenShareInfo.getHeight()
-                            });
-                        }, 500);
-                    }).catch(e => consoleLogging && console.log(e));
-                } else {
-                    videoTrack.applyConstraints({
-                        "width": screenShareInfo.getWidth() - (Math.ceil(Math.random() * 5) + 5)
-                    }).then((res) => {
-                        setTimeout(function () {
-                            videoTrack.applyConstraints({
-                                "width": screenShareInfo.getWidth()
-                            });
-                        }, 500);
-                    }).catch(e => consoleLogging && console.log(e));
+                        videoTrack.applyConstraints({
+                            advanced: [
+                                {
+                                    width: screenShareInfo.getWidth(),
+                                    height: screenShareInfo.getHeight()
+                                },
+                                {
+                                    aspectRatio: 1.333
+                                }
+                            ]
+                        }).then((res) => {
+                            videoTrack.enabled = true;
+                            setTimeout(() => {
+                                videoTrack.applyConstraints({
+                                    "width": screenShareInfo.getWidth(),
+                                    "height": screenShareInfo.getHeight()
+                                });
+                            }, 500);
+                        }).catch(e => consoleLogging && console.log(e));
+                    } else {
+                        videoTrack.applyConstraints({
+                            "width": screenShareInfo.getWidth() - (Math.ceil(Math.random() * 5) + 5)
+                        }).then((res) => {
+                            setTimeout(function () {
+                                videoTrack.applyConstraints({
+                                    "width": screenShareInfo.getWidth()
+                                });
+                            }, 500);
+                        }).catch(e => consoleLogging && console.log(e));
+                    }
                 }
             }
 
@@ -58598,17 +58602,17 @@ WildEmitter.mixin(WildEmitter);
                 case chatMessageVOTypes.MUTE_CALL_PARTICIPANT:
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                    } else {
-                        if(Array.isArray(messageContent)){
-                            for(var i in messageContent) {
-                                callStateController.deactivateParticipantStream(
-                                    messageContent[i].userId,
-                                    'audioTopicName',
-                                    'mute'
-                                )
-                            }
+                    }
+                    if(Array.isArray(messageContent)){
+                        for(var i in messageContent) {
+                            callStateController.deactivateParticipantStream(
+                                messageContent[i].userId,
+                                'audioTopicName',
+                                'mute'
+                            )
                         }
                     }
+
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_DIVS',
@@ -58628,20 +58632,22 @@ WildEmitter.mixin(WildEmitter);
                 case chatMessageVOTypes.UNMUTE_CALL_PARTICIPANT:
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                    } else {
-                        if(Array.isArray(messageContent)) {
-                            for(var i in messageContent) {
-                                callStateController.activateParticipantStream(
-                                    messageContent[i].userId,
-                                    'audio',
-                                    'receive',
-                                    'audioTopicName',
-                                    messageContent[i].sendTopic,
-                                    'mute'
-                                );
-                            }
+                    }
+
+                    if(Array.isArray(messageContent)) {
+                        for(var i in messageContent) {
+                            callStateController.activateParticipantStream(
+                                messageContent[i].userId,
+                                'audio',
+                                //TODO: Should send in here when chat server fixes the bug
+                                'receive',   //(messageContent[i].userId === chatMessaging.userInfo.id ? 'send' : 'receive'),
+                                'audioTopicName',
+                                messageContent[i].sendTopic,
+                                'mute'
+                            );
                         }
                     }
+
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_DIVS',
@@ -58706,18 +58712,18 @@ WildEmitter.mixin(WildEmitter);
                 case chatMessageVOTypes.TURN_ON_VIDEO_CALL:
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                    } else {
-                        if(Array.isArray(messageContent)) {
-                            for(var i in messageContent) {
-                                callStateController.activateParticipantStream(
-                                    messageContent[i].userId,
-                                    'video',
-                                    'receive',
-                                    'videoTopicName',
-                                    messageContent[i].sendTopic,
-                                    'video'
-                                );
-                            }
+                    }
+
+                    if(Array.isArray(messageContent)) {
+                        for(var i in messageContent) {
+                            callStateController.activateParticipantStream(
+                                messageContent[i].userId,
+                                'video',
+                                (messageContent[i].userId === chatMessaging.userInfo.id ? 'send' : 'receive'),
+                                'videoTopicName',
+                                messageContent[i].sendTopic,
+                                'video'
+                            );
                         }
                     }
 
@@ -58741,15 +58747,15 @@ WildEmitter.mixin(WildEmitter);
                 case chatMessageVOTypes.TURN_OFF_VIDEO_CALL:
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
-                    } else {
-                        if(Array.isArray(messageContent)){
-                            for(var i in messageContent) {
-                                callStateController.deactivateParticipantStream(
-                                    messageContent[i].userId,
-                                    'videoTopicName',
-                                    'video'
-                                )
-                            }
+                    }
+
+                    if(Array.isArray(messageContent)) {
+                        for(var i in messageContent) {
+                            callStateController.deactivateParticipantStream(
+                                messageContent[i].userId,
+                                'videoTopicName',
+                                'video'
+                            )
                         }
                     }
 
@@ -59381,8 +59387,30 @@ WildEmitter.mixin(WildEmitter);
         this.resizeScreenShare = function (params, callback) {
             var result = {}
             if(screenShareInfo.isStarted() && screenShareInfo.iAmOwner()) {
-                screenShareInfo.setWidth(params.width);
-                screenShareInfo.setHeight(params.height);
+                var screenSize = window.screen
+                    , qualities = [
+                        {
+                            width: Math.round(screenSize.width / 3),
+                            height: Math.round(window.screen.height / 3)
+                        },
+                        {
+                            width: Math.round(screenSize.width / 2),
+                            height: Math.round(screenSize.height / 2)
+                        },
+                        {
+                            width: screenSize.width,
+                            height: screenSize.height
+                        },
+                        {
+                            width: Math.round(screenSize.width * 1.6),
+                            height: Math.round(screenSize.height * 1.6)
+                        },
+                    ]
+                    , selectedQuality = params.quality ? +params.quality - 1 : 3
+                    , qualityObj = qualities[selectedQuality];
+
+                screenShareInfo.setWidth(qualityObj.width);
+                screenShareInfo.setHeight(qualityObj.height);
 
                 applyScreenShareSizeToElement()
 
@@ -59776,6 +59804,8 @@ WildEmitter.mixin(WildEmitter);
                     sendMessageParams.content = params.userIds;
                 }
             }
+
+            //TODO: should be moved to event 113 when server fixes
             callStateController.deactivateParticipantStream(
                 chatMessaging.userInfo.id,
                 'audioTopicName',
@@ -59823,6 +59853,7 @@ WildEmitter.mixin(WildEmitter);
             }
             var myId = chatMessaging.userInfo.id;
 
+            //TODO: Should be moved to event from chat server (when chat server fixes the bug)
             callStateController.activateParticipantStream(
                 myId,
                 'audio',
@@ -59878,29 +59909,6 @@ WildEmitter.mixin(WildEmitter);
 
             return chatMessaging.sendMessage(turnOnVideoData, {
                 onResult: function (result) {
-                    if(!result.hasError && Array.isArray(result.result)) {
-                        for(var i in result.result) {
-                            callStateController.activateParticipantStream(
-                                result.result[i].userId,
-                                'video',
-                                'send',
-                                'videoTopicName',
-                                result.result[i].sendTopic,
-                                'video'
-                            );
-                            /*if(callUsers[result.result[i].userId]) {
-                                callUsers[result.result[i].userId].video = true;
-                                callUsers[result.result[i].userId].mute = result.result[i].mute;
-                                callUsers[result.result[i].userId].videoTopicName = 'Vi-' + result.result[i].sendTopic;
-
-                                var user = callUsers[result.result[i].userId];
-                                callStateController.appendUserToCallDiv(result.result[i].userId, callStateController.generateHTMLElements(result.result[i].userId));
-                                setTimeout(function () {
-                                    callStateController.createTopic(result.result[i].userId, user.videoTopicName, 'video', 'send');
-                                })
-                            }*/
-                        }
-                    }
                     callback && callback(result);
                 }
             });
@@ -59931,12 +59939,6 @@ WildEmitter.mixin(WildEmitter);
                 });
                 return;
             }
-
-            callStateController.deactivateParticipantStream(
-                chatMessaging.userInfo.id,
-                'videoTopicName',
-                'video'
-            )
 
             return chatMessaging.sendMessage(turnOffVideoData, {
                 onResult: function (result) {
