@@ -2277,7 +2277,7 @@
                     if (!!messageContent[0].userId) {
                         //callStateController.removeFromCallUI(messageContent[0].sendTopic)
                         callStateController.removeParticipant(messageContent[0].userId);
-                        if(screenShareInfo.getOwner() === messageContent[0].userId)
+                        if(screenShareInfo.isStarted() && screenShareInfo.getOwner() === messageContent[0].userId)
                             callStateController.removeScreenShareFromCall()
                     }
 
