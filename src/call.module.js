@@ -815,9 +815,6 @@
 
                     return user.htmlElements;
                 },
-                /*addParticipant: function (params, direction) {
-
-                },*/
                 removeParticipant: function (userId) {
                     var user = callUsers[userId];
                     if(!user)
@@ -847,14 +844,8 @@
                         callUsers[userId] = null;
                     }
                 },
-                stopParticipantAudio: function (userId) {
-                    this.removeTopic(userId, callUsers[userId].peers[userId].audioTopicName);
-                },
                 startParticipantAudio: function (userId) {
                     this.createTopic(userId, callUsers[userId].audioTopicName, 'audio', callUsers[userId].direction);
-                },
-                stopParticipantVideo: function (userId) {
-                    this.removeTopic(userId, callUsers[userId].peers[userId].videoTopicName);
                 },
                 startParticipantVideo: function (userId) {
                     this.createTopic(userId, callUsers[userId].videoTopicName, 'video', callUsers[userId].direction);
