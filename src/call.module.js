@@ -882,20 +882,7 @@
                             mediaConstraints: mediaConstraints,
                             iceTransportPolicy: 'relay',
                             onicecandidate: (candidate) => {
-                                if (callUsers[userId].topicMetaData[topic].interval !== null) {
-                                    clearInterval(callUsers[userId].topicMetaData[topic].interval);
-                                }
-                                callUsers[userId].topicMetaData[topic].interval = setInterval(function () {
-                                    if (callUsers[userId].topicMetaData[topic].sdpAnswerReceived === true) {
-                                        callUsers[userId].topicMetaData[topic].sdpAnswerReceived = false;
-                                        clearInterval(callUsers[userId].topicMetaData[topic].interval);
-                                        sendCallMessage({
-                                            id: 'ADD_ICE_CANDIDATE',
-                                            topic: topic,
-                                            candidateDto: candidate
-                                        })
-                                    }
-                                }, 500, {candidate: candidate});
+                                callStateController.setTopicIceCandidateInterval(userId, topic, candidate)
                             },
                             configuration: {
                                 iceServers: callStateController.getTurnServer(currentCallParams)
@@ -928,6 +915,25 @@
                         }
                         consoleLogging && console.log("[SDK][getSdpOfferOptions] ", "topic: ", topic, "mediaType: ", mediaType, "direction: ", direction, "options: ", options);
                     });
+                },
+                setTopicIceCandidateInterval: function (userId, topic, candidate) {
+                    if (callUsers[userId].topicMetaData[topic].interval !== null) {
+                        callStateController.removeTopicIceCandidateInterval(userId, topic);
+                    }
+                    callUsers[userId].topicMetaData[topic].interval = setInterval(function () {
+                        if (callUsers[userId].topicMetaData[topic].sdpAnswerReceived === true) {
+                            callUsers[userId].topicMetaData[topic].sdpAnswerReceived = false;
+                            callStateController.removeTopicIceCandidateInterval(userId, topic);
+                            sendCallMessage({
+                                id: 'ADD_ICE_CANDIDATE',
+                                topic: topic,
+                                candidateDto: candidate
+                            })
+                        }
+                    }, 500, {candidate: candidate});
+                },
+                removeTopicIceCandidateInterval: function (userId, topic) {
+                    clearInterval(callUsers[userId].topicMetaData[topic].interval);
                 },
                 getTurnServer: function (params) {
 
@@ -1218,7 +1224,8 @@
                                 topic: topic
                             }, function (result) {
                                 if (result.done === 'TRUE') {
-                                    clearInterval(callUsers[userId].topicMetaData[topic].interval)
+                                    // clearInterval(callUsers[userId].topicMetaData[topic].interval)
+                                    callStateController.removeTopicIceCandidateInterval(userId, topic);
                                     callController.removeTopic(userId, topic);
                                     callController.createTopic(userId, topic, mediaType, direction, userId === 'screenShare');
                                 } else if (result.done === 'SKIP') {
@@ -1320,14 +1327,16 @@
                             var user = callUsers[i];
                             if (user) {
                                 if(user.videoTopicName && user.peers[user.videoTopicName]) {
-                                    clearInterval(callUsers[i].topicMetaData[user.videoTopicName].interval);
+                                    callStateController.removeTopicIceCandidateInterval(i, user.videoTopicName)
+                                    // clearInterval(callUsers[i].topicMetaData[user.videoTopicName].interval);
                                     callStateController.removeConnectionQualityInterval(i, user.videoTopicName);
                                     callStateController.removeStreamFromWebRTC(i, user.videoTopicName);
                                     callUsers[i].peers[user.videoTopicName].dispose();
                                     delete callUsers[i].peers[user.videoTopicName];
                                 }
                                 if(user.audioTopicName && user.peers[user.audioTopicName]) {
-                                    clearInterval(callUsers[i].topicMetaData[user.audioTopicName].interval);
+                                    callStateController.removeTopicIceCandidateInterval(i, user.videoTopicName)
+                                    // clearInterval(callUsers[i].topicMetaData[user.audioTopicName].interval);
                                     //callStateController.removeConnectionQualityInterval(i, user.audioTopicName);
                                     callStateController.removeStreamFromWebRTC(i, user.audioTopicName);
                                     callUsers[i].peers[user.audioTopicName].dispose();
@@ -1388,7 +1397,8 @@
                 deactivateParticipantStream: function (userId, topicNameKey, mediaKey) {
                     callUsers[userId][mediaKey] = false;
                     var user = callUsers[userId];
-                    clearInterval(callUsers[userId].topicMetaData[user[topicNameKey]].interval)
+                    callStateController.removeTopicIceCandidateInterval(userId, user[topicNameKey])
+                    // clearInterval(callUsers[userId].topicMetaData[user[topicNameKey]].interval)
                     callStateController.removeTopic(userId, user[topicNameKey]);
                     callStateController.removeStreamFromWebRTC(userId, user[topicNameKey]);
                 },
@@ -1628,10 +1638,12 @@
                         mediaType: (jsonMessage.topic.indexOf('screen-Share') !== -1 || jsonMessage.topic.indexOf('Vi-') !== -1 ? 2  : 1)
                     });
 
-                    callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
-                    startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
-                    if(userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
-                        restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000]);
+                    if(callUsers[userId] && callUsers[userId].topicMetaData[jsonMessage.topic]) {
+                        callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
+                        startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
+                        if(userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
+                            restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000]);
+                        }
                     }
                 });
             },
@@ -1663,13 +1675,17 @@
                         return;
                     }
 
-                    if (callUsers[userId].topicMetaData[jsonMessage.topic].interval !== null) {
-                        callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
-                    }
-                    consoleLogging && console.log("[SDK][handleProcessSdpAnswer]", jsonMessage, jsonMessage.topic)
-                    startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
-                    if(userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
-                        restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000, 20000]);
+                    consoleLogging && console.log("[SDK][handleProcessSdpAnswer]", jsonMessage, jsonMessage.topic);
+
+                    if(callUsers[userId] && callUsers[userId].topicMetaData[jsonMessage.topic]) {
+                        if (callUsers[userId].topicMetaData[jsonMessage.topic].interval !== null) {
+                            callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
+                        }
+
+                        startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
+                        if (userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
+                            restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000, 20000]);
+                        }
                     }
                 });
             },
