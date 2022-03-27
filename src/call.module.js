@@ -232,7 +232,8 @@
             consoleLogging = (params.asyncLogging.consoleLogging && typeof params.asyncLogging.consoleLogging === 'boolean')
                 ? params.asyncLogging.consoleLogging
                 : false,
-            callNoAnswerTimeout = params.callOptions.callNoAnswerTimeout || 0;
+            callNoAnswerTimeout = params.callOptions.callNoAnswerTimeout || 0,
+            callStreamCloseTimeout = params.callOptions.streamCloseTimeout || 10000
 
         function ScreenShareStateClass() {
             var config = {
@@ -319,6 +320,60 @@
                         config.currentServerIndex++;
                     }
                 }
+            }
+        }
+
+        function devicePauseStopManager(params) {
+            const config = {
+                mediaType: params.mediaType, // 'video' || 'audio'
+                paused: false,
+                stopped: false,
+                timeoutHandler: null,
+                timeout: params.timeout
+            };
+
+            const privateFunctions = {
+                setTimeout: function () {
+                    config.timeoutHandler = setInterval(function () {
+                        if(config.paused) {
+                            config.stopped = true;
+
+                            callStateController.deactivateParticipantStream(
+                                chatMessaging.userInfo.id,
+                                config.mediaType,
+                                (config.mediaType === 'video' ? 'video' : 'mute')
+                            );
+                        }
+                    }, config.timeout);
+                },
+                removeTimeout: function () {
+                    clearTimeout(config.timeoutHandler);
+                }
+            };
+
+            return {
+                pauseStream: function () {
+                    config.paused = true
+                },
+                stopStream: function () {
+                    config.stopped = true
+                },
+                isStreamPaused: function () {
+                    return config.paused;
+                },
+                isStreamStopped: function () {
+                    return config.stopped;
+                },
+                disableStream: function (pause) {
+                    if(pause)
+                        this.pauseStream();
+                    privateFunctions.setTimeout()
+                },
+                reset: function () {
+                    config.paused = false;
+                    config.stopped = false;
+                    privateFunctions.removeTimeout();
+                },
             }
         }
 
@@ -702,6 +757,22 @@
                     }
                     user.videoTopicName = 'Vi-' + user.topicSend;
                     user.audioTopicName = 'Vo-' + user.topicSend;
+                    user.audioStopManager = new devicePauseStopManager({
+                        mediaType: 'audio',
+                        timeout: callStreamCloseTimeout
+                    });
+                    if(user.mute) {
+                        user.audioStopManager.pauseStream();
+                        user.audioStopManager.stopStream();
+                    }
+                    user.videoStopManager = new devicePauseStopManager({
+                        mediaType: 'video',
+                        timeout: callStreamCloseTimeout
+                    });
+                    if(!user.video) {
+                        user.videoStopManager.pauseStream();
+                        user.videoStopManager.stopStream();
+                    }
                     user.topicMetaData[user.videoTopicName] = {
                         interval: null,
                         receivedSdpAnswer: false,
@@ -823,7 +894,7 @@
                     if(user.videoTopicName && user.peers[user.videoTopicName]) {
                         clearInterval(callUsers[userId].topicMetaData[user.videoTopicName].interval);
                         callStateController.removeConnectionQualityInterval(userId, user.videoTopicName);
-                        callStateController.removeStreamFromWebRTC(userId, user.videoTopicName);
+                        callStateController.removeStreamHTML(userId, user.videoTopicName);
                         callUsers[userId].peers[user.videoTopicName].dispose();
                         delete callUsers[userId].peers[user.videoTopicName];
 
@@ -831,7 +902,7 @@
                     if(user.audioTopicName && user.peers[user.audioTopicName]) {
                         clearInterval(callUsers[userId].topicMetaData[user.audioTopicName].interval);
                         callStateController.removeConnectionQualityInterval(userId, user.audioTopicName);
-                        callStateController.removeStreamFromWebRTC(userId, user.audioTopicName);
+                        callStateController.removeStreamHTML(userId, user.audioTopicName);
 
                         callUsers[userId].peers[user.audioTopicName].dispose();
                         delete callUsers[userId].peers[user.audioTopicName];
@@ -1264,7 +1335,7 @@
                         clearInterval(callUsers[userId].topicMetaData[topic]['connectionQualityInterval']);
                     }
                 },
-                removeStreamFromWebRTC : function (userId, topic) {
+                removeStreamHTML : function (userId, topic) {
                     if(callUsers[userId] && callUsers[userId].htmlElements && callUsers[userId].htmlElements[topic]){
                         const stream = callUsers[userId].htmlElements[topic].srcObject;
                         if (!!stream) {
@@ -1311,7 +1382,7 @@
                 removeScreenShareFromCall: function (topic) {
                     var screenShare = callUsers["screenShare"];
                     if(screenShare && screenShare.peers[screenShare.videoTopicName]) {
-                        callStateController.removeStreamFromWebRTC('screenShare', screenShare.videoTopicName)
+                        callStateController.removeStreamHTML('screenShare', screenShare.videoTopicName)
                         callStateController.removeTopic('screenShare', screenShare.videoTopicName);
                         chatEvents.fireEvent('callEvents', {
                             type: 'CALL_DIVS',
@@ -1330,7 +1401,7 @@
                                     callStateController.removeTopicIceCandidateInterval(i, user.videoTopicName)
                                     // clearInterval(callUsers[i].topicMetaData[user.videoTopicName].interval);
                                     callStateController.removeConnectionQualityInterval(i, user.videoTopicName);
-                                    callStateController.removeStreamFromWebRTC(i, user.videoTopicName);
+                                    callStateController.removeStreamHTML(i, user.videoTopicName);
                                     callUsers[i].peers[user.videoTopicName].dispose();
                                     delete callUsers[i].peers[user.videoTopicName];
                                 }
@@ -1338,7 +1409,7 @@
                                     callStateController.removeTopicIceCandidateInterval(i, user.videoTopicName)
                                     // clearInterval(callUsers[i].topicMetaData[user.audioTopicName].interval);
                                     //callStateController.removeConnectionQualityInterval(i, user.audioTopicName);
-                                    callStateController.removeStreamFromWebRTC(i, user.audioTopicName);
+                                    callStateController.removeStreamHTML(i, user.audioTopicName);
                                     callUsers[i].peers[user.audioTopicName].dispose();
                                     delete callUsers[i].peers[user.audioTopicName];
                                 }
@@ -1367,11 +1438,11 @@
                         userId = this.findUserIdByTopic(videoElement);
 
                     if (topic.length > 0 && callUsers[userId].htmlElements[videoElement]) {
-                        this.removeStreamFromWebRTC(userId,videoElement);
+                        this.removeStreamHTML(userId,videoElement);
                     }
 
                     if (topic.length > 0 && callUsers[userId].htmlElements[videoElement]) {
-                        this.removeStreamFromWebRTC(userId, audioElement);
+                        this.removeStreamHTML(userId, audioElement);
                     }
                 },
                 findUserIdByTopic: function (topic) {
@@ -1394,13 +1465,14 @@
                         })
                     }
                 },
-                deactivateParticipantStream: function (userId, topicNameKey, mediaKey) {
-                    callUsers[userId][mediaKey] = false;
+                deactivateParticipantStream: function (userId, mediaType, mediaKey) {
+                    callUsers[userId][mediaKey] = (mediaKey === 'mute' ? true : false);
                     var user = callUsers[userId];
-                    callStateController.removeTopicIceCandidateInterval(userId, user[topicNameKey])
+                    var topicNameKey = mediaType === 'audio' ? 'audioTopicName' : 'videoTopicName'
+                    callStateController.removeTopicIceCandidateInterval(userId, user[topicNameKey]);
                     // clearInterval(callUsers[userId].topicMetaData[user[topicNameKey]].interval)
                     callStateController.removeTopic(userId, user[topicNameKey]);
-                    callStateController.removeStreamFromWebRTC(userId, user[topicNameKey]);
+                    callStateController.removeStreamHTML(userId, user[topicNameKey]);
                 },
                 setMediaBitrates: function (sdp) {
                     return this.setMediaBitrate(this.setMediaBitrate(sdp, "video", 400), "audio", 50);
@@ -2400,15 +2472,17 @@
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                     }
                     if(Array.isArray(messageContent)){
+                        let pause;
                         for(var i in messageContent) {
-                            callStateController.deactivateParticipantStream(
-                                messageContent[i].userId,
-                                'audioTopicName',
-                                'mute'
-                            )
+                            pause = messageContent[i].userId == chatMessaging.userInfo.id;
+                            callUsers[messageContent[i].userId].audioStopManager.disableStream(pause);
+                            // callStateController.deactivateParticipantStream(
+                            //     messageContent[i].userId,
+                            //     'audio',
+                            //     'mute'
+                            // )
                         }
                     }
-
 
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_DIVS',
@@ -2549,7 +2623,7 @@
                         for(var i in messageContent) {
                             callStateController.deactivateParticipantStream(
                                 messageContent[i].userId,
-                                'videoTopicName',
+                                'video',
                                 'video'
                             )
                         }
@@ -3602,11 +3676,14 @@
             }
 
             //TODO: should be moved to event 113 when server fixes
-            callStateController.deactivateParticipantStream(
-                chatMessaging.userInfo.id,
-                'audioTopicName',
-                'mute'
-            )
+
+            // callStateController.deactivateParticipantStream(
+            //     chatMessaging.userInfo.id,
+            //     'audio',
+            //     'mute'
+            // );
+            currentModuleInstance.pauseMice({});
+            callUsers[chatMessaging.userInfo.id].audioStopManager.disableStream(true);
 
             return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
@@ -3650,14 +3727,20 @@
             var myId = chatMessaging.userInfo.id;
 
             //TODO: Should be moved to event from chat server (when chat server fixes the bug)
-            callStateController.activateParticipantStream(
-                myId,
-                'audio',
-                'send',
-                'audioTopicName',
-                callUsers[myId].topicSend,
-                'mute'
-            );
+            var myUser = callUsers[myId];
+            if(myUser.audioStopManager.isStreamPaused()) {
+                if (myUser.audioStopManager.isStreamStopped()){
+                    callStateController.activateParticipantStream(
+                        myId,
+                        'audio',
+                        'send',
+                        'audioTopicName',
+                        myUser.topicSend,
+                        'mute'
+                    );
+                }
+                callUsers[chatMessaging.userInfo.id].audioStopManager.reset();
+            }
 
             return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
@@ -3749,7 +3832,7 @@
                     for( var i in params.userIds) {
                         callStateController.deactivateParticipantStream(
                             params.userIds[i],
-                            'videoTopicName',
+                            'video',
                             'video'
                         );
                     }
