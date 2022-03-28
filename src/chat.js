@@ -411,8 +411,20 @@
             chatSendQueue = [],
             chatWaitQueue = [],
             chatUploadQueue = [],
-            fullResponseObject = params.fullResponseObject || false,
-            chatEvents = new ChatEvents(Object.assign(params, {
+            fullResponseObject = params.fullResponseObject || false;
+
+        if(!consoleLogging) {
+            /**
+             * Disable kurento-utils logs
+             */
+            window.Logger = {
+                error(){},
+                log(){},
+                debug(){},
+            };
+        }
+
+        var chatEvents = new ChatEvents(Object.assign(params, {
                 Sentry: Sentry,
                 Utility: Utility,
                 consoleLogging: consoleLogging,
@@ -441,6 +453,7 @@
         /*******************************************************
          *            P R I V A T E   M E T H O D S            *
          *******************************************************/
+
 
         var init = function () {
                 /**
