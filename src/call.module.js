@@ -386,11 +386,12 @@
                 mediaType: params.mediaType,
                 direction: params.direction,
                 isScreenShare: false,
-                metadata: new topicMetaDataManager({
-                    userId: params.userId,
-                    topic: params.topic,
-                })
             };
+
+            const metadataInstance = new topicMetaDataManager({
+                userId: params.userId,
+                topic: params.topic,
+            });
 
             return {
                 setState: function (state) {
@@ -404,6 +405,9 @@
                 },
                 getPeer: function () {
                     return config.peer;
+                },
+                metadata: function () {
+                    return metadataInstance;
                 },
                 isConnecting: function () {
                     return config.state === 1;
@@ -466,31 +470,30 @@
                 watchForIceCandidates: function (candidate) {
                     var manager = this;
 
-                    if (callUsers[config.userId].topicMetaData[config.topic].interval !== null) {
+                    if (metadataInstance.isIceCandidateIntervalSet()) { //callUsers[config.userId].topicMetaData[config.topic].interval
                         // manager.removeTopicIceCandidateInterval();
                         return;
                     }
-                    callUsers[config.userId].topicMetaData[config.topic].interval = setInterval(function () {
+                    //callUsers[config.userId].topicMetaData[config.topic].interval
+                    metadataInstance.setIceCandidateInterval(setInterval(function () {
                         if (callUsers[config.userId].topicMetaData[config.topic].sdpAnswerReceived === true) {
                             callUsers[config.userId].topicMetaData[config.topic].sdpAnswerReceived = false;
-                            manager.removeTopicIceCandidateInterval();
+                            // manager.removeTopicIceCandidateInterval();
+                            metadataInstance.clearIceCandidateInterval();
                             sendCallMessage({
                                 id: 'ADD_ICE_CANDIDATE',
                                 topic: config.topic,
                                 candidateDto: candidate
                             })
                         }
-                    }, 500, {candidate: candidate});
-                },
-                removeTopicIceCandidateInterval: function () {
-                    clearInterval(callUsers[config.userId].topicMetaData[config.topic].interval);
+                    }, 500, {candidate: candidate}));
                 },
                 establishPeerConnection: function (options) {
                     var WebRtcFunction = config.direction === 'send' ? 'WebRtcPeerSendonly' : 'WebRtcPeerRecvonly',
                         manager = this,
                         user = callUsers[config.userId],
-                        topicElement = user.htmlElements[config.topic],
-                        topicMetaData = user.topicMetaData[config.topic];
+                        topicElement = user.htmlElements[config.topic];
+                        //topicMetaData = user.topicMetaData[config.topic];
 
                     config.peer = new KurentoUtils.WebRtcPeer[WebRtcFunction](options, function (err) {
                         if (err) {
@@ -755,7 +758,7 @@
                                     manager.removeTopic();
                                     manager.createTopic();
                                 } else if (result.done === 'SKIP') {
-                                    clearInterval(callUsers[config.userId].topicMetaData[config.topic].interval)
+                                    // clearInterval(callUsers[config.userId].topicMetaData[config.topic].interval)
                                     manager.removeTopic(config.userId, config.topic);
                                     manager.createTopic(config.userId, config.topic, config.mediaType, config.direction, config.userId === 'screenShare');
                                 } else {
@@ -781,7 +784,8 @@
                 },
                 removeTopic: function () {
                     if(config.peer) {
-                        this.removeTopicIceCandidateInterval();
+                        // this.removeTopicIceCandidateInterval();
+                        metadataInstance.clearIceCandidateInterval();
                         this.removeConnectionQualityInterval();
                         config.peer.dispose();
                         config.peer = null;
@@ -2196,11 +2200,14 @@
 
             handleProcessSdpOffer = function (jsonMessage) {
                 var userId = callStateController.findUserIdByTopic(jsonMessage.topic),
+                    topicManager,
                     peer; //callUsers[userId].peers[jsonMessage.topic];
 
                 if(jsonMessage.topic.indexOf('Vi-') !== -1 || jsonMessage.topic.indexOf('screen-Share') !== -1 ) {
+                    topicManager = callUsers[userId].videoTopicManager
                     peer = callUsers[userId].videoTopicManager.getPeer();
                 } else if(jsonMessage.topic.indexOf('Vo-') !== -1) {
+                    topicManager = callUsers[userId].audioTopicManager;
                     peer = callUsers[userId].audioTopicManager.getPeer();
                 }
 
@@ -2225,7 +2232,10 @@
                         mediaType: (jsonMessage.topic.indexOf('screen-Share') !== -1 || jsonMessage.topic.indexOf('Vi-') !== -1 ? 2 : 1)
                     });
 
-                    if(callUsers[userId] && callUsers[userId].topicMetaData[jsonMessage.topic]) {
+                    // if(callUsers[userId] && callUsers[userId].topicMetaData[jsonMessage.topic]) {
+                    //
+                    // }
+                    if(topicManager.metadata().isIceCandidateIntervalSet()) {
                         callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
                         startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
                         if(userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
@@ -2237,11 +2247,14 @@
 
             handleProcessSdpAnswer = function (jsonMessage) {
                 var userId = callStateController.findUserIdByTopic(jsonMessage.topic),
-                 peer; // = callUsers[userId].peers[jsonMessage.topic];
+                    topicManager,
+                    peer; // = callUsers[userId].peers[jsonMessage.topic];
 
                 if(jsonMessage.topic.indexOf('Vi-') !== -1 || jsonMessage.topic.indexOf('screen-Share') !== -1) {
+                    topicManager = callUsers[userId].videoTopicManager;
                     peer = callUsers[userId].videoTopicManager.getPeer();
                 } else if(jsonMessage.topic.indexOf('Vo-') !== -1) {
+                    topicManager = callUsers[userId].audioTopicManager;
                     peer = callUsers[userId].audioTopicManager.getPeer();
                 }
 
@@ -2270,16 +2283,17 @@
 
                     consoleLogging && console.log("[SDK][handleProcessSdpAnswer]", jsonMessage, jsonMessage.topic);
 
-                    if(callUsers[userId] && callUsers[userId].topicMetaData[jsonMessage.topic]) {
-                        if (callUsers[userId].topicMetaData[jsonMessage.topic].interval !== null) {
+                    //if(callUsers[userId] && callUsers[userId].topicMetaData[jsonMessage.topic]) {
+                        if (topicManager.metadata().isIceCandidateIntervalSet()){//callUsers[userId].topicMetaData[jsonMessage.topic].interval !== null) {
                             callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
+                            startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
+                            if (userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
+                                restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000, 20000]);
+                            }
                         }
 
-                        startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
-                        if (userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
-                            restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000, 20000]);
-                        }
-                    }
+
+                    //}
                 });
             },
 
