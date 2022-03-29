@@ -334,6 +334,9 @@
 
             const privateFunctions = {
                 setTimeout: function () {
+                    if(config.timeoutHandler) {
+                        this.removeTimeout();
+                    }
                     config.timeoutHandler = setInterval(function () {
                         if(config.paused) {
                             config.stopped = true;
