@@ -21,6 +21,7 @@
                 botEvents: {},
                 userEvents: {},
                 callEvents: {},
+                callStreamEvents: {},
                 fileUploadEvents: {},
                 fileDownloadEvents: {},
                 systemEvents: {},

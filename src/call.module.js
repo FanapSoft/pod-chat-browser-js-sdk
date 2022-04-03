@@ -482,8 +482,7 @@
                 watchForIceCandidates: function (candidate) {
                     var manager = this;
 
-                    if (metadataInstance.isIceCandidateIntervalSet()) { //callUsers[config.userId].topicMetaData[config.topic].interval
-                        // manager.removeTopicIceCandidateInterval();
+                    if (metadataInstance.isIceCandidateIntervalSet()) {
                         return;
                     }
                     //callUsers[config.userId].topicMetaData[config.topic].interval
@@ -637,6 +636,9 @@
                         }
 
                         if (config.peer.peerConnection.iceConnectionState === "connected") {
+                            if (config.direction === 'receive' && config.mediaType === 'audio') {
+                                manager.watchAudioLevel();
+                            }
                             config.state = peerStates.CONNECTED;
                             callRequestController.callEstablishedInMySide = true;
                             chatEvents.fireEvent('callEvents', {
@@ -645,6 +647,71 @@
                                 errorMessage: `Call Peer (${config.topic}) has connected!`,
                                 errorInfo: config.peer
                             });
+                        }
+                    }
+                },
+                watchAudioLevel: function () {
+                    const manager = this
+                        , audioCtx = new AudioContext()
+                        , stream = config.peer.getRemoteStream();
+                    if(config.peer && !stream) {
+                        setTimeout(function (){
+                            manager.watchAudioLevel()
+                        }, 500)
+                        return
+                    }
+                    const audioSourceNode = audioCtx.createMediaStreamSource(stream)
+                        , analyserNode = audioCtx.createScriptProcessor(2048, 1, 1);
+                    var instant = 0.0, counter = 0;
+                    analyserNode.onaudioprocess = function(event) {
+                        if(!config.peer) {
+                            analyserNode.removeEventListener('audioprocess');
+                            analyserNode.onaudioprocess = null
+                        }
+
+                        counter++;
+
+                        if(counter % 20 !== 0) {
+                            return;
+                        } else {
+                            counter = 0;
+                        }
+
+                        const input = event.inputBuffer.getChannelData(0);
+                        let i;
+                        let sum = 0.0;
+                        let clipcount = 0;
+                        for (i = 0; i < input.length; ++i) {
+                            sum += input[i] * input[i];
+                            if (Math.abs(input[i]) > 0.99) {
+                                clipcount += 1;
+                            }
+                        }
+                        console.log(Math.sqrt(sum / input.length));
+                        instant = Math.floor( Math.sqrt(sum / input.length) * 10000);
+                        chatEvents.fireEvent('callStreamEvents', {
+                            type: 'USER_SPEAKING',
+                            userId: config.userId,
+                            audioLevel: convertToAudioLevel(instant)
+                        })
+                    };
+                    analyserNode.fftSize = 256;
+                    const bufferLength = analyserNode.frequencyBinCount;
+                    const dataArray = new Uint8Array(bufferLength);
+                    audioSourceNode.connect(analyserNode);
+                    analyserNode.connect(audioCtx.destination);
+
+                    function convertToAudioLevel(soundPower){
+                        if(soundPower < 10) {
+                            return 0;
+                        } else if(soundPower >= 10 && soundPower < 100) {
+                            return 1;
+                        } else if(soundPower >= 100 && soundPower < 200) {
+                            return 2;
+                        } else if(soundPower >= 200 && soundPower < 300) {
+                            return 3;
+                        } else if(soundPower >= 300) {
+                            return 4;
                         }
                     }
                 },
