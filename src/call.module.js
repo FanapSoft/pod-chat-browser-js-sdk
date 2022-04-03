@@ -687,7 +687,7 @@
                                 clipcount += 1;
                             }
                         }
-                        console.log(Math.sqrt(sum / input.length));
+
                         instant = Math.floor( Math.sqrt(sum / input.length) * 10000);
                         chatEvents.fireEvent('callStreamEvents', {
                             type: 'USER_SPEAKING',
