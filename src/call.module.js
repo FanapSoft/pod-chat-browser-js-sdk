@@ -2339,15 +2339,10 @@
                         mediaType: (jsonMessage.topic.indexOf('screen-Share') !== -1 || jsonMessage.topic.indexOf('Vi-') !== -1 ? 2 : 1)
                     });
 
-                    // if(callUsers[userId] && callUsers[userId].topicMetaData[jsonMessage.topic]) {
-                    //
-                    // }
-                    if(topicManager.metadata().isIceCandidateIntervalSet()) {
-                        callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
-                        startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
-                        if(userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
-                            restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000]);
-                        }
+                    callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
+                    startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
+                    if(userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
+                        restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000]);
                     }
                 });
             },
@@ -2390,17 +2385,13 @@
 
                     consoleLogging && console.log("[SDK][handleProcessSdpAnswer]", jsonMessage, jsonMessage.topic);
 
-                    //if(callUsers[userId] && callUsers[userId].topicMetaData[jsonMessage.topic]) {
-                        if (topicManager.metadata().isIceCandidateIntervalSet()){//callUsers[userId].topicMetaData[jsonMessage.topic].interval !== null) {
-                            callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
-                            startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
-                            if (userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
-                                restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000, 20000]);
-                            }
+                    if (topicManager.metadata().isIceCandidateIntervalSet()){
+                        callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
+                        startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
+                        if (userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
+                            restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000, 20000]);
                         }
-
-
-                    //}
+                    }
                 });
             },
 
