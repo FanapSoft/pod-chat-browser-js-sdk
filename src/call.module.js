@@ -2990,10 +2990,16 @@
                     });
 
                     if (!!messageContent[0].userId) {
-                        //callStateController.removeFromCallUI(messageContent[0].sendTopic)
                         callStateController.removeParticipant(messageContent[0].userId);
                         if(screenShareInfo.isStarted() && screenShareInfo.getOwner() === messageContent[0].userId)
                             callStateController.removeScreenShareFromCall()
+
+                        if(messageContent[0].userId === chatMessaging.userInfo.id) {
+                            chatEvents.fireEvent('callEvents', {
+                                type: 'CALL_ENDED',
+                                callId: threadId
+                            });
+                        }
                     }
 
                     //If I'm the only call participant, stop the call
