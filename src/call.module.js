@@ -1994,6 +1994,7 @@
                 removeScreenShareFromCall: function () {
                     var screenShare = callUsers["screenShare"];
                     if(screenShare && screenShareInfo.isStarted()) {
+                        screenShareInfo.setIsStarted(false);
                         // callStateController.removeStreamHTML('screenShare', screenShare.videoTopicName)
                         screenShare.videoTopicManager.removeTopic()
                         // callStateController.removeTopic('screenShare', screenShare.videoTopicName);
@@ -3368,7 +3369,6 @@
                  */
                 case chatMessageVOTypes.END_SCREEN_SHARE:
                     // screenShareInfo.setIAmOwner(false);
-                    screenShareInfo.setIsStarted(false);
 
                     if (chatMessaging.messagesCallbacks[uniqueId]) {
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
