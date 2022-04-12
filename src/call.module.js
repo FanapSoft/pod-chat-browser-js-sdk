@@ -323,6 +323,7 @@
 
         function devicePauseStopManager(params) {
             const config = {
+                userId: params.userId,
                 mediaType: params.mediaType, // 'video' || 'audio'
                 paused: false,
                 stopped: false,
@@ -335,12 +336,13 @@
                     if(config.timeoutHandler) {
                         this.removeTimeout();
                     }
-                    config.timeoutHandler = setInterval(function () {
+
+                    config.timeoutHandler = setTimeout(function () {
                         if(config.paused) {
                             config.stopped = true;
 
                             callStateController.deactivateParticipantStream(
-                                chatMessaging.userInfo.id,
+                                config.userId,
                                 config.mediaType,
                                 (config.mediaType === 'video' ? 'video' : 'mute')
                             );
@@ -365,16 +367,16 @@
                 isStreamStopped: function () {
                     return config.stopped;
                 },
-                disableStream: function (pause) {
-                    if(pause)
-                        this.pauseStream();
+                disableStream: function () {
+                    //if(pause)
+                    this.pauseStream();
                     privateFunctions.setTimeout()
                 },
                 reset: function () {
                     config.paused = false;
                     config.stopped = false;
                     privateFunctions.removeTimeout();
-                },
+                }
             }
         }
 
@@ -1327,6 +1329,7 @@
                     user.videoTopicName = 'Vi-' + user.topicSend;
                     user.audioTopicName = 'Vo-' + user.topicSend;
                     user.audioStopManager = new devicePauseStopManager({
+                        userId: user.userId,
                         mediaType: 'audio',
                         timeout: callStreamCloseTimeout
                     });
@@ -1335,6 +1338,7 @@
                         user.audioStopManager.stopStream();
                     }
                     user.videoStopManager = new devicePauseStopManager({
+                        userId: user.userId,
                         mediaType: 'video',
                         timeout: callStreamCloseTimeout
                     });
@@ -3112,8 +3116,8 @@
                     if(Array.isArray(messageContent)){
                         let pause;
                         for(var i in messageContent) {
-                            pause = messageContent[i].userId == chatMessaging.userInfo.id;
-                            callUsers[messageContent[i].userId].audioStopManager.disableStream(pause);
+                            // pause = messageContent[i].userId == chatMessaging.userInfo.id;
+                            callUsers[messageContent[i].userId].audioStopManager.disableStream();
                             // callStateController.deactivateParticipantStream(
                             //     messageContent[i].userId,
                             //     'audio',
@@ -3142,9 +3146,31 @@
                         chatMessaging.messagesCallbacks[uniqueId](Utility.createReturnData(false, '', 0, messageContent, contentCount));
                     }
 
+                    var myId = chatMessaging.userInfo.id;
+
                     if(Array.isArray(messageContent)) {
-                        for(var i in messageContent) {
-                            callStateController.activateParticipantStream(
+                        for(let i in messageContent) {
+                            let cUserId = messageContent[i].userId;
+
+                            if(callUsers[cUserId].audioStopManager.isStreamPaused()) {
+                                if (callUsers[cUserId].audioStopManager.isStreamStopped()) {
+
+                                    callStateController.activateParticipantStream(
+                                        cUserId,
+                                        'audio',
+                                        (myId === cUserId ? 'send' : 'receive'),
+                                        'audioTopicName',
+                                        callUsers[cUserId].topicSend,
+                                        'mute'
+                                    );
+                                } else if(myId === cUserId){
+                                    currentModuleInstance.resumeMice({});
+                                }
+                                callUsers[cUserId].audioStopManager.reset();
+                            }
+
+
+/*                            callStateController.activateParticipantStream(
                                 messageContent[i].userId,
                                 'audio',
                                 //TODO: Should send in here when chat server fixes the bug
@@ -3152,7 +3178,7 @@
                                 'audioTopicName',
                                 messageContent[i].sendTopic,
                                 'mute'
-                            );
+                            );*/
                         }
                     }
 
@@ -4315,13 +4341,8 @@
 
             //TODO: should be moved to event 113 when server fixes
 
-            // callStateController.deactivateParticipantStream(
-            //     chatMessaging.userInfo.id,
-            //     'audio',
-            //     'mute'
-            // );
             currentModuleInstance.pauseMice({});
-            callUsers[chatMessaging.userInfo.id].audioStopManager.disableStream(true);
+            callUsers[chatMessaging.userInfo.id].audioStopManager.disableStream();
 
             return chatMessaging.sendMessage(sendMessageParams, {
                 onResult: function (result) {
@@ -4362,10 +4383,11 @@
                     sendMessageParams.content = params.userIds;
                 }
             }
-            var myId = chatMessaging.userInfo.id;
 
             //TODO: Should be moved to event from chat server (when chat server fixes the bug)
-            var myUser = callUsers[myId];
+            var myId = chatMessaging.userInfo.id
+                , myUser = callUsers[myId];
+
             if(myUser.audioStopManager.isStreamPaused()) {
                 if (myUser.audioStopManager.isStreamStopped()){
                     callStateController.activateParticipantStream(
@@ -4376,8 +4398,10 @@
                         myUser.topicSend,
                         'mute'
                     );
+                } else {
+                    currentModuleInstance.resumeMice({});
                 }
-                callUsers[chatMessaging.userInfo.id].audioStopManager.reset();
+                myUser.audioStopManager.reset();
             }
 
             return chatMessaging.sendMessage(sendMessageParams, {
