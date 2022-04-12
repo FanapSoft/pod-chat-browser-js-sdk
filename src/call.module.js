@@ -1478,7 +1478,7 @@
                     if(!user)
                         return;
 
-                    if(user.videoTopicName && user.videoTopicManager.getPeer()) { //user.peers[user.videoTopicName]
+                    if(user.videoTopicManager && user.videoTopicManager.getPeer()) { //user.peers[user.videoTopicName]
                         // clearInterval(callUsers[userId].topicMetaData[user.videoTopicName].interval);
                         // callStateController.removeConnectionQualityInterval(userId, user.videoTopicName);
                         user.videoTopicManager.removeTopic();
