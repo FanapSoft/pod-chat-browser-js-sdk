@@ -16,7 +16,7 @@
         ChatMessaging;
 
     function Chat(params) {
-        if (typeof (require) !== 'undefined' && typeof (exports) !== 'undefined') {
+        if (typeof (require) !== 'undefined' && typeof (module) !== 'undefined') {
             Async = require('podasync-ws-only');
             ChatUtility = require('./utility/utility.js');
             Dexie = require('dexie').default || require('dexie');

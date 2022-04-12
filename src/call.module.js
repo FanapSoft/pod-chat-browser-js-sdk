@@ -6,15 +6,13 @@
         WebrtcAdapter;
 
     function ChatCall(params) {
-        if (typeof (require) !== 'undefined' && typeof (exports) !== 'undefined') {
+        if (typeof (require) !== 'undefined' && typeof (module) !== 'undefined') {
             KurentoUtils = require('kurento-utils');
             WebrtcAdapter = require('webrtc-adapter');
         } else {
             KurentoUtils = window.kurentoUtils;
             WebrtcAdapter = window.adapter;
         }
-
-
 
         var Utility = params.Utility,
             currentModuleInstance = this,
