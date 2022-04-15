@@ -1294,13 +1294,18 @@
                 startCall: function (params) {
                     var callController = this;
                     for(var i in callUsers) {
-                        if(i === 'screenShare' && !screenShareInfo.isStarted())
+                        if(i === "screenShare") {
+                            if(screenShareInfo.isStarted())
+                                callStateController.addScreenShareToCall('receive', false);
+
                             continue;
+                        }
+
 
                         if(callUsers[i].video) {
                             callController.startParticipantVideo(i);
                         }
-                        if(!callUsers[i].mute) {
+                        if(callUsers[i].mute !== undefined && !callUsers[i].mute) {
                             callController.startParticipantAudio(i);
                         }
                     }
@@ -1375,26 +1380,15 @@
                         video: true,
                     };
                     obj.topicMetaData = {};
-                    // obj.peers = {};
-
-
-
+                    obj.direction = screenShareInfo.iAmOwner() ? 'send' : 'receive';
                     obj.videoTopicManager = new callTopicManager({
                         userId: 'screenShare',
                         topic: topic,
                         mediaType: 'video',
-                        direction: (screenShareInfo.iAmOwner() ? 'send': 'receive'),
+                        direction: obj.direction,
                         isScreenShare: true
                     });
 
-
-
-
-                    if(screenShareInfo.iAmOwner()) {
-                        obj.direction = 'send';
-                    } else {
-                        obj.direction = 'receive'
-                    }
                     obj.videoTopicName = topic;
                     obj.topicMetaData[obj.videoTopicName] = {
                         interval: null,
@@ -1405,10 +1399,10 @@
                         isConnectionPoor: false
                     };
                     callUsers['screenShare'] = obj;
-                    if(screenShareInfo.isStarted())
-                        this.appendUserToCallDiv('screenShare', this.generateHTMLElements('screenShare'));
-                    else
-                        this.generateHTMLElements('screenShare')
+                    // if(screenShareInfo.isStarted())
+                    //     this.appendUserToCallDiv('screenShare', this.generateHTMLElements('screenShare'));
+                    // else
+                    this.generateHTMLElements('screenShare');
                 },
                 appendUserToCallDiv: function (userId) {
                     if(!callDivId) {
@@ -1483,9 +1477,7 @@
                     if(!user)
                         return;
 
-                    if(user.videoTopicManager && user.videoTopicManager.getPeer()) { //user.peers[user.videoTopicName]
-                        // clearInterval(callUsers[userId].topicMetaData[user.videoTopicName].interval);
-                        // callStateController.removeConnectionQualityInterval(userId, user.videoTopicName);
+                    if(user.videoTopicManager && user.videoTopicManager.getPeer()) {
                         user.videoTopicManager.removeTopic();
                     }
                     if(user.audioTopicManager && user.audioTopicManager.getPeer()) {
@@ -1582,7 +1574,7 @@
                     }
                 },
                 addScreenShareToCall: function (direction, shareScreen) {
-                    if(direction !== callUsers["screenShare"].direction) { //callUsers["screenShare"].direction
+                    if(direction !== callUsers["screenShare"].direction) {
                         callUsers['screenShare'].direction = direction;
                         callUsers['screenShare'].videoTopicManager.setDirection(direction);
                     }
@@ -1590,22 +1582,24 @@
 
                     var callController = this,
                         screenShare = callUsers["screenShare"];
-                    if(!screenShare.videoTopicManager.getPeer()) {//.peers[screenShare.videoTopicName]
-                        // Local Video Tag
+                    if(!screenShare.videoTopicManager.getPeer()) {
                         if(!screenShare.htmlElements[screenShare.videoTopicName]) {
                             callStateController.generateHTMLElements('screenShare');
                         }
                         setTimeout(function () {
                             callStateController.appendUserToCallDiv('screenShare');
                             screenShare.videoTopicManager.createTopic();
-                            // callStateController.createTopic('screenShare', screenShare.videoTopicName, "video", direction, shareScreen);
-                        });
+                       });
                         chatEvents.fireEvent('callEvents', {
                             type: 'CALL_DIVS',
                             result: generateCallUIList()
                         });
                     } else {
                         screenShare.videoTopicManager.removeTopic();
+                        if(!screenShare.htmlElements[screenShare.videoTopicName]) {
+                            callStateController.generateHTMLElements('screenShare');
+                        }
+                        callStateController.appendUserToCallDiv('screenShare');
                         screenShare.videoTopicManager.createTopic();
                         startMedia(screenShare.htmlElements[screenShare.videoTopicName])
                     }
