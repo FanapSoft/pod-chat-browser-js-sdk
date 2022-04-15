@@ -337,7 +337,10 @@
                         this.removeTimeout();
                     }
 
-                    config.timeoutHandler = setTimeout(function () {
+                    /**
+                     * Temporarily disable timeout feature
+                     */
+                    //config.timeoutHandler = setTimeout(function () {
                         if(config.paused) {
                             config.stopped = true;
 
@@ -347,7 +350,7 @@
                                 (config.mediaType === 'video' ? 'video' : 'mute')
                             );
                         }
-                    }, config.timeout);
+                    //}, config.timeout);
                 },
                 removeTimeout: function () {
                     clearTimeout(config.timeoutHandler);
@@ -871,7 +874,6 @@
                         // this.removeTopicIceCandidateInterval();
                         metadataInstance.clearIceCandidateInterval();
                         this.removeConnectionQualityInterval();
-                        config.peer.dispose();
                         if(config.direction === 'send' && !config.isScreenShare) {
                             var constraint = {
                                 audio: config.mediaType === 'audio',
@@ -881,18 +883,20 @@
                                 } : false)
                             }
                             navigator.mediaDevices.getUserMedia(constraint).then(stream => {
+                                callStateController.removeStreamHTML(config.userId, config.topic);
                                 stream.getTracks().forEach(function (track) {
                                     if(!!track) {
                                         track.stop();
                                     }
                                 });
+                                config.peer.dispose();
                                 config.peer = null;
-                                callStateController.removeStreamHTML(config.userId, config.topic);
                                 config.state = peerStates.DISCONNECTED;
                             })
                         } else {
-                            config.peer = null;
                             callStateController.removeStreamHTML(config.userId, config.topic);
+                            config.peer.dispose();
+                            config.peer = null;
                             config.state = peerStates.DISCONNECTED;
                         }
                     }
