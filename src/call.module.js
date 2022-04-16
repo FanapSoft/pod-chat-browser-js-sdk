@@ -1942,13 +1942,16 @@
                     topicManager,
                     peer; // = callUsers[userId].peers[jsonMessage.topic];
 
-                if(jsonMessage.topic.indexOf('Vi-') !== -1 || jsonMessage.topic.indexOf('screen-Share') !== -1) {
-                    topicManager = callUsers[userId].videoTopicManager;
-                    peer = callUsers[userId].videoTopicManager.getPeer();
-                } else if(jsonMessage.topic.indexOf('Vo-') !== -1) {
-                    topicManager = callUsers[userId].audioTopicManager;
-                    peer = callUsers[userId].audioTopicManager.getPeer();
+                if(userId && callUsers[userId]) {
+                    if(jsonMessage.topic.indexOf('Vi-') !== -1 || jsonMessage.topic.indexOf('screen-Share') !== -1) {
+                        topicManager = callUsers[userId].videoTopicManager;
+                        peer = callUsers[userId].videoTopicManager.getPeer();
+                    } else if(jsonMessage.topic.indexOf('Vo-') !== -1) {
+                        topicManager = callUsers[userId].audioTopicManager;
+                        peer = callUsers[userId].audioTopicManager.getPeer();
+                    }
                 }
+
 
                 if (peer == null) {
                     chatEvents.fireEvent('callEvents', {
