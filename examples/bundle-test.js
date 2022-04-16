@@ -56794,7 +56794,7 @@ WildEmitter.mixin(WildEmitter);
                             });
 
                             if(chatMessaging.chatState) {
-                                manager.shouldReconnectTopic(config.userId, config.topic, config.mediaType, config.direction);
+                                manager.shouldReconnectTopic();
                             }
                         }
 
@@ -57052,13 +57052,9 @@ WildEmitter.mixin(WildEmitter);
                                 topic: config.topic
                             }, function (result) {
                                 if (result.done === 'TRUE') {
-                                    // manager.removeTopicIceCandidateInterval();
-                                    manager.removeTopic();
-                                    manager.createTopic();
+                                    manager.reconnectTopic();
                                 } else if (result.done === 'SKIP') {
-                                    // clearInterval(callUsers[config.userId].topicMetaData[config.topic].interval)
-                                    manager.removeTopic(config.userId, config.topic);
-                                    manager.createTopic(config.userId, config.topic, config.mediaType, config.direction, config.userId === 'screenShare');
+                                   manager.reconnectTopic();
                                 } else {
                                     consoleLogging && console.log('STOP topic faced a problem', result);
                                     endCall({
@@ -57069,6 +57065,18 @@ WildEmitter.mixin(WildEmitter);
                             });
                         }
                     }
+                },
+                reconnectTopic: function () {
+                    const manager = this;
+                    manager.removeTopic().then(function () {
+                        if(config.isScreenShare && screenShareInfo.isStarted()){
+                            callStateController.addScreenShareToCall(config.direction, config.direction === 'send');
+                        }
+                        else {
+                            callStateController.appendUserToCallDiv(config.userId, callStateController.generateHTMLElements(config.userId));
+                            manager.createTopic();
+                        }
+                    });
                 },
                 createTopic: function () {
                     var manager = this;
@@ -57081,36 +57089,45 @@ WildEmitter.mixin(WildEmitter);
                     });
                 },
                 removeTopic: function () {
-                    if(config.peer) {
-                        // this.removeTopicIceCandidateInterval();
-                        metadataInstance.clearIceCandidateInterval();
-                        this.removeConnectionQualityInterval();
-                        if(config.direction === 'send' && !config.isScreenShare) {
-                            var constraint = {
-                                audio: config.mediaType === 'audio',
-                                video: (config.mediaType === 'video' ? {
-                                    width: 640,
-                                    framerate: 15
-                                } : false)
-                            }
-                            navigator.mediaDevices.getUserMedia(constraint).then(stream => {
+                    let manager = this;
+                    return new Promise(function (resolve, reject) {
+                        if(config.peer) {
+                            // this.removeTopicIceCandidateInterval();
+                            metadataInstance.clearIceCandidateInterval();
+                            manager.removeConnectionQualityInterval();
+                            if(config.direction === 'send' && !config.isScreenShare) {
+                                var constraint = {
+                                    audio: config.mediaType === 'audio',
+                                    video: (config.mediaType === 'video' ? {
+                                        width: 640,
+                                        framerate: 15
+                                    } : false)
+                                }
+                                navigator.mediaDevices.getUserMedia(constraint).then(function (stream) {
+                                    callStateController.removeStreamHTML(config.userId, config.topic);
+                                    stream.getTracks().forEach(function (track) {
+                                        if(!!track) {
+                                            track.stop();
+                                        }
+                                    });
+                                    config.peer.dispose();
+                                    config.peer = null;
+                                    config.state = peerStates.DISCONNECTED;
+                                    resolve(true);
+                                }).catch(error => {
+                                    console.error("Could not free up some resources", error);
+                                    resolve(true);
+                                })
+                            } else {
                                 callStateController.removeStreamHTML(config.userId, config.topic);
-                                stream.getTracks().forEach(function (track) {
-                                    if(!!track) {
-                                        track.stop();
-                                    }
-                                });
                                 config.peer.dispose();
                                 config.peer = null;
                                 config.state = peerStates.DISCONNECTED;
-                            })
-                        } else {
-                            callStateController.removeStreamHTML(config.userId, config.topic);
-                            config.peer.dispose();
-                            config.peer = null;
-                            config.state = peerStates.DISCONNECTED;
+                                resolve(true);
+                            }
                         }
-                    }
+                    })
+
                 },
             }
         }
@@ -57623,7 +57640,6 @@ WildEmitter.mixin(WildEmitter);
                     var user = callUsers[userId]
                     var callParentDiv = document.getElementById(callDivId);
                     if(user.video) {
-                        console.log("appendUserToCallDiv1", user, document.getElementById("callParticipantWrapper-" + userId), document.getElementById("uiRemoteVideo-" + user.videoTopicName))
                         if(!document.getElementById("callParticipantWrapper-" + userId)) {
                             if (!document.getElementById("uiRemoteVideo-" + user.videoTopicName)) {
                                 user.htmlElements.container.appendChild(user.htmlElements[user.videoTopicName])
@@ -57757,12 +57773,6 @@ WildEmitter.mixin(WildEmitter);
                                 callUsers[i].audioTopicManager.shouldReconnectTopic()
                             }
                         }
-                        // if(callUsers[i] && callUsers[i].peers[videoTopic] && callUsers[i].peers[videoTopic].peerConnection.connectionState === 'failed'){
-                        //     this.shouldReconnectTopic(i, videoTopic, 'video', callUsers[i].direction)
-                        // }
-                        // if(callUsers[i] && callUsers[i].peers[audioTopic] && callUsers[i].peers[audioTopic].peerConnection.connectionState === 'failed'){
-                        //     this.shouldReconnectTopic(i, audioTopic, 'audio', callUsers[i].direction)
-                        // }
                     }
                 },
                 removeStreamHTML : function (userId, topic) {
@@ -57835,28 +57845,11 @@ WildEmitter.mixin(WildEmitter);
                             if (user) {
                                 if(user.videoTopicManager && user.videoTopicManager.getPeer()) {
                                     user.videoTopicManager.removeTopic();
-                                    // callStateController.removeStreamHTML(i, user.videoTopicName);
                                 }
                                 if(user.audioTopicManager && user.audioTopicManager.getPeer()) {
                                     user.audioTopicManager.removeTopic();
-                                    // callStateController.removeStreamHTML(i, user.audioTopicManager);
                                 }
-                                // if(user.videoTopicName && user.peers[user.videoTopicName]) {
-                                //     callStateController.removeTopicIceCandidateInterval(i, user.videoTopicName)
-                                //     // clearInterval(callUsers[i].topicMetaData[user.videoTopicName].interval);
-                                //     callStateController.removeConnectionQualityInterval(i, user.videoTopicName);
-                                //     callStateController.removeStreamHTML(i, user.videoTopicName);
-                                //     callUsers[i].peers[user.videoTopicName].dispose();
-                                //     delete callUsers[i].peers[user.videoTopicName];
-                                // }
-                                // if(user.audioTopicName && user.peers[user.audioTopicName]) {
-                                //     callStateController.removeTopicIceCandidateInterval(i, user.videoTopicName)
-                                //     // clearInterval(callUsers[i].topicMetaData[user.audioTopicName].interval);
-                                //     //callStateController.removeConnectionQualityInterval(i, user.audioTopicName);
-                                //     callStateController.removeStreamHTML(i, user.audioTopicName);
-                                //     callUsers[i].peers[user.audioTopicName].dispose();
-                                //     delete callUsers[i].peers[user.audioTopicName];
-                                // }
+
                                 setTimeout(function (){
                                     if(callUsers[i]){
                                         // callUsers[i].peers = {};
@@ -58153,13 +58146,16 @@ WildEmitter.mixin(WildEmitter);
                     topicManager,
                     peer; // = callUsers[userId].peers[jsonMessage.topic];
 
-                if(jsonMessage.topic.indexOf('Vi-') !== -1 || jsonMessage.topic.indexOf('screen-Share') !== -1) {
-                    topicManager = callUsers[userId].videoTopicManager;
-                    peer = callUsers[userId].videoTopicManager.getPeer();
-                } else if(jsonMessage.topic.indexOf('Vo-') !== -1) {
-                    topicManager = callUsers[userId].audioTopicManager;
-                    peer = callUsers[userId].audioTopicManager.getPeer();
+                if(userId && callUsers[userId]) {
+                    if(jsonMessage.topic.indexOf('Vi-') !== -1 || jsonMessage.topic.indexOf('screen-Share') !== -1) {
+                        topicManager = callUsers[userId].videoTopicManager;
+                        peer = callUsers[userId].videoTopicManager.getPeer();
+                    } else if(jsonMessage.topic.indexOf('Vo-') !== -1) {
+                        topicManager = callUsers[userId].audioTopicManager;
+                        peer = callUsers[userId].audioTopicManager.getPeer();
+                    }
                 }
+
 
                 if (peer == null) {
                     chatEvents.fireEvent('callEvents', {
@@ -58254,8 +58250,36 @@ WildEmitter.mixin(WildEmitter);
                     message: "Kurento error: " + errMessage
                 });
             },
+            releaseResource = function (mediaType) {
+                var constraint = {
+                    audio: mediaType === 'audio',
+                    video: (mediaType === 'video' ? {
+                        width: 640,
+                        framerate: 15
+                    } : false)
+                }
+                navigator.mediaDevices.getUserMedia(constraint).then(function (stream) {
+                    stream.getTracks().forEach(function (track) {
+                        if(!!track) {
+                            track.stop();
+                        }
+                    });
 
+                }).catch(error => {
+                    consoleLogging && console.error(error)
+                })
+            },
             callStop = function () {
+                if(callUsers) {
+                    let me = callUsers[chatMessaging.userInfo.id];
+                    if(me) {
+                        if(me.video)
+                            releaseResource('video');
+                        if(!me.mute)
+                            releaseResource('audio');
+                    }
+                }
+
                 callStateController.removeAllCallParticipants();
 
                 if (callStopQueue.callStarted) {
@@ -58622,8 +58646,6 @@ WildEmitter.mixin(WildEmitter);
                         result: messageContent
                     });
 
-                    //callStateController.removeAllCallParticipants();
-
                     if (typeof messageContent === 'object'
                         && messageContent.hasOwnProperty('chatDataDto')
                         && !!messageContent.chatDataDto.kurentoAddress) {
@@ -58730,8 +58752,15 @@ WildEmitter.mixin(WildEmitter);
                         type: 'CALL_PARTICIPANT_CONNECTED',
                         result: messageContent
                     });
-                    restartMediaOnKeyFrame(chatMessaging.userInfo.id, [100])
-
+                    if(callUsers && callUsers[chatMessaging.userInfo.id] && callUsers[chatMessaging.userInfo.id].video) {
+                        restartMediaOnKeyFrame(chatMessaging.userInfo.id, [2000,4000,8000,12000]);
+                    }
+                    if(callUsers && callUsers['screenShare']
+                        && screenShareInfo.isStarted()
+                        && screenShareInfo.iAmOwner()
+                    ) {
+                        restartMediaOnKeyFrame('screenShare', [2000,4000,8000,12000]);
+                    }
                     break;
 
                 /**
