@@ -57103,21 +57103,24 @@ WildEmitter.mixin(WildEmitter);
                                         framerate: 15
                                     } : false)
                                 }
+
+                                callStateController.removeStreamHTML(config.userId, config.topic);
+                                config.peer.dispose();
+                                config.peer = null;
+                                config.state = peerStates.DISCONNECTED;
+
                                 navigator.mediaDevices.getUserMedia(constraint).then(function (stream) {
-                                    callStateController.removeStreamHTML(config.userId, config.topic);
                                     stream.getTracks().forEach(function (track) {
                                         if(!!track) {
                                             track.stop();
                                         }
                                     });
-                                    config.peer.dispose();
-                                    config.peer = null;
-                                    config.state = peerStates.DISCONNECTED;
-                                    resolve(true);
                                 }).catch(error => {
                                     console.error("Could not free up some resources", error);
                                     resolve(true);
-                                })
+                                });
+
+                                resolve(true);
                             } else {
                                 callStateController.removeStreamHTML(config.userId, config.topic);
                                 config.peer.dispose();
