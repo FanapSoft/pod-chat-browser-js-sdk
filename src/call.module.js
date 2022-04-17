@@ -1927,7 +1927,7 @@
 
                     callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
                     startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
-                    if(userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
+                    if(userId == 'screenShare' || userId == chatMessaging.userInfo.id) {
                         restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000]);
                     }
                 });
@@ -1977,7 +1977,7 @@
                     if (topicManager.metadata().isIceCandidateIntervalSet()){
                         callUsers[userId].topicMetaData[jsonMessage.topic].sdpAnswerReceived = true;
                         startMedia(callUsers[userId].htmlElements[jsonMessage.topic]);
-                        if (userId === 'screenShare' || userId === chatMessaging.userInfo.id) {
+                        if (userId == 'screenShare' || userId == chatMessaging.userInfo.id) {
                             restartMediaOnKeyFrame(userId, [2000, 4000, 8000, 12000, 20000]);
                         }
                     }
