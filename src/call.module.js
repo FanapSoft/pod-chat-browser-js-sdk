@@ -202,7 +202,7 @@
                 started: false,
                 imOwner: false
             },
-            screenShareInfo = new ScreenShareStateClass(),
+            screenShareInfo = new screenShareStateManager(),
             callClientType = {
                 WEB: 1,
                 ANDROID: 2,
@@ -221,7 +221,7 @@
                 callStarted: false,
             },
             callServerName,
-            callServerManager = new callServerManagerClass(),
+            callServerController = new callServerManager(),
             messageTtl = params.messageTtl || 10000,
             config = {
                 getHistoryCount: 50
@@ -233,7 +233,7 @@
             callNoAnswerTimeout = params.callOptions.callNoAnswerTimeout || 0,
             callStreamCloseTimeout = params.callOptions.streamCloseTimeout || 10000
 
-        function ScreenShareStateClass() {
+        function screenShareStateManager() {
             var config = {
                 ownerId: 0,
                 imOwner: false,
@@ -286,7 +286,7 @@
             }
         }
 
-        function callServerManagerClass() {
+        function callServerManager() {
             var config = {
                 servers: [],
                 currentServerIndex: 0,
@@ -525,7 +525,7 @@
                             }
                         }
 
-                        if(callServerManager.isJanus() && config.direction === 'receive') {
+                        if(callServerController.isJanus() && config.direction === 'receive') {
                             sendCallMessage({
                                 id: 'REGISTER_RECV_NOTIFICATION',
                                 topic: config.topic,
@@ -964,6 +964,7 @@
         var init = function () {
 
             },
+
             sendCallMessage = function (message, callback) {
                 message.token = token;
 
@@ -980,7 +981,7 @@
                 var data = {
                     type: 3,
                     content: {
-                        peerName: callServerManager.getCurrentServer(),// callServerName,
+                        peerName: callServerController.getCurrentServer(),// callServerName,
                         priority: 1,
                         content: JSON.stringify(message),
                         ttl: messageTtl
@@ -1010,9 +1011,9 @@
                             delete chatMessaging.messagesCallbacks[uniqueId];
                         }
 
-                        if(callServerManager.canChangeServer() && message.id === 'CREATE_SESSION') {
+                        if(callServerController.canChangeServer() && message.id === 'CREATE_SESSION') {
                             // 'CREATE_SESSION',
-                            callServerManager.changeServer();
+                            callServerController.changeServer();
                             sendCallMessage(message, callback);
                             return;
                         }
@@ -2442,7 +2443,7 @@
                         && messageContent.hasOwnProperty('chatDataDto')
                         && !!messageContent.chatDataDto.kurentoAddress) {
 
-                        callServerManager.setServers(messageContent.chatDataDto.kurentoAddress.split(','));
+                        callServerController.setServers(messageContent.chatDataDto.kurentoAddress.split(','));
 
                         startCallWebRTCFunctions({
                             video: messageContent.clientDTO.video,
