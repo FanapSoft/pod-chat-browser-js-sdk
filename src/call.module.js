@@ -1736,7 +1736,8 @@
                 chatEvents.fireEvent('callEvents', {
                     type: 'CALL_ERROR',
                     code: 7000,
-                    message: message
+                    message: message,
+                    environmentDetails: getSDKCallDetails()
                 });
 
                 sendCallMessage({
@@ -1749,7 +1750,8 @@
                 chatEvents.fireEvent('callEvents', {
                     type: 'CALL_ERROR',
                     code: 7000,
-                    message: err
+                    message: err,
+                    environmentDetails: getSDKCallDetails()
                 });
 
                 const n = err.name;
@@ -1757,7 +1759,8 @@
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: "Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks"
+                        message: "Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks",
+                        environmentDetails: getSDKCallDetails()
                     });
                     alert("Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks");
                     return "Missing " + (deviceType === 'video' ? 'webcam' : 'mice') + " for required tracks";
@@ -1765,7 +1768,8 @@
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use"
+                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use",
+                        environmentDetails: getSDKCallDetails()
                     });
 
                     alert((deviceType === 'video' ? 'Webcam' : 'Mice') + " is already in use");
@@ -1774,7 +1778,8 @@
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks"
+                        message: (deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks",
+                        environmentDetails: getSDKCallDetails()
                     });
                     alert((deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks");
                     return (deviceType === 'video' ? 'Webcam' : 'Mice') + " doesn't provide required tracks";
@@ -1782,7 +1787,8 @@
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: (deviceType === 'video' ? (deviceSource === 'screen'? 'ScreenShare' : 'Webcam') : 'Mice') + " permission has been denied by the user"
+                        message: (deviceType === 'video' ? (deviceSource === 'screen'? 'ScreenShare' : 'Webcam') : 'Mice') + " permission has been denied by the user",
+                        environmentDetails: getSDKCallDetails()
                     });
                     alert((deviceType === 'video' ? (deviceSource === 'screen'? 'ScreenShare' : 'Webcam') : 'Mice') + " permission has been denied by the user");
                     return (deviceType === 'video' ? (deviceSource === 'screen'? 'ScreenShare' : 'Webcam') : 'Mice') + " permission has been denied by the user";
@@ -1790,14 +1796,16 @@
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: "No media tracks have been requested"
+                        message: "No media tracks have been requested",
+                        environmentDetails: getSDKCallDetails()
                     });
                     return "No media tracks have been requested";
                 } else {
                     chatEvents.fireEvent('callEvents', {
                         type: 'CALL_ERROR',
                         code: 7000,
-                        message: "Unknown error: " + err
+                        message: "Unknown error: " + err,
+                        environmentDetails: getSDKCallDetails()
                     });
                     return "Unknown error: " + err;
                 }
@@ -1810,13 +1818,15 @@
                         chatEvents.fireEvent('callEvents', {
                             type: 'CALL_ERROR',
                             code: 7000,
-                            message: "[startMedia] Browser doesn't allow playing media: " + err
+                            message: "[startMedia] Browser doesn't allow playing media: " + err,
+                            environmentDetails: getSDKCallDetails()
                         });
                     } else {
                         chatEvents.fireEvent('callEvents', {
                             type: 'CALL_ERROR',
                             code: 7000,
-                            message: "[startMedia] Error in media.play(): " + err
+                            message: "[startMedia] Error in media.play(): " + err,
+                            environmentDetails: getSDKCallDetails()
                         });
                     }
                 });
@@ -1955,7 +1965,8 @@
                         type: 'CALL_ERROR',
                         code: 7000,
                         message: "[handleProcessSdpAnswer] Skip, no WebRTC Peer",
-                        error: peer
+                        error: peer,
+                        environmentDetails: getSDKCallDetails()
                     });
                     return;
                 }
@@ -1967,7 +1978,8 @@
                         chatEvents.fireEvent('callEvents', {
                             type: 'CALL_ERROR',
                             code: 7000,
-                            message: "[handleProcessSdpAnswer] Error: " + err
+                            message: "[handleProcessSdpAnswer] Error: " + err,
+                            environmentDetails: getSDKCallDetails()
                         });
 
                         return;
@@ -2001,7 +2013,8 @@
                         type: 'CALL_ERROR',
                         code: 7000,
                         message: "[handleAddIceCandidate] Skip, no WebRTC Peer",
-                        error: JSON.stringify(peer)
+                        error: JSON.stringify(peer),
+                        environmentDetails: getSDKCallDetails()
                     });
                     return;
                 }
@@ -2014,7 +2027,8 @@
                             type: 'CALL_ERROR',
                             code: 7000,
                             message: "[handleAddIceCandidate] " + err,
-                            error: JSON.stringify(jsonMessage.candidate)
+                            error: JSON.stringify(jsonMessage.candidate),
+                            environmentDetails: getSDKCallDetails()
                         });
 
                         return;
@@ -2040,9 +2054,11 @@
                 chatEvents.fireEvent('callEvents', {
                     type: 'CALL_ERROR',
                     code: 7000,
-                    message: "Kurento error: " + errMessage
+                    message: "Kurento error: " + errMessage,
+                    environmentDetails: getSDKCallDetails()
                 });
             },
+
             releaseResource = function (mediaType) {
                 var constraint = {
                     audio: mediaType === 'audio',
@@ -2062,6 +2078,7 @@
                     consoleLogging && console.error(error)
                 })
             },
+
             callStop = function () {
                 if(callUsers) {
                     let me = callUsers[chatMessaging.userInfo.id];
@@ -2210,8 +2227,25 @@
                         }).catch(e => consoleLogging && console.log(e));
                     }
                 }
-            }
+            },
 
+            getSDKCallDetails = function (customData) {
+                return {
+                    currentUser: chatMessaging.userInfo,
+                    currentServers: {
+                        callTurnIp,
+
+                    },
+                    isJanus: currentCallId && callServerController.isJanus(),
+                    screenShareInfo: {
+                        isStarted: screenShareInfo.isStarted(),
+                        iAmOwner: screenShareInfo.iAmOwner(),
+                    },
+                    callId: currentCallId,
+                    startCallInfo: currentCallParams,
+                    customData
+                }
+            }
 
         this.updateToken = function (newToken) {
             token = newToken;
@@ -2230,7 +2264,8 @@
                 chatEvents.fireEvent('callEvents', {
                     type: 'CALL_ERROR',
                     code: 7000,
-                    message: "Kurento error: " + (jsonMessage.desc ? jsonMessage.desc : jsonMessage.message)
+                    message: "Kurento error: " + (jsonMessage.desc ? jsonMessage.desc : jsonMessage.message),
+                    environmentDetails: getSDKCallDetails()
                 });
             }
 
@@ -2467,7 +2502,8 @@
                     } else {
                         chatEvents.fireEvent('callEvents', {
                             type: 'CALL_ERROR',
-                            message: 'Chat Data DTO is not present!'
+                            message: 'Chat Data DTO is not present!',
+                            environmentDetails: getSDKCallDetails()
                         });
                     }
 
