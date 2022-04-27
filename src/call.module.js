@@ -2107,6 +2107,9 @@
             },
 
             restartMediaOnKeyFrame = function (userId, timeouts) {
+                if(callServerController.isJanus())
+                    return;
+
                 for (var i = 0; i < timeouts.length; i++) {
                     setTimeout(function () {
                         if(typeof callUsers[userId] !== "undefined" && callUsers[userId] && callUsers[userId].videoTopicManager.getPeer()) //callUsers[userId].peers[callUsers[userId].videoTopicName]
